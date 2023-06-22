@@ -287,11 +287,8 @@ const loadMarkers = (positions, markers) => {
         color = "pink";
         break;
       case 39: // 음식점
-        color = "red";
-        break;
       default:
         color = "red";
-        break;
     }
     // 마커 이미지를 생성합니다
     var imgSrc = window.location.origin + "/src/assets/img/marker-" + color + ".png";
@@ -373,12 +370,6 @@ const loadMarkers = (positions, markers) => {
 
     var favorite = document.createElement("div");
     favorite.className = "favorite";
-
-    `<img
-      :src="product.isFavorite ? 'src/assets/img/heart-red.png' : 'src/assets/img/heart-white.png'"
-      :width="20"
-      @click="changeProductFavorite(product.name)"
-    />`;
 
     var heartWhite = document.createElement("img");
     heartWhite.src = window.location.origin + "/src/assets/img/heart-white.png";
@@ -549,18 +540,10 @@ const deleteLines = () => {
   width: 286px;
   height: 250px;
   border: 1px solid #8493c9;
-  /* box-shadow: 0px 1px 2px #888; */
   border-radius: 5%;
-  /* border-bottom: 2px solid #ccc; */
-  /* border-right: 1px solid #ccc; */
   overflow: hidden;
   background: #fff;
 }
-
-/* .wrap .info:nth-child(1) {
-  border: 0;
-  box-shadow: 0px 1px 2px #888;
-} */
 
 .info .title {
   padding: 10px 0;
@@ -638,17 +621,6 @@ const deleteLines = () => {
   background: #fff;
   text-align: center;
 }
-
-/* .info:after {
-  content: "";
-  position: absolute;
-  margin-left: -12px;
-  left: 50%;
-  bottom: 0;
-  width: 22px;
-  height: 12px;
-  background: url("https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/vertex_white.png");
-} */
 
 .info .link {
   color: #5085bb;

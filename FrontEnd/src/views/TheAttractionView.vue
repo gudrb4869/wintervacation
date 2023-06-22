@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from "vue";
-import { listSido, listGugun, listAttractions } from "@/api/map";
+import { listAttractions } from "@/api/map";
 import festivals from "@/assets/festival.json";
 
 import VKakaoMap from "@/components/common/VKakaoMap.vue";
@@ -8,11 +8,9 @@ import VKakaoMap from "@/components/common/VKakaoMap.vue";
 const { VITE_OPEN_API_SERVICE_KEY } = import.meta.env;
 
 let festivalList = [];
-// 1 2 3 4 5 6 7 8 9 10 11 12
 
 const festival = ref({});
 
-//
 const getFestivals = (month) => {
   return festivals.filter((f) => (f.month - month + 12) % 12 < 4);
 };
@@ -45,14 +43,13 @@ const randomRecommend = () => {
   console.log(current);
 
   let monthDate = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365];
-  for (let i = 1; i <= 12; i++) {
-    monthDate[i] += monthDate[i - 1];
-  }
+
   // 2월 4일 (입춘) => 34
   // 5월 5일 (입하) => 124
   // 8월 7일 (입추) => 218
   // 11월 7일 (입동) => 310
   let currentDate = monthDate[current.getMonth()] + (current.getDate() - 1);
+  console.log("현재날짜의 값: " + currentDate);
   if (currentDate >= 34 && currentDate < 124) {
     festivalList = getFestivals(2);
   } else if (currentDate >= 124 && currentDate < 218) {
