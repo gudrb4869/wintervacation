@@ -37,22 +37,22 @@ create table qna_memo(
 );
 
 -- 솔트 조회
-select * from member where userid = ?;
+select * from member where user_id = ?;
 
 -- 멤버 로그인
-select * from member where userid = ? and userpass = ?;
+select * from member where user_id = ? and user_pass = ?;
 
 -- 회원가입
-insert into member(userid, username, userpass, email, salt) values ( ?, ?, ?, ?, ? );
+insert into member(user_id, user_name, user_pass, email, salt) values ( ?, ?, ?, ?, ? );
 
 -- 회원수정
-update member set userpass = ?, email = ? , username = ? where userid = ?;
+update member set user_pass = ?, email = ? , user_name = ? where user_id = ?;
 
 -- 아이디 중복체크
-select count(userid) from member where userid = ?;
+select count(user_id) from member where user_id = ?;
 
 -- 아이디 삭제
-delete from member where userid = ?;
+delete from member where user_id = ?;
 
 -- 지도 시/도 목록
 select * from sido;
