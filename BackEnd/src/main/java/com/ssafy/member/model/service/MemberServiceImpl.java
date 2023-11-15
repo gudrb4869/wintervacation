@@ -48,8 +48,8 @@ public class MemberServiceImpl implements MemberService {
 		dto.setSalt(salt); // 솔트값 DTO에 저장
 		
 		// 비밀번호 해싱
-		String encryptedPass = keyStretching(dto.getUserpass() + salt); // 비밀번호+솔트를 해싱
-		dto.setUserpass(encryptedPass); // 비밀번호 암호화 처리한 값으로 DTO에 저장
+		String encryptedPass = keyStretching(dto.getUserPass() + salt); // 비밀번호+솔트를 해싱
+		dto.setUserPass(encryptedPass); // 비밀번호 암호화 처리한 값으로 DTO에 저장
 		System.out.println(dto);
 		return memberMapper.join(dto);
 	}

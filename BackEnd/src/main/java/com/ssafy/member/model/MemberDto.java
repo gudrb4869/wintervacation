@@ -1,33 +1,34 @@
 package com.ssafy.member.model;
 
 public class MemberDto {
-	private String userid;
-	private String username;
-	private String userpass;
+	private String userId;
+	private String userName;
+	private String userPass;
 	private String email;
-	private String birthdate;
+	private String birthDate;
 	private String gender;
 	private String address;
-	private String joindate;
+	private String joinDate;
 	private String salt;
 	
-	public String getUserid() {
-		return userid;
+	
+	public String getUserId() {
+		return userId;
 	}
-	public void setUserid(String userid) {
-		this.userid = userid;
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
-	public String getUsername() {
-		return username;
+	public String getUserName() {
+		return userName;
 	}
-	public void setUsername(String username) {
-		this.username = username;
+	public void setUserName(String userName) {
+		this.userName = userName;
 	}
-	public String getUserpass() {
-		return userpass;
+	public String getUserPass() {
+		return userPass;
 	}
-	public void setUserpass(String userpass) {
-		this.userpass = userpass;
+	public void setUserPass(String userPass) {
+		this.userPass = userPass;
 	}
 	public String getEmail() {
 		return email;
@@ -35,11 +36,11 @@ public class MemberDto {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	public String getBirthdate() {
-		return birthdate;
+	public String getBirthDate() {
+		return birthDate;
 	}
-	public void setBirthdate(String birthdate) {
-		this.birthdate = birthdate;
+	public void setBirthDate(String birthDate) {
+		this.birthDate = birthDate;
 	}
 	public String getGender() {
 		return gender;
@@ -53,11 +54,11 @@ public class MemberDto {
 	public void setAddress(String address) {
 		this.address = address;
 	}
-	public String getJoindate() {
-		return joindate;
+	public String getJoinDate() {
+		return joinDate;
 	}
-	public void setJoindate(String joindate) {
-		this.joindate = joindate;
+	public void setJoinDate(String joinDate) {
+		this.joinDate = joinDate;
 	}
 	public String getSalt() {
 		return salt;
@@ -65,11 +66,14 @@ public class MemberDto {
 	public void setSalt(String salt) {
 		this.salt = salt;
 	}
+	
 	@Override
 	public String toString() {
-		return "MemberDto [userid=" + userid + ", username=" + username + ", userpass=" + userpass + ", email=" + email
-				+ ", birthdate=" + birthdate + ", gender=" + gender + ", address=" + address + ", joindate=" + joindate
+		return "MemberDto [userId=" + userId + ", userName=" + userName + ", userPass=" + userPass + ", email=" + email
+				+ ", birthDate=" + birthDate + ", gender=" + gender + ", address=" + address + ", joinDate=" + joinDate
 				+ ", salt=" + salt + "]";
 	}
+	
+
 	
 }

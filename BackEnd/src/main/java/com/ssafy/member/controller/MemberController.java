@@ -135,7 +135,7 @@ public class MemberController {
 	@GetMapping("/delete")
 	public String delete(HttpSession session, RedirectAttributes redirectAttributes) throws Exception {
 		MemberDto memberDto = (MemberDto) session.getAttribute("userinfo");
-		String userid = memberDto.getUserid();
+		String userid = memberDto.getUserId();
 		memberService.delete(userid);
 		session.invalidate();
 		redirectAttributes.addFlashAttribute("msg", "회원삭제 성공!");
