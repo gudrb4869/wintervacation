@@ -23,11 +23,17 @@ const contentList = ref([
 const chargingStations = ref([]);
 const selectStation = ref({});
 
+// const param = ref({
+//   serviceKey: VITE_OPEN_API_SERVICE_KEY,
+//   pageNo: 1,
+//   numOfRows: 20,
+//   zscode: 0,
+// });
+
 const param = ref({
-  serviceKey: VITE_OPEN_API_SERVICE_KEY,
-  pageNo: 1,
-  numOfRows: 20,
-  zscode: 0,
+  sido_code: 0,
+  gugun_code: 0,
+  content_type_id: 0,
 });
 
 onMounted(() => {
@@ -60,6 +66,7 @@ const onChangeSido = (val) => {
         options.push({ text: gugun.gugun_name, value: gugun.gugun_code });
       });
       gugunList.value = options;
+      getChargingStations();
     },
     (err) => {
       console.log(err);
@@ -71,10 +78,26 @@ const onChangeGugun = (val) => {
   param.value.zscode = val;
   // getChargingStations();
   console.log("구군 변경!");
+  getChargingStations();
 };
 
 const onChangeContent = (val) => {
   console.log("콘텐츠 변경!");
+  getChargingStations();
+};
+
+const getChargingStations = () => {
+  console.log("관광지 정보 api 호출!");
+  listAttractions(
+    param.value,
+    ({ data }) => {
+      console.log(data);
+      // chargingStations.value = data;
+    },
+    (err) => {
+      console.log(err);
+    }
+  );
 };
 </script>
 
@@ -82,9 +105,13 @@ const onChangeContent = (val) => {
   <div class="container text-center mt-3">
     <div class="alert alert-success" role="alert">지역별 여행지</div>
     <div class="d-flex justify-content-center">
-      <VSelect :selectOption="sidoList" @onKeySelect="onChangeSido" />
-      <VSelect :selectOption="gugunList" @onKeySelect="onChangeGugun" />
-      <VSelect :selectOption="contentList" @onKeySelect="onChangeContent"></VSelect>
+      <VSelect v-model="param.sido_code" :selectOption="sidoList" @onKeySelect="onChangeSido" />
+      <VSelect v-model="param.gugun_code" :selectOption="gugunList" @onKeySelect="onChangeGugun" />
+      <VSelect
+        v-model="param.content_type_id"
+        :selectOption="contentList"
+        @onKeySelect="onChangeContent"
+      ></VSelect>
     </div>
     <VKakaoMap :stations="chargingStations" :selectStation="selectStation" />
     <table class="table table-hover table-striped mt-3">
