@@ -16,6 +16,9 @@ public interface MemberMapper {
 	// 로그인
 	public MemberDto login(Map<String, String> map) throws SQLException;
 	
+	// 로그인 회원 정보
+	MemberDto userInfo(String userId) throws SQLException;
+	
 	// 회원가입
 	public int join(MemberDto dto) throws SQLException;
 	
@@ -30,5 +33,14 @@ public interface MemberMapper {
 	
 	// 비밀번호 변경
 	public int modify_pw(Map<String, String> map) throws SQLException;
+	
+	// 토큰 저장
+	public void saveRefreshToken(Map<String, String> map) throws SQLException;
+	
+	// 토큰 얻기(재발급)
+	Object getRefreshToken(String userid) throws SQLException;
+	
+	// 토큰 삭제
+	void deleteRefreshToken(Map<String, String> map) throws SQLException;
 	
 }

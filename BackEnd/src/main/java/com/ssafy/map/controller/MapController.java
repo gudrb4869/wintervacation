@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -41,7 +42,7 @@ public class MapController {
 	@ApiOperation(value = "지도 검색", notes = "지도 검색", response=List.class)
 	@GetMapping("/search")
 	public ResponseEntity<?> search(
-			@RequestParam @ApiParam(value = "지도검색을 위한 부가 정보", required = true)
+			@RequestParam  @ApiParam(value = "지도검색을 위한 부가 정보", required = true)
 			Map<String, Integer> map) {
 		
 		try {
