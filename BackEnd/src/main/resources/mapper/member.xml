@@ -14,6 +14,7 @@
 		<result column="address" property="address"/>
 		<result column="join_date" property="joinDate"/>
 		<result column="salt" property="salt"/>
+		<result column="token" property="token"/>
 	</resultMap>
 	
 	<select id="findSaltByUserId" parameterType="String" resultType="string">
