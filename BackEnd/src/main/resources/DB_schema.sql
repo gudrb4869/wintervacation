@@ -16,6 +16,7 @@ create table member (
     birth_date varchar(30),
     gender varchar(10),
     address varchar(50),
+    token varchar(1000) default null,
     join_date timestamp not null default current_timestamp
 );
 
