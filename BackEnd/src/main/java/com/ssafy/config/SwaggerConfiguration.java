@@ -60,6 +60,17 @@ public class SwaggerConfiguration {
                 .apiInfo(apiInfo())
                 .useDefaultResponseMessages(false);
     }
+    
+    @Bean
+    public Docket MapApi() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .groupName("Map API")
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.ssafy.map.controller"))
+                .paths(regex("/map.*")).build()
+                .apiInfo(apiInfo())
+                .useDefaultResponseMessages(false);
+    }
 	
 	private Set<String> getConsumeContentTypes() {
         Set<String> consumes = new HashSet<>();
