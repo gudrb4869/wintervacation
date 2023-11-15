@@ -9,14 +9,14 @@ create table board(
 
 create table member (
     user_id varchar(20) primary key,
-    username varchar(20) not null,
-    userpass varchar(100) not null,
+    user_name varchar(20) not null,
+    user_pass varchar(100) not null,
     salt varchar(100) not null,
     email varchar(30) not null,
-    birthdate varchar(30),
+    birth_date varchar(30),
     gender varchar(10),
     address varchar(50),
-    joindate timestamp not null default current_timestamp
+    join_date timestamp not null default current_timestamp
 );
 
 create table qna_board(
