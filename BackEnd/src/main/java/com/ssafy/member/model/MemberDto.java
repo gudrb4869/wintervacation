@@ -10,8 +10,15 @@ public class MemberDto {
 	private String address;
 	private String joinDate;
 	private String salt;
+	private String token;
 	
 	
+	public String getToken() {
+		return token;
+	}
+	public void setToken(String token) {
+		this.token = token;
+	}
 	public String getUserId() {
 		return userId;
 	}
@@ -66,14 +73,11 @@ public class MemberDto {
 	public void setSalt(String salt) {
 		this.salt = salt;
 	}
-	
 	@Override
 	public String toString() {
 		return "MemberDto [userId=" + userId + ", userName=" + userName + ", userPass=" + userPass + ", email=" + email
 				+ ", birthDate=" + birthDate + ", gender=" + gender + ", address=" + address + ", joinDate=" + joinDate
-				+ ", salt=" + salt + "]";
+				+ ", salt=" + salt + ", token=" + token + "]";
 	}
-	
-
 	
 }
