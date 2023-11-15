@@ -1,6 +1,6 @@
 <script setup>
-import { ref } from "vue";
-defineProps({ selectOption: Array });
+import { ref, watch } from "vue";
+const props = defineProps({ selectOption: Array });
 const emit = defineEmits(["onKeySelect"]);
 
 const key = ref("");
@@ -9,6 +9,14 @@ const onSelect = () => {
   console.log(key.value + "선택!!!");
   emit("onKeySelect", key.value);
 };
+
+watch(
+  () => props.selectOption.value,
+  () => {
+    key.value = "";
+  },
+  { deep: true }
+);
 </script>
 
 <template>

@@ -1,4 +1,10 @@
-<script setup></script>
+<script setup>
+import { useRouter } from "vue-router";
+const router = useRouter();
+const moveAttraction = () => {
+  router.push({ name: "attractions" });
+};
+</script>
 
 <template>
   <!-- Carousel -->
@@ -123,12 +129,7 @@
         </div>
       </div>
       <div class="row justify-content-center">
-        <button
-          id="btn-search"
-          class="btn text-black btn-auto-width"
-          type="button"
-          onclick="location.href='/map/map'"
-        >
+        <button type="button" class="btn text-black btn-auto-width" @click="moveAttraction">
           여행가기
         </button>
       </div>

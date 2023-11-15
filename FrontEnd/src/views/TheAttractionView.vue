@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted } from "vue";
+import { listSido, listGugun, listAttractions } from "@/api/map";
 
 import VKakaoMap from "@/components/common/VKakaoMap.vue";
 import VSelect from "@/components/common/VSelect.vue";
@@ -8,6 +9,17 @@ const { VITE_OPEN_API_SERVICE_KEY } = import.meta.env;
 
 const sidoList = ref([]);
 const gugunList = ref([{ text: "구군선택", value: "" }]);
+const contentList = ref([
+  { text: "관광지유형", value: "" },
+  { text: "관광지", value: "12" },
+  { text: "문화시설", value: "14" },
+  { text: "축제공연행사", value: "15" },
+  { text: "여행코스", value: "25" },
+  { text: "레포츠", value: "28" },
+  { text: "숙박", value: "32" },
+  { text: "쇼핑", value: "38" },
+  { text: "음식점", value: "39" },
+]);
 const chargingStations = ref([]);
 const selectStation = ref({});
 
@@ -17,19 +29,65 @@ const param = ref({
   numOfRows: 20,
   zscode: 0,
 });
+
+onMounted(() => {
+  getSidoList();
+});
+
+const getSidoList = () => {
+  listSido(
+    ({ data }) => {
+      let options = [];
+      options.push({ text: "시도선택", value: "" });
+      data.forEach((sido) => {
+        options.push({ text: sido.sido_name, value: sido.sido_code });
+      });
+      sidoList.value = options;
+    },
+    (err) => {
+      console.log(err);
+    }
+  );
+};
+
+const onChangeSido = (val) => {
+  listGugun(
+    { sido_code: val },
+    ({ data }) => {
+      let options = [];
+      options.push({ text: "구군선택", value: "" });
+      data.forEach((gugun) => {
+        options.push({ text: gugun.gugun_name, value: gugun.gugun_code });
+      });
+      gugunList.value = options;
+    },
+    (err) => {
+      console.log(err);
+    }
+  );
+};
+
+const onChangeGugun = (val) => {
+  param.value.zscode = val;
+  // getChargingStations();
+  console.log("구군 변경!");
+};
+
+const onChangeContent = (val) => {
+  console.log("콘텐츠 변경!");
+};
 </script>
 
 <template>
   <div class="container text-center mt-3">
-    <div class="alert alert-success" role="alert">전기차 충전소</div>
-    <div class="row mb-2">
-      <!-- <div class="col d-flex flex-row-reverse">
-        <VSelect :selectOption="sidoList" @onKeySelect="onChangeSido" />
-      </div>
-      <div class="col"><VSelect :selectOption="gugunList" @onKeySelect="onChangeGugun" /></div> -->
+    <div class="alert alert-success" role="alert">지역별 여행지</div>
+    <div class="d-flex justify-content-center">
+      <VSelect :selectOption="sidoList" @onKeySelect="onChangeSido" />
+      <VSelect :selectOption="gugunList" @onKeySelect="onChangeGugun" />
+      <VSelect :selectOption="contentList" @onKeySelect="onChangeContent"></VSelect>
     </div>
     <VKakaoMap :stations="chargingStations" :selectStation="selectStation" />
-    <table class="table table-hover">
+    <table class="table table-hover table-striped mt-3">
       <thead>
         <tr class="text-center">
           <th scope="col">충전소명</th>
