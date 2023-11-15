@@ -21,7 +21,7 @@ const userinfo = ref(null);
       <div class="collapse navbar-collapse" id="collapsibleNavbar">
         <ul class="navbar-nav ms-auto">
           <li class="nav-item">
-            <a class="nav-link" href="/map/map">지역별여행지</a>
+            <router-link class="nav-link" :to="{ name: 'attractions' }">지역별여행지</router-link>
           </li>
           <li class="nav-item">
             <router-link class="nav-link" :to="{ name: 'board' }">여행후기공유</router-link>
@@ -41,7 +41,6 @@ const userinfo = ref(null);
             <li class="nav-item dropdown" id="myPage">
               <a
                 class="nav-link dropdown-toggle"
-                href="/member/myPage.jsp"
                 role="button"
                 data-bs-toggle="dropdown"
                 aria-expanded="false"

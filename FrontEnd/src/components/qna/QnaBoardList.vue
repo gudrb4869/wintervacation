@@ -5,7 +5,7 @@ import { listArticle } from "@/api/qna-board";
 
 import VSelect from "@/components/common/VSelect.vue";
 import QnaBoardListItem from "@/components/qna/item/QnaBoardListItem.vue";
-import PageNavigation from "@/components/common/PageNavigation.vue";
+import VPageNavigation from "@/components/common/VPageNavigation.vue";
 
 const router = useRouter();
 
@@ -82,7 +82,12 @@ const moveWrite = () => {
             <form class="d-flex">
               <v-select :selectOption="selectOption" @onKeySelect="changeKey"></v-select>
               <div class="input-group input-group-sm">
-                <input type="text" class="form-control" v-model="param.word" placeholder="검색어..." />
+                <input
+                  type="text"
+                  class="form-control"
+                  v-model="param.word"
+                  placeholder="검색어..."
+                />
                 <button class="btn btn-sm" type="button" @click="getArticleList">검색</button>
               </div>
             </form>
@@ -99,12 +104,19 @@ const moveWrite = () => {
             </tr>
           </thead>
           <tbody>
-            <qna-board-list-item v-for="article in articles" :key="article.article_no"
-              :article="article"></qna-board-list-item>
+            <qna-board-list-item
+              v-for="article in articles"
+              :key="article.article_no"
+              :article="article"
+            ></qna-board-list-item>
           </tbody>
         </table>
       </div>
-      <page-navigation :current-page="currentPage" :total-page="totalPage" @pageChange="onPageChange"></page-navigation>
+      <v-page-navigation
+        :current-page="currentPage"
+        :total-page="totalPage"
+        @pageChange="onPageChange"
+      ></v-page-navigation>
     </div>
   </div>
 </template>
