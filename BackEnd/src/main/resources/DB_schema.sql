@@ -8,7 +8,7 @@ create table board(
 );
 
 create table member (
-    userid varchar(20) primary key,
+    user_id varchar(20) primary key,
     username varchar(20) not null,
     userpass varchar(100) not null,
     salt varchar(100) not null,
