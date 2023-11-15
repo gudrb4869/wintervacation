@@ -1,0 +1,23 @@
+.title{
+    /* margin:20px;
+    padding:20px;
+    display: flex;
+    justify-content: center;
+    align-items: center; */
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+}
+
+.btn{
+    background-color: #C6ECF8;
+}
+
+
+.btn:hover{
+    background-color: white;
+    border-color: #C6ECF8;
+    border-width: 2px;
+}

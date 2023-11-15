@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.qna.model.mapper.QnaMapper">
+	
+	<insert id="writeQna" parameterType="QnaBoardDto">
+		insert into qna_board (user_id, subject, content)
+		values (#{user_id}, #{subject}, #{content})
+	</insert>
+	
+	<sql id="search">
+		<if test="word != null and word != ''">
+			<if test="key == 'subject'">
+				and subject like concat('%', #{word}, '%')
+			</if>
+			<if test="key != 'subject'">
+				and ${key} = #{word}
+			</if>
+		</if>
+	</sql>
+	
+	<select id="qnaBoardList" parameterType="map" resultType="QnaBoardDto">
+		select article_no, user_id, subject, content, hit, register_time
+		from qna_board
+		<where>
+			<include refid="search"></include>
+		</where>
+		order by article_no desc
+		limit #{start}, #{listsize}
+	</select>
+	
+	<select id="getTotalQnaBoardCount" parameterType="map" resultType="int">
+		select count(article_no)
+		from qna_board
+		<where>
+			<include refid="search"></include>
+		</where>
+	</select>
+	
+	<select id="viewQnaBoard" parameterType="int" resultType="QnaBoardDto">
+		select article_no, user_id, subject, content, hit, register_time
+		from qna_board
+		where article_no = #{article_no}	
+	</select>
+	
+	<update id="updateHit" parameterType="int">
+		update qna_board
+		set hit = hit + 1
+		where article_no = #{article_no}
+	</update>
+	
+	<update id="modifyQna" parameterType="QnaBoardDto">
+		update qna_board
+		set subject = #{subject}, content = #{content}
+		where article_no = #{article_no}
+	</update>
+	
+	<delete id="deleteQna" parameterType="int">
+		delete from qna_board
+		where article_no = #{article_no}
+	</delete>
+	
+	<select id="qnaMemoList" parameterType="int" resultType="QnaMemoDto">
+		select memo_no, user_id, comment, memo_time, article_no 
+		from qna_memo
+		where article_no = #{article_no}
+		order by memo_time desc
+	</select>
+
+	<insert id="writeQnaMemo" parameterType="QnaMemoDto">
+		insert into qna_memo (user_id, comment, article_no)
+		values (#{user_id}, #{comment}, #{article_no})	
+	</insert>
+
+	<delete id="deleteQnaMemo" parameterType="int">
+		delete from qna_memo
+		where memo_no = #{memo_no}
+	</delete>
+
+</mapper>
