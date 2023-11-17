@@ -28,6 +28,10 @@ watch(
   () => props.attractions.value,
   () => {
     positions.value = [];
+    if (props.attractions.length == 0) {
+      deleteMarkers();
+      return;
+    }
     props.attractions.forEach((attraction) => {
       let obj = {};
       obj.content_id = attraction.content_id;

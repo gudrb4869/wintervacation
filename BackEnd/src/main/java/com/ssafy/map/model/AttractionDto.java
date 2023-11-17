@@ -75,7 +75,7 @@ public class AttractionDto {
 	}
 	@Override
 	public String toString() {
-		return "MapDto [content_id=" + content_id + ", content_type_id=" + content_type_id + ", title=" + title
+		return "AttractionDto [content_id=" + content_id + ", content_type_id=" + content_type_id + ", title=" + title
 				+ ", addr=" + addr + ", image=" + image + ", sido_code=" + sido_code + ", gugun_code=" + gugun_code
 				+ ", latitude=" + latitude + ", longitude=" + longitude + ", overview=" + overview + "]";
 	}

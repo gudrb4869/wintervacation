@@ -4,13 +4,14 @@ import { listSido, listGugun, listAttractions } from "@/api/map";
 
 import VKakaoMap from "@/components/common/VKakaoMap.vue";
 import VSelect from "@/components/common/VSelect.vue";
+import VSwitch from "@/components/common/VSwitch.vue";
 
 const { VITE_OPEN_API_SERVICE_KEY } = import.meta.env;
 
 const sidoList = ref([]);
 const gugunList = ref([{ text: "구군선택", value: "" }]);
 const contentTypeList = ref([
-  { text: "관광지유형", value: "" },
+  // { text: "모두", value: "0" },
   { text: "관광지", value: "12" },
   { text: "문화시설", value: "14" },
   { text: "축제공연행사", value: "15" },
@@ -33,7 +34,7 @@ const selectAttraction = ref({});
 const param = ref({
   sido_code: 0,
   gugun_code: 0,
-  content_type_id: 0,
+  content_type_id: [],
 });
 
 onMounted(() => {
@@ -75,11 +76,14 @@ const onChangeSido = (val) => {
 
 const onChangeGugun = (val) => {
   console.log("구군 변경!");
-  getAttractions();
+  // getAttractions();
 };
 
 const onChangeContentType = (val) => {
   console.log("콘텐츠 변경!");
+  console.log(val);
+  param.value.content_type_id = val;
+  console.log(param.value);
   getAttractions();
 };
 
@@ -88,8 +92,8 @@ const getAttractions = () => {
   listAttractions(
     param.value,
     ({ data }) => {
-      console.log(data);
       attractions.value = data;
+      console.log(attractions.value);
     },
     (err) => {
       console.log(err);
@@ -107,14 +111,17 @@ const viewAttraction = (attraction) => {
 <template>
   <div class="container text-center mt-3">
     <div class="alert alert-success" role="alert">지역별 여행지</div>
-    <div class="d-flex justify-content-center">
+    <div class="d-flex justify-content-center mb-3">
       <VSelect v-model="param.sido_code" :selectOption="sidoList" @onKeySelect="onChangeSido" />
       <VSelect v-model="param.gugun_code" :selectOption="gugunList" @onKeySelect="onChangeGugun" />
-      <VSelect
+      <!-- <VSelect
         v-model="param.content_type_id"
         :selectOption="contentTypeList"
         @onKeySelect="onChangeContentType"
-      ></VSelect>
+      ></VSelect> -->
+    </div>
+    <div class="d-flex justify-content-evenly mb-3">
+      <VSwitch :switchOption="contentTypeList" @onChangeSwitch="onChangeContentType"></VSwitch>
     </div>
     <VKakaoMap :attractions="attractions" :selectAttraction="selectAttraction" />
     <table class="table table-hover table-striped mt-3">

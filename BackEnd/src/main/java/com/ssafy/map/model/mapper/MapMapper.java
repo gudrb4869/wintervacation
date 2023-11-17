@@ -14,4 +14,5 @@ public interface MapMapper {
 	List<SidoGugunCodeDto> getSido() throws SQLException;
 	List<SidoGugunCodeDto> getGugun(int sidoCode) throws SQLException;
 	List<AttractionDto> getAttractions(Map<String, Integer> map) throws SQLException;
+	List<AttractionDto> attractionList(Map<String, List<Integer>> params);
 }

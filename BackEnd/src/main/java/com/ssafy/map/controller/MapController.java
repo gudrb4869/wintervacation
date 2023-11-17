@@ -1,5 +1,6 @@
 package com.ssafy.map.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -35,23 +36,29 @@ public class MapController {
 	@ApiOperation(value = "지도 검색", notes = "지도 검색", response=List.class)
 	@GetMapping("/search")
 	public ResponseEntity<?> search(
-			@RequestParam  @ApiParam(value = "지도검색을 위한 부가 정보", required = true)
-			Map<String, Integer> map) {
+			@RequestParam @ApiParam(value = "지도검색을 위한 부가 정보", required = true)
+			Map<String, String> params) {
 		
 		try {
-			log.info("/map/serach, map={}", map);
-			List<AttractionDto> list = mapService.getAttractions(map);
+			log.info("/map/search, map={}", params);
+			
+//			List<AttractionDto> list = mapService.getAttractions(params);
+			String str = params.get("content_type_id");
+			log.info("content_type_id = {}", str);
+			List<AttractionDto> list = str != null && str.length() > 0 ? mapService.attractionList(params) : new ArrayList<>();
 			
 			log.info("map list : {}", list);
 			
 //			HttpHeaders header = new HttpHeaders();
 //			header.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
 //			return ResponseEntity.ok().headers(header).body(list);	
-			if (list != null && !list.isEmpty()) {
-				return new ResponseEntity<List<AttractionDto>>(list, HttpStatus.OK);
-			} else {
-				return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
-			}
+			return new ResponseEntity<List<AttractionDto>>(list, HttpStatus.OK);
+//			if (list != null && !list.isEmpty()) {
+//				return new ResponseEntity<List<AttractionDto>>(list, HttpStatus.OK);
+//			} else {
+//				log.info("Zzzzzzzzzzzzzzzzz");
+//				return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+//			}
 		} catch (Exception e) {
 			return exceptionHandling(e);
 		}

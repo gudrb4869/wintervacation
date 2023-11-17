@@ -41,4 +41,30 @@
 		</if>
 	</select>
 	
+	<select id="attractionList" parameterType="map" resultType="attractionDto">
+	select content_id, content_type_id, title, addr,
+		image, sido_code, gugun_code, latitude, longitude, overview
+		from attraction
+		<where>
+			<if test="sido_code != null and sido_code.size > 0">
+				sido_code IN
+				<foreach collection="sido_code" item="value" separator="," open="(" close=")">
+					#{value}
+				</foreach>
+			</if>
+			<if test="gugun_code != null and gugun_code.size > 0">
+				and gugun_code IN
+				<foreach collection="gugun_code" item="value" separator="," open="(" close=")">
+					#{value}
+				</foreach>
+			</if>
+			<if test="content_type_id != null and content_type_id.size > 0">
+				and content_type_id IN
+				<foreach collection="content_type_id" item="value" separator="," open="(" close=")">
+					#{value}
+				</foreach>
+			</if>
+		</where>
+	</select>
+	
 </mapper>
