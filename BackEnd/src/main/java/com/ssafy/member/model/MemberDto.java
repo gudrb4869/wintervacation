@@ -1,35 +1,27 @@
 package com.ssafy.member.model;
 
 public class MemberDto {
-	private String userId;
-	private String userName;
+	private String user_id;
+	private String user_name;
 	private String userPass;
 	private String email;
-	private String birthDate;
+	private String birth_date;
 	private String gender;
 	private String address;
-	private String joinDate;
+	private String join_date;
 	private String salt;
 	private String token;
-	
-	
-	public String getToken() {
-		return token;
+	public String getUser_id() {
+		return user_id;
 	}
-	public void setToken(String token) {
-		this.token = token;
+	public void setUser_id(String user_id) {
+		this.user_id = user_id;
 	}
-	public String getUserId() {
-		return userId;
+	public String getUser_name() {
+		return user_name;
 	}
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
-	public String getUserName() {
-		return userName;
-	}
-	public void setUserName(String userName) {
-		this.userName = userName;
+	public void setUser_name(String user_name) {
+		this.user_name = user_name;
 	}
 	public String getUserPass() {
 		return userPass;
@@ -43,11 +35,11 @@ public class MemberDto {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	public String getBirthDate() {
-		return birthDate;
+	public String getBirth_date() {
+		return birth_date;
 	}
-	public void setBirthDate(String birthDate) {
-		this.birthDate = birthDate;
+	public void setBirth_date(String birth_date) {
+		this.birth_date = birth_date;
 	}
 	public String getGender() {
 		return gender;
@@ -61,11 +53,11 @@ public class MemberDto {
 	public void setAddress(String address) {
 		this.address = address;
 	}
-	public String getJoinDate() {
-		return joinDate;
+	public String getJoin_date() {
+		return join_date;
 	}
-	public void setJoinDate(String joinDate) {
-		this.joinDate = joinDate;
+	public void setJoin_date(String join_date) {
+		this.join_date = join_date;
 	}
 	public String getSalt() {
 		return salt;
@@ -73,11 +65,18 @@ public class MemberDto {
 	public void setSalt(String salt) {
 		this.salt = salt;
 	}
+	public String getToken() {
+		return token;
+	}
+	public void setToken(String token) {
+		this.token = token;
+	}
+	
 	@Override
 	public String toString() {
-		return "MemberDto [userId=" + userId + ", userName=" + userName + ", userPass=" + userPass + ", email=" + email
-				+ ", birthDate=" + birthDate + ", gender=" + gender + ", address=" + address + ", joinDate=" + joinDate
-				+ ", salt=" + salt + ", token=" + token + "]";
+		return "MemberDto [user_id=" + user_id + ", user_name=" + user_name + ", userPass=" + userPass + ", email="
+				+ email + ", birth_date=" + birth_date + ", gender=" + gender + ", address=" + address + ", join_date="
+				+ join_date + ", salt=" + salt + ", token=" + token + "]";
 	}
 	
 }

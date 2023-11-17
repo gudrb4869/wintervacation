@@ -58,13 +58,13 @@ public class MemberController {
 			if (memberDto != null) {
 				session.setAttribute("userinfo", memberDto);
 
-				String accessToken = jwtUtil.createAccessToken(memberDto.getUserId());
-				String refreshToken = jwtUtil.createRefreshToken(memberDto.getUserId());
+				String accessToken = jwtUtil.createAccessToken(memberDto.getUser_id());
+				String refreshToken = jwtUtil.createRefreshToken(memberDto.getUser_id());
 				log.debug("access token : {}", accessToken);
 				log.debug("refresh token : {}", refreshToken);
 
 //			발급받은 refresh token을 DB에 저장.
-				memberService.saveRefreshToken(memberDto.getUserId(), refreshToken);
+				memberService.saveRefreshToken(memberDto.getUser_id(), refreshToken);
 
 //			JSON으로 token 전달.
 				resultMap.put("access-token", accessToken);
@@ -162,7 +162,7 @@ public class MemberController {
 	}
 
 	
-	
+	@ApiOperation(value = "비밀번호 수정", notes = "비밀번호를 수정한다. DB수정 성공여부에 따라 'success' 또는 'fail' 문자열을 반환")
 	@PostMapping("/modify_pw")
 	public String modify_pw(@RequestParam String userid, @RequestParam String userpass, @RequestParam String salt,
 			Model model, RedirectAttributes redirectAttributes, HttpSession session) throws Exception {
@@ -193,7 +193,7 @@ public class MemberController {
 	@GetMapping("/delete")
 	public String delete(HttpSession session, RedirectAttributes redirectAttributes) throws Exception {
 		MemberDto memberDto = (MemberDto) session.getAttribute("userinfo");
-		String userid = memberDto.getUserId();
+		String userid = memberDto.getUser_id();
 		memberService.delete(userid);
 		session.invalidate();
 		redirectAttributes.addFlashAttribute("msg", "회원삭제 성공!");
