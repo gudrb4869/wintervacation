@@ -6,14 +6,12 @@ import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import com.ssafy.map.model.GugunDto;
-import com.ssafy.map.model.MapDto;
-import com.ssafy.map.model.SidoDto;
+import com.ssafy.map.model.AttractionDto;
+import com.ssafy.map.model.SidoGugunCodeDto;
 
 @Mapper
 public interface MapMapper {
-	List<SidoDto> getSido() throws SQLException;
-	List<GugunDto> getGugun(int sidoCode) throws SQLException;
-	SidoDto getSidoByCode(int sidoCode) throws SQLException;
-	List<MapDto> getMap(Map<String, Integer> map) throws SQLException;
+	List<SidoGugunCodeDto> getSido() throws SQLException;
+	List<SidoGugunCodeDto> getGugun(int sidoCode) throws SQLException;
+	List<AttractionDto> getAttractions(Map<String, Integer> map) throws SQLException;
 }

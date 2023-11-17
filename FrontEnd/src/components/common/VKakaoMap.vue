@@ -6,13 +6,16 @@ const positions = ref([]);
 const markers = ref([]);
 const overlays = ref([]);
 
-const props = defineProps({ stations: Array, selectStation: Object });
+const props = defineProps({ attractions: Array, selectAttraction: Object });
 
 watch(
-  () => props.selectStation.value,
+  () => props.selectAttraction.value,
   () => {
     // 이동할 위도 경도 위치를 생성합니다
-    var moveLatLon = new kakao.maps.LatLng(props.selectStation.lat, props.selectStation.lng);
+    var moveLatLon = new kakao.maps.LatLng(
+      props.selectAttraction.latitude,
+      props.selectAttraction.longitude
+    );
 
     // 지도 중심을 부드럽게 이동시킵니다
     // 만약 이동할 거리가 지도 화면보다 크면 부드러운 효과 없이 이동합니다
@@ -22,14 +25,18 @@ watch(
 );
 
 watch(
-  () => props.stations.value,
+  () => props.attractions.value,
   () => {
     positions.value = [];
-    props.stations.forEach((station) => {
+    props.attractions.forEach((attraction) => {
       let obj = {};
-      obj.latlng = new kakao.maps.LatLng(station.lat, station.lng);
-      obj.title = station.statNm;
-      obj.addr = station.addr;
+      obj.content_id = attraction.content_id;
+      obj.latlng = new kakao.maps.LatLng(attraction.latitude, attraction.longitude);
+      obj.title = attraction.title;
+      obj.content_type_id = attraction.content_type_id;
+      obj.addr = attraction.addr;
+      obj.image = attraction.image;
+      obj.overview = attraction.overview;
       positions.value.push(obj);
     });
     loadMarkers();
@@ -68,16 +75,48 @@ const loadMarkers = () => {
   // 현재 표시되어있는 marker들이 있다면 map에 등록된 marker를 제거한다.
   deleteMarkers();
 
-  // 마커 이미지를 생성합니다
-  // const imgSrc = require("@/assets/map/markerStar.png");
-  const imgSrc = "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png";
-  // 마커 이미지의 이미지 크기 입니다
-  const imgSize = new kakao.maps.Size(24, 35);
-  const markerImage = new kakao.maps.MarkerImage(imgSrc, imgSize);
-
   // 마커를 생성합니다
   markers.value = [];
   positions.value.forEach((position) => {
+    // 마커 이미지를 생성합니다
+    // const imgSrc = require("@/assets/map/markerStar.png");
+    // 마커 이미지의 이미지 크기 입니다
+    // const imgSrc = "https://t1.daumcdn.net/localimg/ocalimages/07/mapapidoc/markerStar.png";
+    var color;
+    switch (position.content_type_id) {
+      case 12: // 관광지
+        color = "skyblue";
+        break;
+      case 14: // 문화시설
+        color = "orange";
+        break;
+      case 15: // 축제공연행사
+        color = "blue";
+        break;
+      case 25: // 여행코스
+        color = "green";
+        break;
+      case 28: // 레포츠
+        color = "purple";
+        break;
+      case 32: // 숙박
+        color = "yellow";
+        break;
+      case 38: // 쇼핑
+        color = "pink";
+        break;
+      case 39: // 음식점
+        color = "red";
+        break;
+      default:
+        color = "red";
+        break;
+    }
+    const imgSrc = "src/assets/img/marker-" + color + ".png";
+    // const imgSrc = "src/assets/img/marker.png";
+    const imgSize = new kakao.maps.Size(27, 30);
+    const markerImage = new kakao.maps.MarkerImage(imgSrc, imgSize);
+
     var marker = new kakao.maps.Marker({
       map: map, // 마커를 표시할 지도
       position: position.latlng, // 마커를 표시할 위치
@@ -140,7 +179,7 @@ const loadMarkers = () => {
     var img = document.createElement("div");
     img.className = "img";
     var image = document.createElement("img");
-    image.src = "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/thumnail.png";
+    image.src = position.image ? position.image : "src/assets/img/no_image.png";
     image.width = "73";
     image.height = "70";
     img.appendChild(image);
@@ -155,18 +194,53 @@ const loadMarkers = () => {
     ellipsis.appendChild(address);
     desc.appendChild(ellipsis);
 
-    var link = document.createElement("div");
-    var a = document.createElement("a");
-    a.href = "https://www.kakaocorp.com/main";
-    a.target = "_blank";
-    a.className = "link";
-    a.appendChild(document.createTextNode("홈페이지"));
-    link.appendChild(a);
-    desc.appendChild(link);
+    // var link = document.createElement("div");
+    // var a = document.createElement("a");
+    // a.href = "https://www.kakaocorp.com/main";
+    // a.target = "_blank";
+    // a.className = "link";
+    // a.appendChild(document.createTextNode("홈페이지"));
+    // link.appendChild(a);
+    // desc.appendChild(link);
 
     body.appendChild(desc);
-
     info.appendChild(body);
+
+    var overview = document.createElement("div");
+    overview.className = "overview";
+
+    var ellipsis2 = document.createElement("div");
+    ellipsis2.className = "ellipsis";
+    var description = document.createTextNode(position.overview);
+    ellipsis2.appendChild(description);
+    overview.appendChild(ellipsis2);
+
+    info.appendChild(overview);
+
+    var favorite = document.createElement("div");
+    favorite.className = "favorite";
+    var name = document.createTextNode("찜하기");
+
+    `<img
+      :src="product.isFavorite ? 'src/assets/img/heart-red.png' : 'src/assets/img/heart-white.png'"
+      :width="20"
+      @click="changeProductFavorite(product.name)"
+    />`;
+
+    var heart = document.createElement("img");
+    heart.src = "src/assets/img/heart-red.png";
+    heart.width = "30";
+    heart.height = "30";
+    heart.onclick = () => {
+      console.log("찜하기 버튼 클릭!!!");
+      changeAttractionFavorite(position.content_id);
+    };
+    heart.style.cursor = "pointer";
+    favorite.appendChild(heart);
+    favorite.appendChild(name);
+
+    info.appendChild(favorite);
+
     content.appendChild(info);
 
     overlay.setContent(content);
@@ -212,14 +286,11 @@ const deleteMarkers = () => {
 .wrap {
   position: absolute;
   left: 0;
-  bottom: 40px;
+  bottom: 20px;
   width: 288px;
-  height: 132px;
+  height: 264px;
   margin-left: -144px;
-  text-align: left;
   overflow: hidden;
-  font-size: 12px;
-  font-family: "Malgun Gothic", dotum, "돋움", sans-serif;
   line-height: 1.5;
 }
 
@@ -230,26 +301,29 @@ const deleteMarkers = () => {
 
 .wrap .info {
   width: 286px;
-  height: 120px;
-  border-radius: 5px;
-  border-bottom: 2px solid #ccc;
-  border-right: 1px solid #ccc;
+  height: 250px;
+  border: 1px solid black;
+  /* box-shadow: 0px 1px 2px #888; */
+  border-radius: 0px;
+  /* border-bottom: 2px solid #ccc; */
+  /* border-right: 1px solid #ccc; */
   overflow: hidden;
   background: #fff;
 }
 
-.wrap .info:nth-child(1) {
+/* .wrap .info:nth-child(1) {
   border: 0;
   box-shadow: 0px 1px 2px #888;
-}
+} */
 
 .info .title {
-  padding: 5px 0 0 10px;
-  height: 30px;
-  background: #eee;
+  padding: 10px 0;
+  height: 40px;
+  background: #fff;
   border-bottom: 1px solid #ddd;
   font-size: 18px;
   font-weight: bold;
+  text-align: center;
 }
 
 .info .close {
@@ -273,14 +347,14 @@ const deleteMarkers = () => {
 
 .info .desc {
   position: relative;
-  margin: 13px 0 0 90px;
+  margin: 13px 10px 0 90px;
   height: 75px;
 }
 
 .desc .ellipsis {
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .desc .jibun {
@@ -300,7 +374,26 @@ const deleteMarkers = () => {
   overflow: hidden;
 }
 
-.info:after {
+.info .overview {
+  position: relative;
+  margin: 5px 10px;
+  height: 75px;
+  overflow-y: scroll;
+}
+
+.overview .ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+}
+
+.info .favorite {
+  height: 40px;
+  background: #fff;
+  text-align: center;
+}
+
+/* .info:after {
   content: "";
   position: absolute;
   margin-left: -12px;
@@ -309,7 +402,7 @@ const deleteMarkers = () => {
   width: 22px;
   height: 12px;
   background: url("https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/vertex_white.png");
-}
+} */
 
 .info .link {
   color: #5085bb;
