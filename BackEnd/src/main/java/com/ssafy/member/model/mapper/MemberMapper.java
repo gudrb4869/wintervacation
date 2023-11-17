@@ -14,7 +14,8 @@ public interface MemberMapper {
 	public String findSaltByUserId(String userid) throws SQLException;
 	
 	// 로그인
-	public MemberDto login(Map<String, String> map) throws SQLException;
+//	public MemberDto login(Map<String, String> map) throws SQLException;
+	public MemberDto login(MemberDto memberDto) throws SQLException;
 	
 	// 로그인 회원 정보
 	MemberDto userInfo(String userId) throws SQLException;

@@ -7,7 +7,8 @@ import com.ssafy.member.model.MemberDto;
 
 public interface MemberService {
 	// 로그인
-	public MemberDto login(Map<String, String> map) throws Exception;
+//	public MemberDto login(Map<String, String> map) throws Exception;
+	MemberDto login(MemberDto memberDto) throws Exception;
 	
 	// 로그인 회원 정보
 	MemberDto userInfo(String userId) throws Exception;

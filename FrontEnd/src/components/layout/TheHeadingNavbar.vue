@@ -1,5 +1,20 @@
 <script setup>
 import { ref } from "vue";
+import { useMenuStore } from "@/stores/menu";
+import { storeToRefs } from "pinia";
+
+const menuStore = useMenuStore();
+
+// 반응형을 유지하면서 스토어에서 속성을 추출하려면, storeToRefs()를 사용
+// https://pinia.vuejs.kr/core-concepts/
+const { menuList } = storeToRefs(menuStore);
+const { changeMenuState } = menuStore;
+
+const logout = () => {
+  console.log("로그아웃!!!!");
+  changeMenuState();
+};
+
 const userinfo = ref(null);
 </script>
 
@@ -27,30 +42,25 @@ const userinfo = ref(null);
             <router-link class="nav-link" :to="{ name: 'board' }">여행후기공유</router-link>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" :to="{ name: 'qna' }">Q&A게시판</router-link>
+            <router-link class="nav-link" :to="{ name: 'qna' }">Plan</router-link>
           </li>
-          <template v-if="userinfo == null">
-            <li class="nav-item">
-              <a class="nav-link" href="/member/login">로그인</a>
-            </li>
-          </template>
-          <template v-if="userinfo != null">
-            <li class="nav-item">
-              <a class="nav-link" href="/member/logout">로그아웃</a>
-            </li>
-            <li class="nav-item dropdown" id="myPage">
-              <a
-                class="nav-link dropdown-toggle"
-                role="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-              >
-                마이페이지
-              </a>
-              <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="/member/modify">회원정보 수정</a></li>
-              </ul>
-            </li>
+          <template v-for="menu in menuList" :key="menu.routeName">
+            <template v-if="menu.show">
+              <template v-if="menu.routeName === 'user-logout'">
+                <li class="nav-item">
+                  <router-link to="/" @click.prevent="logout" class="nav-link">{{
+                    menu.name
+                  }}</router-link>
+                </li>
+              </template>
+              <template v-else>
+                <li class="nav-item">
+                  <router-link :to="{ name: menu.routeName }" class="nav-link">{{
+                    menu.name
+                  }}</router-link>
+                </li>
+              </template>
+            </template>
           </template>
         </ul>
       </div>

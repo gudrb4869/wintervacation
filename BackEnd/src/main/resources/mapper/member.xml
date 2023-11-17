@@ -4,66 +4,71 @@
 
 <mapper namespace="com.ssafy.member.model.mapper.MemberMapper">
 
-	<resultMap type="memberDto" id="member">
-		<result column="user_id" property="userId"/>
-		<result column="user_name" property="userName"/>
-		<result column="user_pass" property="userPass"/>
-		<result column="email" property="email"/>
-		<result column="birth_date" property="birthDate"/>
-		<result column="gender" property="gender"/>
-		<result column="address" property="address"/>
-		<result column="join_date" property="joinDate"/>
-		<result column="salt" property="salt"/>
-		<result column="token" property="token"/>
-	</resultMap>
-	
 	<select id="findSaltByUserId" parameterType="String" resultType="string">
 		select salt
 		from member
-		where user_id = #{userId}
+		where user_id = #{user_id}
 	</select>
 	
-	<select id="userInfo" parameterType="string" resultMap="member">
+	<select id="userInfo" parameterType="string" resultType="memberDto">
 		select user_name, user_id, email_id, email_domain, join_date
-		from members
-		where user_id = #{userId}
+		from member
+		where user_id = #{user_id}
 	</select>
 	
 	<select id="idCheck" parameterType="String" resultType="int">
 		select count(user_id)
 		from member
-		where user_id = #{userId}
+		where user_id = #{user_id}
 	</select>
 
 	<insert id="join" parameterType="memberDto">
 		insert into member (user_id, user_name, user_pass, email, salt)
-		values (#{userId}, #{userName}, #{userPass}, #{email}, #{salt})
+		values (#{user_id}, #{user_name}, #{user_pass}, #{email}, #{salt})
 	</insert>
 
-	<select id="login" parameterType="map" resultMap="member">
+	<select id="login" parameterType="memberDto" resultType="memberDto">
 		select user_id, user_name, user_pass, email, birth_date, gender, address, join_date, salt
 		from member
-		where user_id = #{userId} and user_pass = #{userPass}
+		where user_id = #{user_id} and user_pass = #{user_pass}
 	</select>
 	
 	<update id="modify" parameterType="memberDto">
 		update member
 		<trim prefix="set" suffixOverrides=",">
 			<if test="email != null">email = #{email},</if>
-			<if test="userName != null">user_name = #{userName},</if>
+			<if test="userName != null">user_name = #{user_name},</if>
 		</trim>
-		where user_id = #{userId}
+		where user_id = #{user_id}
 	</update>
 	
 	<delete id="delete" parameterType="String">
 		delete from member
-		where user_id = #{userId}
+		where user_id = #{user_id}
 	</delete>
 	
 	<update id="modify_pw" parameterType="map">
 		update member
-		set user_pass = #{userPass}
-		where user_id = #{userId}
+		set user_pass = #{user_pass}
+		where user_id = #{user_id}
+	</update>
+	
+	<update id="saveRefreshToken" parameterType="map">
+		update member
+		set token = #{token}
+		where user_id = #{user_id}
+	</update>
+	
+	<select id="getRefreshToken" parameterType="string" resultType="string">
+		select token
+		from member
+		where user_id = #{user_id}
+	</select>
+	
+	<update id="deleteRefreshToken" parameterType="map">
+		update member
+		set token = #{token, jdbcType=VARCHAR}
+		where user_id = #{user_id}
 	</update>
 	
 </mapper>

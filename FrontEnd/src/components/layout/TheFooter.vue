@@ -1,7 +1,7 @@
 <script setup></script>
 
 <template>
-  <footer class="navbar navbar-expand-lg navbar-light bg-light shadaw justify-content-center">
+  <footer class="navbar navbar-expand-lg navbar-light bg-light shadow justify-content-center fixed-bottom">
     <div class="row">
       <ul class="navbar-nav">
         <li><a href="#" class="nav-link text-secondary">개인정보처리방침</a></li>
@@ -14,4 +14,13 @@
   </footer>
 </template>
 
-<style scoped></style>
+<style scoped>
+/* 아래 스타일을 추가 */
+footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
+/* 필요한 경우에 스타일을 추가하여 디자인을 조절할 수 있습니다. */
+</style>

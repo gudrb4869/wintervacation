@@ -4,27 +4,22 @@ import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.ssafy.board.model.BoardDto;
 import com.ssafy.member.model.MemberDto;
 import com.ssafy.member.model.service.MemberService;
 import com.ssafy.util.JWTUtil;
@@ -43,41 +38,38 @@ public class MemberController {
 	private final MemberService memberService;
 	private final JWTUtil jwtUtil;
 
+	
 	@ApiOperation(value = "로그인", notes = "아이디와 비밀번호를 이용하여 로그인 처리.")
 	@PostMapping("/login")
-	public ResponseEntity<Map<String, Object>> login(@RequestParam Map<String, String> map,
-			@RequestParam(name = "saveid", required = false) String saveid, Model model, HttpSession session,
-			HttpServletResponse response) throws Exception {
+	public ResponseEntity<Map<String, Object>> login(@RequestBody @ApiParam(value = "로그인 시 필요한 회원정보(아이디, 비밀번호).", required = true) 
+	MemberDto memberDto) throws Exception {
 
-		log.info("map: {}", map);
+		log.debug("login user : {}", memberDto);
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 		HttpStatus status = HttpStatus.ACCEPTED;
 		try {
-			MemberDto memberDto = memberService.login(map);
-
-			if (memberDto != null) {
-				session.setAttribute("userinfo", memberDto);
-
-				String accessToken = jwtUtil.createAccessToken(memberDto.getUser_id());
-				String refreshToken = jwtUtil.createRefreshToken(memberDto.getUser_id());
+			MemberDto loginUser = memberService.login(memberDto);
+			if(loginUser != null) {
+				String accessToken = jwtUtil.createAccessToken(loginUser.getUser_id());
+				String refreshToken = jwtUtil.createRefreshToken(loginUser.getUser_id());
 				log.debug("access token : {}", accessToken);
 				log.debug("refresh token : {}", refreshToken);
-
-//			발급받은 refresh token을 DB에 저장.
-				memberService.saveRefreshToken(memberDto.getUser_id(), refreshToken);
-
-//			JSON으로 token 전달.
+				
+//				발급받은 refresh token을 DB에 저장.
+				memberService.saveRefreshToken(loginUser.getUser_id(), refreshToken);
+				
+//				JSON으로 token 전달.
 				resultMap.put("access-token", accessToken);
-
+				
 				// 나중에 Cookie로 변경
 				resultMap.put("refresh-token", refreshToken);
-
+				
 				status = HttpStatus.CREATED;
 			} else {
 				resultMap.put("message", "아이디 또는 패스워드를 확인해주세요.");
 				status = HttpStatus.UNAUTHORIZED;
-			}
-
+			} 
+			
 		} catch (Exception e) {
 			log.debug("로그인 에러 발생 : {}", e);
 			resultMap.put("message", e.getMessage());
@@ -86,14 +78,18 @@ public class MemberController {
 		return new ResponseEntity<Map<String, Object>>(resultMap, status);
 	}
 	
+	
+	
+	
 	@ApiOperation(value = "회원인증", notes = "회원 정보를 담은 Token을 반환한다.", response = Map.class)
-	@GetMapping("/info/{userId}")
+	@GetMapping("/info/{user_id}")
 	public ResponseEntity<Map<String, Object>> getInfo(
-			@PathVariable("userId") @ApiParam(value = "인증할 회원의 아이디.", required = true) String userId,
+			@PathVariable("user_id") @ApiParam(value = "인증할 회원의 아이디.", required = true) String userId,
 			HttpServletRequest request) {
 //		logger.debug("userId : {} ", userId);
 		Map<String, Object> resultMap = new HashMap<>();
 		HttpStatus status = HttpStatus.ACCEPTED;
+		log.info("getInfo : " + request.getHeader("Authorization") );
 		if (jwtUtil.checkToken(request.getHeader("Authorization"))) {
 			log.info("사용 가능한 토큰!!!");
 			try {
@@ -112,6 +108,9 @@ public class MemberController {
 		}
 		return new ResponseEntity<Map<String, Object>>(resultMap, status);
 	}
+	
+	
+	
 
 	@ApiOperation(value = "로그아웃", notes = "회원 정보를 담은 Token을 제거한다.", response = Map.class)
 	@GetMapping("/logout/{userId}")
@@ -129,7 +128,36 @@ public class MemberController {
 		return new ResponseEntity<Map<String, Object>>(resultMap, status);
 
 	}
+	
+	
+	
+	
+	@ApiOperation(value = "Access Token 재발급", notes = "만료된 access token을 재발급받는다.", response = Map.class)
+	@PostMapping("/refresh")
+	public ResponseEntity<?> refreshToken(@RequestBody MemberDto memberDto, HttpServletRequest request)
+			throws Exception {
+		Map<String, Object> resultMap = new HashMap<>();
+		HttpStatus status = HttpStatus.ACCEPTED;
+		String token = request.getHeader("refreshToken");
+		log.debug("token : {}, memberDto : {}", token, memberDto);
+		if (jwtUtil.checkToken(token)) {
+			if (token.equals(memberService.getRefreshToken(memberDto.getUser_id()))) {
+				String accessToken = jwtUtil.createAccessToken(memberDto.getUser_id());
+				log.debug("token : {}", accessToken);
+				log.debug("정상적으로 액세스토큰 재발급!!!");
+				resultMap.put("access-token", accessToken);
+				status = HttpStatus.CREATED;
+			}
+		} else {
+			log.debug("리프레쉬토큰도 사용불가!!!!!!!");
+			status = HttpStatus.UNAUTHORIZED;
+		}
+		return new ResponseEntity<Map<String, Object>>(resultMap, status);
+	}
 
+	
+	
+	
 	@ApiOperation(value = "회원가입", notes = "회원가입 한다.", response = Map.class)
 	@PostMapping("/join")
 	public ResponseEntity<?> join(@RequestBody @ApiParam(value = "회원가입을 위한 정보.", required = true) MemberDto memberDto) throws Exception {
@@ -141,6 +169,9 @@ public class MemberController {
 		
 	}
 
+	
+	
+	
 	@ApiOperation(value = "회원정보 수정 화면에 뿌릴 값 얻기", notes = "아이디에 맞는 회원 정보를 반환 한다.", response = MemberDto.class)
 	@GetMapping("/modify/{user_id}")
 	public ResponseEntity<MemberDto> userModifyView(@PathVariable("user_id") @ApiParam(value = "얻어올 회원 아이디", required = true) String user_id) throws Exception {
@@ -149,9 +180,12 @@ public class MemberController {
 		return new ResponseEntity<MemberDto>(memberService.userInfo(user_id), HttpStatus.OK);
 	}
 	
+	
+	
+	
 	//TODO Response 추가할지 말지
-	@ApiOperation(value = "회원정보 수정", notes = "회원 정보를 수정한다. DB수정 성공여부에 따라 'success' 또는 'fail' 문자열을 반환")
-	@PostMapping("/modify")
+	@ApiOperation(value = "회원정보 수정", notes = "회원 정보를 수정한다. DB수정 성공여부에 따라 'success' 또는 'fail' 문자열을 반환", response=String.class)
+	@PutMapping("/modify")
 	public ResponseEntity<String> modify(@RequestBody @ApiParam(value = "수정할 유저.", required = true) MemberDto memberDto)
 			throws Exception {
 		
@@ -162,20 +196,30 @@ public class MemberController {
 	}
 
 	
-	@ApiOperation(value = "비밀번호 수정", notes = "비밀번호를 수정한다. DB수정 성공여부에 따라 'success' 또는 'fail' 문자열을 반환")
-	@PostMapping("/modify_pw")
-	public String modify_pw(@RequestParam String userid, @RequestParam String userpass, @RequestParam String salt,
-			Model model, RedirectAttributes redirectAttributes, HttpSession session) throws Exception {
-
+	
+	
+	
+	@ApiOperation(value = "비밀번호 수정", notes = "비밀번호를 수정한다. DB수정 성공여부에 따라 'success' 또는 'fail' 문자열을 반환", response=String.class)
+	@PutMapping("/modify_pw")
+	public ResponseEntity<?> modify_pw(@RequestParam String userid, @RequestParam String userpass, @RequestParam String salt) throws Exception {
+		//TODO 이 로그는 테스트 후 지워야 함
+		log.info("modify_pw - 호출 : " + userid + ", " + userpass + ", " + salt);
+		HttpStatus status = HttpStatus.ACCEPTED;
+		removeToken(userid);
+		status = HttpStatus.OK;
+		
 		memberService.modify_pw(userid, userpass, salt);
 		// 세션 제거
-		session.invalidate();
-		redirectAttributes.addFlashAttribute("msg", "비밀번호 수정 성공! 다시 로그인해주세요!");
-		return "redirect:/";
+
+		return ResponseEntity.ok().build();
 	}
 
-	@GetMapping("/idcheck/{userid}")
-	public ResponseEntity<?> idcheck(@PathVariable("userid") String userId) {
+	
+	
+	
+	@ApiOperation(value = "아이디 체크", notes = "아이디가 존재하는지 체크한다. 존재하지 않을시 0, 있으면 1. 회원가입할 때 사용", response=String.class)
+	@GetMapping("/idcheck/{user_id}")
+	public ResponseEntity<?> idcheck(@PathVariable("user_id") String userId) {
 		log.info("idcheck: " + userId);
 		try {
 			int cnt = memberService.idCheck(userId);
@@ -189,15 +233,17 @@ public class MemberController {
 			return new ResponseEntity<String>("Error : " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+	
+	
+	
 
-	@GetMapping("/delete")
-	public String delete(HttpSession session, RedirectAttributes redirectAttributes) throws Exception {
-		MemberDto memberDto = (MemberDto) session.getAttribute("userinfo");
-		String userid = memberDto.getUser_id();
-		memberService.delete(userid);
-		session.invalidate();
-		redirectAttributes.addFlashAttribute("msg", "회원삭제 성공!");
-		return "redirect:/";
+	@ApiOperation(value = "회원 탈퇴", notes = "회원을 탈퇴한다. DB수정 성공여부에 따라 'success' 또는 'fail' 문자열을 반환")
+	@DeleteMapping("/delete/{user_id}")
+	public ResponseEntity<?> delete(@PathVariable("user_id") @ApiParam(value = "삭제할 글의 글번호.", required = true) String user_id) throws Exception {
+		memberService.delete(user_id);
+		removeToken(user_id);
+		
+		return ResponseEntity.ok().build();
 	}
 
 }

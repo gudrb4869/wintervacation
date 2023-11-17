@@ -25,19 +25,24 @@ public class MemberServiceImpl implements MemberService {
 	
 	private final MemberMapper memberMapper;
 	
+//	@Override
+//	public MemberDto login(Map<String, String> map) throws Exception {
+//		String userid = map.get("userid");
+//		String userpass = map.get("userpass");
+//		String salt = memberMapper.findSaltByUserId(userid);
+//		if (salt == null) { // 솔트가 존재하지 않는 경우(존재하지 않는 아이디)
+//			return null;
+//		}
+//
+//		String encryptedPass = keyStretching(userpass + salt); // 사용자입력비밀번호+유저의솔트값 해싱
+//		map.put("userpass", encryptedPass);
+//		System.out.println(map);
+//		return memberMapper.login(map);
+//	}
+	
 	@Override
-	public MemberDto login(Map<String, String> map) throws Exception {
-		String userid = map.get("userid");
-		String userpass = map.get("userpass");
-		String salt = memberMapper.findSaltByUserId(userid);
-		if (salt == null) { // 솔트가 존재하지 않는 경우(존재하지 않는 아이디)
-			return null;
-		}
-
-		String encryptedPass = keyStretching(userpass + salt); // 사용자입력비밀번호+유저의솔트값 해싱
-		map.put("userpass", encryptedPass);
-		System.out.println(map);
-		return memberMapper.login(map);
+	public MemberDto login(MemberDto memberDto) throws Exception {
+		return memberMapper.login(memberDto);
 	}
 	
 	@Override
@@ -53,8 +58,8 @@ public class MemberServiceImpl implements MemberService {
 		dto.setSalt(salt); // 솔트값 DTO에 저장
 		
 		// 비밀번호 해싱
-		String encryptedPass = keyStretching(dto.getUserPass() + salt); // 비밀번호+솔트를 해싱
-		dto.setUserPass(encryptedPass); // 비밀번호 암호화 처리한 값으로 DTO에 저장
+		String encryptedPass = keyStretching(dto.getUser_pass() + salt); // 비밀번호+솔트를 해싱
+		dto.setUser_pass(encryptedPass); // 비밀번호 암호화 처리한 값으로 DTO에 저장
 		System.out.println(dto);
 		return memberMapper.join(dto);
 	}
@@ -69,8 +74,8 @@ public class MemberServiceImpl implements MemberService {
 		String encryptedPass = keyStretching(newPw + salt); // 비밀번호+솔트를 해싱
 		
 		Map<String, String> map = new HashMap<>();
-		map.put("userid", userId);
-		map.put("userpass", encryptedPass);
+		map.put("user_id", userId);
+		map.put("user_pass", encryptedPass);
 		return memberMapper.modify_pw(map);
 	}
 	
@@ -101,9 +106,9 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	@Override
-	public void saveRefreshToken(String userId, String refreshToken) throws Exception {
+	public void saveRefreshToken(String user_id, String refreshToken) throws Exception {
 		Map<String, String> map = new HashMap<String, String>();
-		map.put("userId", userId);
+		map.put("user_id", user_id);
 		map.put("token", refreshToken);
 		memberMapper.saveRefreshToken(map);
 	}

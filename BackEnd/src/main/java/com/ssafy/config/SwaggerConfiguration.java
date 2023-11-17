@@ -71,6 +71,17 @@ public class SwaggerConfiguration {
                 .apiInfo(apiInfo())
                 .useDefaultResponseMessages(false);
     }
+    
+    @Bean
+    public Docket MemberApi() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .groupName("Member API")
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.ssafy.member.controller"))
+                .paths(regex("/member.*")).build()
+                .apiInfo(apiInfo())
+                .useDefaultResponseMessages(false);
+    }
 	
 	private Set<String> getConsumeContentTypes() {
         Set<String> consumes = new HashSet<>();

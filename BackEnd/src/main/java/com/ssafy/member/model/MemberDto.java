@@ -3,7 +3,7 @@ package com.ssafy.member.model;
 public class MemberDto {
 	private String user_id;
 	private String user_name;
-	private String userPass;
+	private String user_pass;
 	private String email;
 	private String birth_date;
 	private String gender;
@@ -11,6 +11,7 @@ public class MemberDto {
 	private String join_date;
 	private String salt;
 	private String token;
+	
 	public String getUser_id() {
 		return user_id;
 	}
@@ -23,11 +24,11 @@ public class MemberDto {
 	public void setUser_name(String user_name) {
 		this.user_name = user_name;
 	}
-	public String getUserPass() {
-		return userPass;
+	public String getUser_pass() {
+		return user_pass;
 	}
-	public void setUserPass(String userPass) {
-		this.userPass = userPass;
+	public void setUser_pass(String user_pass) {
+		this.user_pass = user_pass;
 	}
 	public String getEmail() {
 		return email;
@@ -71,12 +72,12 @@ public class MemberDto {
 	public void setToken(String token) {
 		this.token = token;
 	}
-	
 	@Override
 	public String toString() {
-		return "MemberDto [user_id=" + user_id + ", user_name=" + user_name + ", userPass=" + userPass + ", email="
+		return "MemberDto [user_id=" + user_id + ", user_name=" + user_name + ", user_pass=" + user_pass + ", email="
 				+ email + ", birth_date=" + birth_date + ", gender=" + gender + ", address=" + address + ", join_date="
 				+ join_date + ", salt=" + salt + ", token=" + token + "]";
 	}
+	
 	
 }

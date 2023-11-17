@@ -2,12 +2,17 @@
 import { RouterView } from "vue-router";
 import TheHeadingNavbar from "@/components/layout/TheHeadingNavbar.vue";
 import TheFooter from "@/components/layout/TheFooter.vue";
+import 'ant-design-vue/dist/reset.css';
 </script>
 
 <template>
   <div>
     <the-heading-navbar></the-heading-navbar>
     <router-view></router-view>
+    <br>
+    <br>
+    <br>
+    <br>
     <the-footer></the-footer>
   </div>
 </template>
