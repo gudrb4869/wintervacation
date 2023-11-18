@@ -19,6 +19,7 @@ import com.ssafy.member.model.mapper.MemberMapper;
 
 @Service
 @RequiredArgsConstructor
+
 public class MemberServiceImpl implements MemberService {
 
 	private static final int KEY_STRETCHING_COUNT = 500; // 키 스트레칭 횟수
@@ -135,7 +136,7 @@ public class MemberServiceImpl implements MemberService {
 	@Override
 	public void deleRefreshToken(String userId) throws Exception {
 		Map<String, String> map = new HashMap<String, String>();
-		map.put("userId", userId);
+		map.put("user_id", userId);
 		map.put("token", null);
 		memberMapper.deleteRefreshToken(map);
 	}

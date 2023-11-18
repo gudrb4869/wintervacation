@@ -88,7 +88,7 @@ export const useMemberStore = defineStore("memberStore", () => {
               isLogin.value = false;
               userInfo.value = null;
               isValidToken.value = false;
-              router.push({ name: "user-login" });
+              router.push({ name: "member-login" });
             },
             (error) => {
               console.error(error);
@@ -101,9 +101,10 @@ export const useMemberStore = defineStore("memberStore", () => {
     );
   };
 
-  const userLogout = async (userid) => {
+  const userLogout = async (user_id) => {
+    console.log(user_id);
     await logout(
-      userid,
+      user_id,
       (response) => {
         if (response.status === httpStatusCode.OK) {
           isLogin.value = false;
@@ -117,7 +118,7 @@ export const useMemberStore = defineStore("memberStore", () => {
         console.log(error);
       }
     );
-    };
+  };
     
 
   return {

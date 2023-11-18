@@ -1,21 +1,26 @@
 <script setup>
 import { ref } from "vue";
 import { useMenuStore } from "@/stores/menu";
+import { useMemberStore } from "@/stores/member";
 import { storeToRefs } from "pinia";
 
 const menuStore = useMenuStore();
+const memberStore = useMemberStore();
 
 // 반응형을 유지하면서 스토어에서 속성을 추출하려면, storeToRefs()를 사용
 // https://pinia.vuejs.kr/core-concepts/
 const { menuList } = storeToRefs(menuStore);
 const { changeMenuState } = menuStore;
 
-const logout = () => {
+const { userLogout } = memberStore;
+
+const toLogout = () => {
+  console.log(memberStore.userInfo.user_id);
+  userLogout(memberStore.userInfo.user_id);
   console.log("로그아웃!!!!");
   changeMenuState();
 };
 
-const userinfo = ref(null);
 </script>
 
 <template>
@@ -46,9 +51,9 @@ const userinfo = ref(null);
           </li>
           <template v-for="menu in menuList" :key="menu.routeName">
             <template v-if="menu.show">
-              <template v-if="menu.routeName === 'user-logout'">
+              <template v-if="menu.routeName === 'member-logout'">
                 <li class="nav-item">
-                  <router-link to="/" @click.prevent="logout" class="nav-link">{{
+                  <router-link to="/" @click.prevent="toLogout" class="nav-link">{{
                     menu.name
                   }}</router-link>
                 </li>

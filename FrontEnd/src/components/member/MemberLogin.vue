@@ -10,12 +10,12 @@ const router = useRouter();
 const memberStore = useMemberStore();
 
 const { isLogin } = storeToRefs(memberStore);
-const { userLogin, getUserinfo } = memberStore;
+const { userLogin, getUserInfo } = memberStore;
 const { changeMenuState } = useMenuStore();
 
 const loginUser = ref({
-  userId: "",
-  userPwd: "",
+  user_id: "",
+  user_pass: "",
 });
 
 const login = async () => {
@@ -54,14 +54,14 @@ const goToJoin = () => {
 							<div class="input-form-box">
 								<span>아이디 </span>
                                 <input type="text" name="user_id" id="user_id"
-                                    v-model="loginUser.userId"
+                                    v-model="loginUser.user_id"
                                     placeholder="  아이디..."
 									class="form-control" />
 							</div>
 							<div class="input-form-box">
 								<span>비밀번호 </span><input type="password" name="userpwd"
 									id="userpwd" class="form-control" 
-                                    v-model="loginUser.userPwd"
+                                    v-model="loginUser.user_pass"
 									placeholder="  비밀번호..."
                                     @keyup.enter="login"/>
 							</div>

@@ -96,6 +96,7 @@ public class MemberController {
 //				로그인 사용자 정보.
 				MemberDto memberDto = memberService.userInfo(userId);
 				resultMap.put("userInfo", memberDto);
+				log.info("getinfo : {}", memberDto);
 				status = HttpStatus.OK;
 			} catch (Exception e) {
 				log.error("정보조회 실패 : {}", e);
@@ -113,9 +114,10 @@ public class MemberController {
 	
 
 	@ApiOperation(value = "로그아웃", notes = "회원 정보를 담은 Token을 제거한다.", response = Map.class)
-	@GetMapping("/logout/{userId}")
-	public ResponseEntity<?> removeToken(@PathVariable ("userId") @ApiParam(value = "로그아웃할 회원의 아이디.", required = true) String userId) {
+	@GetMapping("/logout/{user_id}")
+	public ResponseEntity<?> removeToken(@PathVariable ("user_id") @ApiParam(value = "로그아웃할 회원의 아이디.", required = true) String userId) {
 		Map<String, Object> resultMap = new HashMap<>();
+		log.info("로그아웃 아이디! : {}", userId);
 		HttpStatus status = HttpStatus.ACCEPTED;
 		try {
 			memberService.deleRefreshToken(userId);
