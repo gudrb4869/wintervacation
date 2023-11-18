@@ -30,12 +30,7 @@ const toLogout = () => {
       <router-link class="navbar-brand" :to="{ name: 'main' }">
         <img src="@/assets/img/logo.png" style="width: 150px; height: 60px" />
       </router-link>
-      <button
-        class="navbar-toggler"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#collapsibleNavbar"
-      >
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="collapsibleNavbar">
@@ -47,7 +42,7 @@ const toLogout = () => {
             <router-link class="nav-link" :to="{ name: 'board' }">여행후기공유</router-link>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" :to="{ name: 'qna' }">Plan</router-link>
+            <router-link class="nav-link" :to="{ name: 'plan' }">Plan</router-link>
           </li>
           <template v-for="menu in menuList" :key="menu.routeName">
             <template v-if="menu.show">

@@ -16,7 +16,7 @@ const onlyAuthUser = async (to, from, next) => {
     await getUserInfo(token);
   }
   if (!isValidToken.value || userInfo.value === null) {
-    next({ name: "user-login" });
+    next({ name: "member-login" });
   } else {
     next();
   }
@@ -61,6 +61,26 @@ const router = createRouter({
           name: "qna-board-modify",
           component: () => import("@/components/qna/QnaBoardModify.vue"),
         },
+      ],
+    },
+    {
+      path: "/plan",
+      name: "plan",
+      component: () => import("@/views/ThePlanView.vue"),
+      redirect: { name: "plan-list" },
+      children: [
+        {
+          path: "list",
+          name: "plan-list",
+          // beforeEnter: onlyAuthUser,
+          component: () => import("@/components/plan/PlanList.vue"),
+        },
+        {
+          path: "write",
+          name: "plan-write",
+          // beforeEnter: onlyAuthUser,
+          component: () => import("@/components/plan/PlanWrite.vue"),
+        }
       ],
     },
     {
