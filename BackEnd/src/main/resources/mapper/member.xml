@@ -11,7 +11,7 @@
 	</select>
 	
 	<select id="userInfo" parameterType="string" resultType="memberDto">
-		select user_name, user_id, email_id, email_domain, join_date
+		select user_name, user_id, email, join_date, gender, address, birth_date
 		from member
 		where user_id = #{user_id}
 	</select>

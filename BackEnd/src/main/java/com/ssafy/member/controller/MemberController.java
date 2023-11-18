@@ -217,7 +217,7 @@ public class MemberController {
 	
 	
 	
-	@ApiOperation(value = "아이디 체크", notes = "아이디가 존재하는지 체크한다. 존재하지 않을시 0, 있으면 1. 회원가입할 때 사용", response=String.class)
+	@ApiOperation(value = "아이디 체크", notes = "아이디가 존재하는지 체크한다. 존재하지 않을시 0, 있으면 1. 회원가입할 때 사용")
 	@GetMapping("/idcheck/{user_id}")
 	public ResponseEntity<?> idcheck(@PathVariable("user_id") String userId) {
 		log.info("idcheck: " + userId);
@@ -239,7 +239,7 @@ public class MemberController {
 
 	@ApiOperation(value = "회원 탈퇴", notes = "회원을 탈퇴한다. DB수정 성공여부에 따라 'success' 또는 'fail' 문자열을 반환")
 	@DeleteMapping("/delete/{user_id}")
-	public ResponseEntity<?> delete(@PathVariable("user_id") @ApiParam(value = "삭제할 글의 글번호.", required = true) String user_id) throws Exception {
+	public ResponseEntity<?> delete(@PathVariable("user_id") @ApiParam(value = "삭제할 회원 id.", required = true) String user_id) throws Exception {
 		memberService.delete(user_id);
 		removeToken(user_id);
 		

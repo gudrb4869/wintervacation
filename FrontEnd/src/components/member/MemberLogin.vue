@@ -28,6 +28,11 @@ const login = async () => {
   router.push("/");
 };
 
+const goToJoin = () => {
+  router.push("/member/join");
+};
+
+
 </script>
 
 <template>
@@ -50,13 +55,14 @@ const login = async () => {
 								<span>아이디 </span>
                                 <input type="text" name="user_id" id="user_id"
                                     v-model="loginUser.userId"
-                                    placeholder="아이디..."
+                                    placeholder="  아이디..."
 									class="form-control" />
 							</div>
 							<div class="input-form-box">
 								<span>비밀번호 </span><input type="password" name="userpwd"
 									id="userpwd" class="form-control" 
                                     v-model="loginUser.userPwd"
+									placeholder="  비밀번호..."
                                     @keyup.enter="login"/>
 							</div>
 							<div class="button-login-box">
@@ -64,10 +70,11 @@ const login = async () => {
 									id="login_btn" style="width: 100%; margin-top: 10px" @click="login">
 									로그인</button>
 								<button type="button"
-									class="btn btn btn-outline-secondary btn-xs"
-									style="width: 100%; margin-top: 10px"
-									onClick="location.href='${root}/member/regist.jsp'">
-									회원가입</button>
+										class="btn btn btn-outline-secondary btn-xs"
+										style="width: 100%; margin-top: 10px"
+										@click="goToJoin">
+									회원가입
+								</button>
 							</div>
 						</div>
 					</div>

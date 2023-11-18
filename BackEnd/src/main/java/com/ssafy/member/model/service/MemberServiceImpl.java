@@ -39,9 +39,23 @@ public class MemberServiceImpl implements MemberService {
 //		System.out.println(map);
 //		return memberMapper.login(map);
 //	}
+//	
+//	@Override
+//	public MemberDto login(MemberDto memberDto) throws Exception {
+//		return memberMapper.login(memberDto);
+//	}
 	
 	@Override
 	public MemberDto login(MemberDto memberDto) throws Exception {
+		String userid = memberDto.getUser_id();
+		String userpass = memberDto.getUser_pass();
+		String salt = memberMapper.findSaltByUserId(userid);
+		if (salt == null) { // 솔트가 존재하지 않는 경우(존재하지 않는 아이디)
+			return null;
+		}
+
+		String encryptedPass = keyStretching(userpass + salt); // 사용자입력비밀번호+유저의솔트값 해싱
+		memberDto.setUser_pass(encryptedPass);
 		return memberMapper.login(memberDto);
 	}
 	

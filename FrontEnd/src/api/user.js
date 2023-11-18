@@ -26,7 +26,11 @@ async function getModify(user_id, success, fail) {
 }
 
 async function modify(user, success, fail) {
-  await local.put(`${url}`, JSON.stringify(user)).then(success).catch(fail);
+  await local.put(`${url}/modify`, JSON.stringify(user)).then(success).catch(fail);
+}
+
+async function join(user, success, fail) {
+  await local.post(`${url}/join`, JSON.stringify(user)).then(success).catch(fail);
 }
 
 
@@ -43,5 +47,5 @@ async function idDelete(user_id, success, fail) {
 }
 
 export {
-  userConfirm, findById, tokenRegeneration, logout, getModify,
+  userConfirm, findById, tokenRegeneration, logout, getModify, join,
 modify, idCheck, idDelete};
