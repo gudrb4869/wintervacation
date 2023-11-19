@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.plan.model.mapper.PlanMapper">
+
+	<resultMap type="planDto" id="plan">
+		<result column="plan_no" property="plan_no"/>
+		<result column="title" property="title"/>
+		<result column="start_date" property="start_date"/>
+		<result column="end_date" property="end_date"/>
+	</resultMap>
+
+	<resultMap type="planDto" id="viewPlan" extends="plan">
+		<collection property="courses" column="plan_no" javaType="list" ofType="courseDto" select="courseList"></collection>		
+	</resultMap>
+	
+	<resultMap type="courseDto" id="course">
+		<result column="date" property="date"/>
+		<result column="orders" property="orders"/>
+		<association property="attraction" resultMap="attractionDto"></association>
+	</resultMap>
+
+	<select id="getPlan" parameterType="int" resultMap="viewPlan">
+		select plan_no, title, start_date, end_date
+		from plan
+		where user_id = #{user_id}
+	</select>
+	
+	<select id="courseList" resultMap="course">
+		select 
+		from course c join attraction a on c.content_id = a.content_id;
+		where c.plan_no = #{plan_no}
+	</select>
+	
+	<select id="listPlan" parameterType="map" resultMap="plan">
+		select plan_no, title, start_date, end_date
+		from plan
+		where user_id = #{user_id}
+	</select>
+	
+	<select id="getTotalPlanCount" parameterType="map" resultType="int">
+		select count(plan_no)
+		from plan
+		where user_id = #{user_id}
+	</select>
+
+</mapper>

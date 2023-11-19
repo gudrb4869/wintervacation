@@ -55,9 +55,8 @@ onMounted(() => {
     const script = document.createElement("script");
     // autoload=false 꼭 설정해주기
     // clusterer -> 마커많을때 하나로 합쳐주는기능
-    script.src = `//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=${
-      import.meta.env.VITE_KAKAO_MAP_SERVICE_KEY
-    }&libraries=services,clusterer`;
+    script.src = `//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=${import.meta.env.VITE_KAKAO_MAP_SERVICE_KEY
+      }&libraries=services,clusterer`;
     /* global kakao */
     script.onload = () => kakao.maps.load(() => initMap());
     document.head.appendChild(script);
@@ -116,7 +115,7 @@ const loadMarkers = () => {
         color = "red";
         break;
     }
-    const imgSrc = "src/assets/img/marker-" + color + ".png";
+    const imgSrc = window.location.origin + "/src/assets/img/marker-" + color + ".png";
     // const imgSrc = "src/assets/img/marker.png";
     const imgSize = new kakao.maps.Size(27, 30);
     const markerImage = new kakao.maps.MarkerImage(imgSrc, imgSize);
@@ -183,7 +182,7 @@ const loadMarkers = () => {
     var img = document.createElement("div");
     img.className = "img";
     var image = document.createElement("img");
-    image.src = position.image ? position.image : "src/assets/img/no_image.png";
+    image.src = position.image ? position.image : window.location.origin + "/src/assets/img/no_image.png";
     image.width = "73";
     image.height = "70";
     img.appendChild(image);
@@ -232,7 +231,7 @@ const loadMarkers = () => {
     />`;
 
     var heart = document.createElement("img");
-    heart.src = "src/assets/img/heart-red.png";
+    heart.src = window.location.origin + "/src/assets/img/heart-red.png";
     heart.width = "30";
     heart.height = "30";
     heart.onclick = () => {

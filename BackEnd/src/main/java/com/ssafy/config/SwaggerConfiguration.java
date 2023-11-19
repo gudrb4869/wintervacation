@@ -38,6 +38,17 @@ public class SwaggerConfiguration {
                 .apiInfo(apiInfo())
                 .useDefaultResponseMessages(false);
     }
+    
+    @Bean
+    public Docket planApi() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .groupName("Plan API")
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.ssafy.plan.controller"))
+                .paths(regex("/plan.*")).build()
+                .apiInfo(apiInfo())
+                .useDefaultResponseMessages(false);
+    }
 
     @Bean
     public Docket qnaMemoApi() {

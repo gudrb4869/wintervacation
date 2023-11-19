@@ -4,6 +4,13 @@ import { useRouter } from 'vue-router';
 
 import PlanListItem from '@/components/plan/item/PlanListItem.vue';
 import VPageNavigation from '@/components/common/VPageNavigation.vue';
+import { listPlan } from '../../api/plan';
+
+import { useMemberStore } from "@/stores/member";
+
+const memberStore = useMemberStore();
+
+const userInfo = ref(memberStore.userInfo);
 
 const router = useRouter();
 
@@ -13,17 +20,35 @@ const plans = ref([]);
 const currentPage = ref(1);
 const totalPage = ref(0);
 const param = ref({
+    user_id: userInfo.value.user_id,
     pgno: currentPage.value,
     spp: VITE_ARTICLE_LIST_SIZE,
     key: "",
     word: "",
 });
 
+onMounted(() => {
+    getPlanList();
+})
+
+const getPlanList = () => {
+    console.log("Plan 얻어오자!!!")
+    console.log(param.value);
+    listPlan(
+        param.value,
+        ({ data }) => {
+            console.log(data);
+        }, (error) => {
+            console.log(error);
+        }
+    )
+}
+
 const onPageChange = (val) => {
     console.log(val + "번 페이지로 이동 준비 끝!!!");
     currentPage.value = val;
     param.value.pgno = val;
-    //   getArticleList();
+    getArticleList();
 };
 
 const moveWrite = () => {

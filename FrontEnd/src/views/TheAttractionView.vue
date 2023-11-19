@@ -189,7 +189,7 @@ const viewAttraction = (attraction) => {
 </script>
 
 <template>
-  <div class="container text-center mt-3">
+  <div class="text-center mt-3">
     <div class="alert alert-warning" role="alert" @click='getRecommendAttractions'>{{ currentSeason }} 제철음식인 {{ food
     }} 먹으러 {{ location }}(으)로 여행을 떠나보는건
       어때요?

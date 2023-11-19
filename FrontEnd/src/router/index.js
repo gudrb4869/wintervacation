@@ -72,13 +72,13 @@ const router = createRouter({
         {
           path: "list",
           name: "plan-list",
-          // beforeEnter: onlyAuthUser,
+          beforeEnter: onlyAuthUser,
           component: () => import("@/components/plan/PlanList.vue"),
         },
         {
           path: "write",
           name: "plan-write",
-          // beforeEnter: onlyAuthUser,
+          beforeEnter: onlyAuthUser,
           component: () => import("@/components/plan/PlanWrite.vue"),
         }
       ],
