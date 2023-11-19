@@ -1,5 +1,7 @@
 package com.ssafy.plan.model;
 
+import com.ssafy.map.model.AttractionDto;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -16,7 +18,7 @@ public class CourseDto {
 	private int date;
 	@ApiModelProperty(value = "몇번째")
 	private int orders;
-	@ApiModelProperty(value = "여행지 번호")
-	private int course_id;
+	@ApiModelProperty(value = "여행지 어디?")
+	private AttractionDto attraction;
 	
 }
