@@ -87,8 +87,18 @@ const router = createRouter({
       path: "/board",
       name: "board",
       component: () => import("@/views/TheBoardView.vue"),
-      redirect: { name: "board-list" },
+      redirect: { name: "board-main" },
       children: [
+        {
+          path: "main",
+          name: "board-main",
+          component: () => import("@/components/board/BoardMain.vue"),
+        },
+        {
+          path: "regist",
+          name: "board-main-regist",
+          component: () => import("@/components/board/BoardMainRegist.vue"),
+        },
         {
           path: "list",
           name: "board-list",
