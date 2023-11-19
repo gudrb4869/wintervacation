@@ -203,14 +203,13 @@ public class MemberController {
 	
 	@ApiOperation(value = "비밀번호 수정", notes = "비밀번호를 수정한다. DB수정 성공여부에 따라 'success' 또는 'fail' 문자열을 반환", response=String.class)
 	@PutMapping("/modify_pw")
-	public ResponseEntity<?> modify_pw(@RequestParam String userid, @RequestParam String userpass, @RequestParam String salt) throws Exception {
+	public ResponseEntity<?> modify_pw(@RequestParam String user_id, @RequestParam String user_pass) throws Exception {
 		//TODO 이 로그는 테스트 후 지워야 함
-		log.info("modify_pw - 호출 : " + userid + ", " + userpass + ", " + salt);
+		log.info("modify_pw - 호출 : " + user_id + ", " + user_pass);
 		HttpStatus status = HttpStatus.ACCEPTED;
-		removeToken(userid);
 		status = HttpStatus.OK;
 		
-		memberService.modify_pw(userid, userpass, salt);
+		memberService.modify_pw(user_id, user_pass);
 		// 세션 제거
 
 		return ResponseEntity.ok().build();

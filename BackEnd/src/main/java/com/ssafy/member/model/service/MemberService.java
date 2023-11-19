@@ -26,7 +26,7 @@ public interface MemberService {
 	public int delete(String userId) throws Exception;
 	
 	// 비밀번호 변경
-	public int modify_pw(String userId, String newPw, String salt) throws Exception;
+	public int modify_pw(String userId, String newPw) throws Exception;
 	
 	// 토큰 저장
 	public void saveRefreshToken(String userId, String refreshToken) throws Exception;

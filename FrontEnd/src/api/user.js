@@ -21,10 +21,12 @@ async function logout(user_id, success, fail) {
   await local.get(`${url}/logout/${user_id}`).then(success).catch(fail);
 }
 
+// 미사용
 async function getModify(user_id, success, fail) {
   await local.get(`${url}/modify/${user_id}`).then(success).catch(fail);
 }
 
+// 미사용
 async function modify(user, success, fail) {
   await local.put(`${url}/modify`, JSON.stringify(user)).then(success).catch(fail);
 }
@@ -34,9 +36,15 @@ async function join(user, success, fail) {
 }
 
 
-// async function modify_pw(user_id, user_pass, success, fail) {
-//   await local.put(`${url}`).then(success).catch(fail);
-// }
+async function modify_pw(user_id, user_pass, success, fail) {
+  await local.put(`${url}/modify_pw`, null, {
+    params: {
+      user_id: user_id,
+      user_pass: user_pass,
+    },
+  }).then(success).catch(fail);
+}
+
 
 async function idCheck(user_id, success, fail) {
   await local.get(`${url}/idcheck/${user_id}`).then(success).catch(fail);
@@ -47,5 +55,5 @@ async function idDelete(user_id, success, fail) {
 }
 
 export {
-  userConfirm, findById, tokenRegeneration, logout, getModify, join,
+  userConfirm, findById, tokenRegeneration, logout, getModify, join, modify_pw,
 modify, idCheck, idDelete};

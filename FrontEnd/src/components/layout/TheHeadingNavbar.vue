@@ -15,7 +15,6 @@ const { changeMenuState } = menuStore;
 const { userLogout } = memberStore;
 
 const toLogout = () => {
-  console.log(memberStore.userInfo.user_id);
   userLogout(memberStore.userInfo.user_id);
   console.log("로그아웃!!!!");
   changeMenuState();

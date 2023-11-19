@@ -85,7 +85,11 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	@Override
-	public int modify_pw(String userId, String newPw, String salt) throws Exception {
+	public int modify_pw(String userId, String newPw) throws Exception {
+		String salt = memberMapper.findSaltByUserId(userId);
+		if (salt == null) { // 솔트가 존재하지 않는 경우(존재하지 않는 아이디)
+			return 0;
+		}
 		String encryptedPass = keyStretching(newPw + salt); // 비밀번호+솔트를 해싱
 		
 		Map<String, String> map = new HashMap<>();

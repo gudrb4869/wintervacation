@@ -1,8 +1,16 @@
 <script setup>
 import { ref, computed } from 'vue';
+import { useRouter } from "vue-router";
 import { useMemberStore } from "@/stores/member";
+import { useMenuStore } from "@/stores/menu";
+import { modify_pw, idDelete } from "@/api/user";
+import { httpStatusCode } from "@/util/http-status";
 
+const menuStore = useMenuStore();
 const memberStore = useMemberStore();
+const { userLogout } = memberStore;
+const { changeMenuState } = menuStore;
+const router = useRouter();
 
 const profile = ref(null);
 profile.value = memberStore.userInfo;
@@ -16,11 +24,59 @@ const formattedJoinDate = computed(() => {
 
   // joinDate가 null 또는 undefined가 아니고, 비어 있지 않을 때만 처리
   if (joinDate !== null && joinDate !== undefined && joinDate.trim() !== '') {
-    // 예시: '2023-11-18 00:11:20'에서 '2023-11-18' 부분만 추출
     return joinDate.split(' ')[0];
   }
-  return ''; // joinDate가 null이거나 undefined이거나 빈 문자열이면 빈 문자열 반환
+  return '';
 });
+
+const changePass = async () => {
+  if (password.value == confirmPassword.value) {
+    await modify_pw(
+      profile.value.user_id,
+      password.value,
+      (response) => {
+        if (response.status === httpStatusCode.OK) {
+          console.log("비밀번호 변경 성공");
+  
+          userLogout(profile.value.user_id);
+          console.log("로그아웃!!!!");
+          changeMenuState();
+          router.push("/");
+          alert("다시 로그인 해주세요!");
+        } else {
+          console.log("비밀번호 변경 실패");
+          alert("잠시후 다시 시도해 해주세요!");
+        }
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
+  } else {
+    alert("비밀 번호가 같은지 확인해 주세요");
+  }
+}
+
+const withdrawal = async () => {
+  await idDelete(
+    profile.value.user_id,
+    (response) => {
+      if (response.status === httpStatusCode.OK) {
+        console.log("회원 탈퇴 성공");
+        changeMenuState();
+        router.push("/");
+        alert("회원탈퇴에 성공했습니다. 감사합니다.");
+      } else {
+        alert("회원탈퇴에 실패했습니다. 잠시후 다시 시도해주세요");
+        console.log("회원 탈퇴 실패");
+      }
+    },
+    (error) => {
+      console.log(error);
+    }
+  )
+}
+
 </script>
 
 
@@ -57,8 +113,8 @@ const formattedJoinDate = computed(() => {
     </div>
 
     <div id='buttons'>
-      <button @click="handleButton1">비밀번호 변경</button>
-      <button @click="handleButton2">탈퇴</button>
+      <button @click="changePass">비밀번호 변경</button>
+      <button @click="withdrawal">탈퇴</button>
     </div>
   </div>
 

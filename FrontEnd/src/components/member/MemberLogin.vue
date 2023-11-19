@@ -9,7 +9,6 @@ const router = useRouter();
 
 const memberStore = useMemberStore();
 
-const { isLogin } = storeToRefs(memberStore);
 const { userLogin, getUserInfo } = memberStore;
 const { changeMenuState } = useMenuStore();
 
@@ -20,12 +19,14 @@ const loginUser = ref({
 
 const login = async () => {
   await userLogin(loginUser.value);
-  let token = sessionStorage.getItem("accessToken");
-  if (isLogin) {
+  if (memberStore.isLogin) {
+	let token = sessionStorage.getItem("accessToken");
     getUserInfo(token);
     changeMenuState();
+	router.push("/");
+  } else {
+    alert("아이디와 비밀번호를 확인해 주세요");
   }
-  router.push("/");
 };
 
 const goToJoin = () => {
