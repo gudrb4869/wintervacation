@@ -209,11 +209,11 @@ const moveList = () => {
                 </div>
                 <div class="col-3">
                     <h1>여행지 검색 목록</h1>
-                    <!-- <draggable class='dragArea list-group' v-model="attractions" group="" item-key='content_id'>
+                    <draggable class='dragArea list-group' v-model="attractions" group="" item-key='content_id'>
                         <template #item='{element, index}'>
                             <div class='list-group-item'>{{ element.title }} {{element.addr}} {{ index }}</div>
                         </template>
-                    </draggable> -->
+                    </draggable>
                 </div>
             </div>
         </div>
