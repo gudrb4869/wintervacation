@@ -13,19 +13,20 @@ function detailArticle(articleno, success, fail) {
     local.get(`${url}/view/${articleno}`).then(success).catch(fail);
 }
 
-async function registArticle(boardDto, file, success, fail) {
+function registArticle(boardDto, file, success, fail) {
     
     const formData = new FormData();
-
+    console.log(boardDto);
+    console.log(JSON.stringify(boardDto));
+    console.log(file);
     // formData.append("imgInfos", file);
     for (let i = 0; i < file.length; i++) {
         formData.append("imgInfos", file[i]);
     }
-
     // dto데이터를 FormData로 변경
     formData.append("boardDto", JSON.stringify(boardDto));
 
-    await fileAxios2.post(`${url}/register`, formData).then(success).catch(fail);
+    fileAxios2.post(`${url}/register`, formData).then(success).catch(fail);
 }
 
 function getModifyArticle(articleno, success, fail) {

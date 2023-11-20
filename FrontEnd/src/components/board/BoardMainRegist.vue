@@ -56,7 +56,7 @@ const goToBoardMain = () => {
       </div>
       <hr>
 
-      <form @submit.prevent="boardRegist">
+
         <label for="subject">제목</label>
         <input type="text" id='subject' v-model="board.subject" placeholder='제목...'>
 
@@ -67,11 +67,10 @@ const goToBoardMain = () => {
         <input type="file" class="form-control border" id="file" name="file" multiple="multiple">
         <div id='buttonContainer'>
             <div style='display: flex; justify-content: flex-end; align-items: center; margin-top: 10px;'>
-                <button class="float-right btn" type="submit">공유 하기</button>
+                <button class="float-right btn" @click.prevent="boardRegist">공유 하기</button>
                 <button class="float-right btn" style='margin-left: 10px;' @click.prevent="goToBoardMain">취소</button>
             </div>
         </div>
-    </form>
   </div>
 </div>
 </template>
