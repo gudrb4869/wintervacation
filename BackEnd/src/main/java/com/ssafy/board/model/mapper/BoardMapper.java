@@ -11,7 +11,7 @@ import com.ssafy.board.model.BoardDto;
 @Mapper
 public interface BoardMapper {
 
-	int writeArticle(BoardDto boardDto) throws SQLException;
+	void writeArticle(BoardDto boardDto) throws SQLException;
 	
 	List<BoardDto> boardList(Map<String, String> map) throws SQLException;
 	

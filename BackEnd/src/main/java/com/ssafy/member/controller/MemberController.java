@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -34,6 +35,15 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class MemberController {
+	
+	@Value("${file.path}")
+	private String uploadPath;
+	
+	@Value("${file.path.upload-images}")
+	private String uploadImagePath;
+	
+	@Value("${file.path.upload-files}")
+	private String uploadFilePath;
 
 	private final MemberService memberService;
 	private final JWTUtil jwtUtil;
@@ -246,5 +256,8 @@ public class MemberController {
 		
 		return ResponseEntity.ok().build();
 	}
+	
+//	@ApiOperation(value = "프로필 사진", notes = "프로필 사진 가져오기")
+//	public ResponseEntity<?> profil()
 
 }

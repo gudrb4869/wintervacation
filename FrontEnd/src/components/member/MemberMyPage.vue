@@ -29,6 +29,11 @@ const formattedJoinDate = computed(() => {
   return '';
 });
 
+
+const loadProfil = async () => {
+  
+}
+
 const changePass = async () => {
   if (password.value == confirmPassword.value) {
     await modify_pw(
@@ -86,7 +91,7 @@ const withdrawal = async () => {
     <!-- 왼쪽 사이드에 프로필 사진 -->
     <div id='container2'>
       <div id="profil">
-        <!-- 여기에 프로필 사진을 넣거나 스타일을 추가하세요 -->
+
       </div>
 
       <!-- 프로필 정보 -->

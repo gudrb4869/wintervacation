@@ -23,4 +23,15 @@ function localAxios() {
   return instance;
 }
 
-export { localAxios };
+function fileAxios() {
+  const instance = axios.create({
+    baseURL: VITE_VUE_API_URL,
+    headers: {
+      "Content-Type": "multipart/form-data",
+      charset: "utf-8",
+    },
+  });
+  return instance;
+}
+
+export { localAxios, fileAxios };

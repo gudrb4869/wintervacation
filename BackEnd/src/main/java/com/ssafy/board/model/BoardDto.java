@@ -1,5 +1,10 @@
 package com.ssafy.board.model;
 
+import java.util.List;
+
+import com.ssafy.file.model.FileDto;
+
+
 public class BoardDto {
 
 	private int article_no;
@@ -8,6 +13,7 @@ public class BoardDto {
 	private String content;
 	private int hit;
 	private String register_time;
+	private List<FileDto> fileInfos;
 	
 
 	public int getArticle_no() {
@@ -68,13 +74,23 @@ public class BoardDto {
 	public void setRegister_time(String register_time) {
 		this.register_time = register_time;
 	}
+	
+	public List<FileDto> getFileInfos() {
+		return fileInfos;
+	}
+
+
+	public void setFileInfos(List<FileDto> fileInfos) {
+		this.fileInfos = fileInfos;
+	}
 
 
 	@Override
 	public String toString() {
 		return "BoardDto [article_no=" + article_no + ", user_id=" + user_id + ", subject=" + subject + ", content="
-				+ content + ", hit=" + hit + ", registerTime=" + register_time + "]";
+				+ content + ", hit=" + hit + ", register_time=" + register_time + ", fileInfos=" + fileInfos + "]";
 	}
+
 
 
 }

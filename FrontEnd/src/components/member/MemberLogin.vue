@@ -56,14 +56,14 @@ const goToJoin = () => {
 								<span>아이디 </span>
                                 <input type="text" name="user_id" id="user_id"
                                     v-model="loginUser.user_id"
-                                    placeholder="  아이디..."
+                                    placeholder="아이디..."
 									class="form-control" />
 							</div>
 							<div class="input-form-box">
 								<span>비밀번호 </span><input type="password" name="userpwd"
 									id="userpwd" class="form-control" 
                                     v-model="loginUser.user_pass"
-									placeholder="  비밀번호..."
+									placeholder="비밀번호..."
                                     @keyup.enter="login"/>
 							</div>
 							<div class="button-login-box">
@@ -90,6 +90,10 @@ const goToJoin = () => {
 * {
 	padding: 0;
 	margin: 0;
+}
+
+input {
+	padding: 10px;
 }
 
 html, body {

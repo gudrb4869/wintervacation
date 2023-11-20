@@ -9,20 +9,30 @@ import org.springframework.stereotype.Service;
 import com.ssafy.board.model.BoardDto;
 import com.ssafy.board.model.BoardListDto;
 import com.ssafy.board.model.mapper.BoardMapper;
+import com.ssafy.file.model.FileDto;
+import com.ssafy.file.model.mapper.FileMapper;
 
 @Service
 public class BoardServiceImpl implements BoardService {
 
 	BoardMapper boardMapper;
+	FileMapper fileMapper;
 	
-	public BoardServiceImpl(BoardMapper boardMapper) {
+	public BoardServiceImpl(BoardMapper boardMapper, FileMapper fileMapper) {
 		super();
 		this.boardMapper = boardMapper;
+		this.fileMapper = fileMapper;
 	}
 	
 	@Override
-	public int writeArticle(BoardDto boardDto) throws Exception {
-		return boardMapper.writeArticle(boardDto);
+	public void writeArticle(BoardDto boardDto) throws Exception {
+		System.out.println("글입력 전 dto : " + boardDto);
+		boardMapper.writeArticle(boardDto);
+		System.out.println("글입력 후 dto : " + boardDto);
+		List<FileDto> fileInfos = boardDto.getFileInfos();
+		if (fileInfos != null && !fileInfos.isEmpty()) {
+			fileMapper.registerFile(boardDto);
+		}
 	}
 
 	@Override

@@ -10,7 +10,6 @@ const profile = ref(null);
 
 onMounted( () => {
     profile.value = memberStore.userInfo;
-    console.log(profile.value);
 });
 
 const goToRegist = () => {

@@ -1,14 +1,19 @@
 package com.ssafy.board.controller;
 
+import java.io.File;
 import java.nio.charset.Charset;
-import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServlet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -23,11 +28,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.board.model.BoardDto;
 import com.ssafy.board.model.BoardListDto;
 import com.ssafy.board.model.service.BoardService;
+import com.ssafy.config.FileUtil;
+import com.ssafy.file.model.FileDto;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -42,35 +53,73 @@ import io.swagger.annotations.ApiResponses;
 @Api
 public class BoardController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	
+	@Value("${file.path}")
+	private String uploadPath;
+	
+	@Value("${file.path.upload-images}")
+	private String uploadImagePath;
+	
+	@Value("${file.path.upload-files}")
+	private String uploadFilePath;
 
 	private final Logger logger = LoggerFactory.getLogger(BoardController.class);
 
 	BoardService boardService;
+	FileUtil fileUtil;
 
 	public BoardController(BoardService boardService) {
 		super();
 		this.boardService = boardService;
 	}
 
-	@ApiOperation(value = "여행후기 게시판 글작성", notes = "새로운 여행후기 게시글 정보를 입력한다.")
+//	@ApiOperation(value = "여행후기 게시판 글작성", notes = "새로운 여행후기 게시글 정보를 입력한다.")
+//	@PostMapping("/register")
+//	public ResponseEntity<?> writeArticle(@RequestBody @ApiParam(value = "여행후기 게시글 정보.", required = true)
+//	Map<String, String> map) throws SQLException {
+//		logger.info("writeArticle map - {}", map);
+//		
+//		BoardDto boardDto = new BoardDto();
+//		boardDto.setUser_id(map.get("user_id"));
+//		boardDto.setSubject(map.get("subject"));
+//		boardDto.setContent(map.get("content"));
+//
+//		try {
+//			boardService.writeArticle(boardDto);
+//			return new ResponseEntity<Void>(HttpStatus.CREATED);
+//		} catch (Exception e) {
+//			return exceptionHandling(e);
+//		}
+//		
+//	}
+	
+	
 	@PostMapping("/register")
-	public ResponseEntity<?> writeArticle(@RequestBody @ApiParam(value = "여행후기 게시글 정보.", required = true)
-	Map<String, String> map) throws SQLException {
-		logger.info("writeArticle map - {}", map);
-		
-		BoardDto boardDto = new BoardDto();
-		boardDto.setUser_id(map.get("user_id"));
-		boardDto.setSubject(map.get("subject"));
-		boardDto.setContent(map.get("content"));
+	   public ResponseEntity<?> write(@RequestPart("boardDto") BoardDto boardDto, @RequestPart("imgInfos") MultipartFile[] files) {
+        try {
+            // boardDto(JSON문자열)를 BoardDto객체로 변환(jackson)
+            ObjectMapper objectMapper = new ObjectMapper();
+            BoardDto boardDto = objectMapper.readValue(formData.getParameter("boardDto"), BoardDto.class);
+            // 파일들 받아오기
+            List<MultipartFile> multipartFiles = formData.getFiles("imgInfos");
+            
+            // 파일들 저장 및 dto 리스트로 변환
+            List<FileDto> imgInfos = fileUtil.storeImgs(multipartFiles, boardDto);
+            
+            // dto에 파일 dto 리스트 추가
+            boardDto.setFileInfos(imgInfos);
+            
+            // 서비스 호출
+            boardService.writeArticle(boardDto);
+    
+            return new ResponseEntity<Void>(HttpStatus.OK);
+        } catch(Exception e) {
+            System.out.println("board uploadImg Controller Error");
+            e.printStackTrace();
+            return new ResponseEntity<String>("Error : " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
-		try {
-			boardService.writeArticle(boardDto);
-			return new ResponseEntity<Void>(HttpStatus.CREATED);
-		} catch (Exception e) {
-			return exceptionHandling(e);
-		}
-		
-	}
 
 	@ApiOperation(value = "여행후기 게시판 글목록", notes = "모든 여행후기 게시글의 정보를 반환한다.", response = List.class)
 	@ApiResponses({ @ApiResponse(code = 200, message = "여행후기 목록 OK!!"), @ApiResponse(code = 404, message = "페이지없어!!"),
@@ -89,7 +138,7 @@ public class BoardController extends HttpServlet {
 		} 
 	}
 
-	@ApiOperation(value = "QnA 게시판 글보기", notes = "글번호에 해당하는 게시글의 정보를 반환한다.", response = BoardDto.class)
+	@ApiOperation(value = "게시판 글보기", notes = "글번호에 해당하는 게시글의 정보를 반환한다.", response = BoardDto.class)
 	@GetMapping("/view/{article_no}")
 	public ResponseEntity<BoardDto> viewArticle(@PathVariable("article_no") @ApiParam(value = "얻어올 글의 글번호.", required = true) int article_no) 
 			throws Exception {
