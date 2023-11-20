@@ -28,6 +28,7 @@ function fileAxios() {
     baseURL: VITE_VUE_API_URL,
     headers: {
       "Content-Type": "multipart/form-data",
+      charset: "utf-8",
     },
   });
   return instance;
