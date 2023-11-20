@@ -1,4 +1,4 @@
-package com.ssafy.config;
+package com.ssafy.file;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,15 +9,17 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.ssafy.board.model.BoardDto;
 import com.ssafy.file.model.FileDto;
 
+@Component
 public class FileUtil {
 	
 	// 게시판 이미지 저장 경로(ref: application.properties)
-    @Value("${file.path.board-images}")
+    @Value("${file.path.upload-images}")
     private String uploadImagePath;
     
     // 이미지 저장 및 dto변환

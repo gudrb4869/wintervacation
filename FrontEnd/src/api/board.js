@@ -1,7 +1,7 @@
 import { localAxios, fileAxios } from "@/util/http-commons";
 
 const local = localAxios();
-const fileAxios2 = fileAxios();
+const file = fileAxios();
 
 const url = "/board-api";
 
@@ -13,21 +13,18 @@ function detailArticle(articleno, success, fail) {
     local.get(`${url}/view/${articleno}`).then(success).catch(fail);
 }
 
-function registArticle(boardDto, file, success, fail) {
-    
+function registArticle(params, success, fail) {
+    // 파일 데이터를 FormData로 변경
     const formData = new FormData();
-    console.log(boardDto);
-    console.log(JSON.stringify(boardDto));
-    console.log(file);
-    // formData.append("imgInfos", file);
-    for (let i = 0; i < file.length; i++) {
-        formData.append("imgInfos", file[i]);
+    for (let i = 0; i < params.imgInfos.length; i++) {
+      formData.append("imgInfos", params.imgInfos[i]);
     }
     // dto데이터를 FormData로 변경
-    formData.append("boardDto", JSON.stringify(boardDto));
-
-    fileAxios2.post(`${url}/register`, formData).then(success).catch(fail);
-}
+    formData.append("boardDto", JSON.stringify(params.boardDto));
+  
+    // axios
+    file.post(`${url}/register`, formData).then(success).catch(fail);
+  }
 
 function getModifyArticle(articleno, success, fail) {
     local.get(`${url}/modify/${articleno}`).then(success).catch(fail);

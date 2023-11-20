@@ -37,7 +37,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.board.model.BoardDto;
 import com.ssafy.board.model.BoardListDto;
 import com.ssafy.board.model.service.BoardService;
-import com.ssafy.config.FileUtil;
+import com.ssafy.file.FileUtil;
 import com.ssafy.file.model.FileDto;
 
 import io.swagger.annotations.Api;
@@ -47,7 +47,6 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
 
-@CrossOrigin(origins = { "*" }, methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE} , maxAge = 6000)
 @RestController
 @RequestMapping("/board-api")
 @Api
@@ -68,9 +67,10 @@ public class BoardController extends HttpServlet {
 	BoardService boardService;
 	FileUtil fileUtil;
 
-	public BoardController(BoardService boardService) {
+	public BoardController(BoardService boardService, FileUtil fileUtil) {
 		super();
 		this.boardService = boardService;
+		this.fileUtil = fileUtil;
 	}
 
 //	@ApiOperation(value = "여행후기 게시판 글작성", notes = "새로운 여행후기 게시글 정보를 입력한다.")
@@ -94,42 +94,29 @@ public class BoardController extends HttpServlet {
 //	}
 	
 	
-	@PostMapping(value = "/register", consumes = "multipart/form-data", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> write(@RequestPart("boardDto") BoardDto boardDto, @RequestPart("imgInfos") MultipartFile[] files) {
+    @PostMapping("/register")
+    public ResponseEntity<?> write(MultipartHttpServletRequest formData) {
         try {
-        	logger.info("register 들어옴");
-    		if (!files[0].isEmpty()) {
-    			String today = new SimpleDateFormat("yyMMdd").format(new Date());
-    			String saveFolder = uploadPath + File.separator + today;
-    			logger.debug("저장 폴더 : {}", saveFolder);
-    			File folder = new File(saveFolder);
-    			if (!folder.exists())
-    				folder.mkdirs();
-    			List<FileDto> fileInfos = new ArrayList<FileDto>();
-    			
-    			for (MultipartFile mfile : files) {
-    				FileDto fileInfoDto = new FileDto();
-    				String originalFileName = mfile.getOriginalFilename();
-    				if (!originalFileName.isEmpty()) {
-    					String saveFileName = UUID.randomUUID().toString()
-    							+ originalFileName.substring(originalFileName.lastIndexOf('.'));
-    					fileInfoDto.setSaveFolder(today);
-    					fileInfoDto.setOriginalFile(originalFileName);
-    					fileInfoDto.setSaveFile(saveFileName);
-    					fileInfoDto.setArticle_no(boardDto.getArticle_no());
-    					fileInfoDto.setUser_id(boardDto.getUser_id());
-    					logger.debug("원본 파일 이름 : {}, 실제 저장 파일 이름 : {}", mfile.getOriginalFilename(), saveFileName);
-    					mfile.transferTo(new File(folder, saveFileName));
-    				}
-    				fileInfos.add(fileInfoDto);
-    			}
-    			boardDto.setFileInfos(fileInfos);
-    		}
+            // boardDto(JSON문자열)를 BoardDto객체로 변환(jackson)
+            ObjectMapper objectMapper = new ObjectMapper();
+            BoardDto boardDto = objectMapper.readValue(formData.getParameter("boardDto"), BoardDto.class);
+            // 파일들 받아오기
+            List<MultipartFile> multipartFiles = formData.getFiles("imgInfos");
+            
+            logger.info("regist dto : {}", boardDto);
+            logger.info("regist multipartFiles : {}", multipartFiles);
+            
+            
+            // 파일들 저장 및 dto 리스트로 변환
+            List<FileDto> imgInfos = fileUtil.storeImgs(multipartFiles, boardDto);
+            
+            // dto에 파일 dto 리스트 추가
+            boardDto.setFileInfos(imgInfos);
             
             // 서비스 호출
             boardService.writeArticle(boardDto);
     
-            return new ResponseEntity<>("{}", HttpStatus.OK);
+            return new ResponseEntity<Void>(HttpStatus.OK);
         } catch(Exception e) {
             System.out.println("board uploadImg Controller Error");
             e.printStackTrace();

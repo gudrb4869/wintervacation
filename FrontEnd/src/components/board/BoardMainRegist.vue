@@ -5,7 +5,7 @@ import { useRouter } from "vue-router";
 import { registArticle } from "@/api/board"
 
 const router = useRouter();
-const user = ref(null);
+const memberStore = useMemberStore();
 
 const board = ref({
     article_no: "",
@@ -16,20 +16,26 @@ const board = ref({
     register_time: "",
 })
 
+
+
 onMounted(() => {
-    const memberStore = useMemberStore();
-    user.value = memberStore.userInfo;
+    const profile = ref(null);
+    profile.value = memberStore.userInfo;
+    board.value.user_id = profile.value.user_id;
 });
 
 
 
 const boardRegist = () => {
-    board.user_id = user.value.user_id;
+    const imgInfos = document.querySelector('#file').files;
 
-    const fileList = document.querySelector('#file').files;
+    const params = {
+        boardDto: board.value,
+        imgInfos: imgInfos,
+    }
+
     registArticle(
-        board.value,
-        fileList,
+        params,
         (response) => {
             console.log(response);
             goToBoardMain();
