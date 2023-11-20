@@ -55,8 +55,9 @@ onMounted(() => {
     const script = document.createElement("script");
     // autoload=false 꼭 설정해주기
     // clusterer -> 마커많을때 하나로 합쳐주는기능
-    script.src = `//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=${import.meta.env.VITE_KAKAO_MAP_SERVICE_KEY
-      }&libraries=services,clusterer`;
+    script.src = `//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=${
+      import.meta.env.VITE_KAKAO_MAP_SERVICE_KEY
+    }&libraries=services,clusterer`;
     /* global kakao */
     script.onload = () => kakao.maps.load(() => initMap());
     document.head.appendChild(script);
@@ -182,7 +183,9 @@ const loadMarkers = () => {
     var img = document.createElement("div");
     img.className = "img";
     var image = document.createElement("img");
-    image.src = position.image ? position.image : window.location.origin + "/src/assets/img/no_image.png";
+    image.src = position.image
+      ? position.image
+      : window.location.origin + "/src/assets/img/no_image.png";
     image.width = "73";
     image.height = "70";
     img.appendChild(image);

@@ -20,9 +20,25 @@
 		<result column="orders" property="orders"/>
 		<association property="attraction" resultMap="attractionDto"></association>
 	</resultMap>
+	
+	<insert id="writePlan" parameterType="planDto">
+		insert into plan (title, start_date, end_date, user_id)
+		values (#{title}, #{start_date}, #{end_date}, #{user_id})
+		<selectKey resultType="int" keyProperty="plan_no" order="AFTER">
+			select last_insert_id()
+		</selectKey>
+	</insert>
+	
+	<insert id="registerCourse" parameterType="planDto">
+		insert into course (plan_no, content_id, date, orders)
+		values
+		<foreach collection="courses" item="course" separator=",">
+			(#{plan_no}, #{course.attraction.content_id}, #{course.date}, #{course.orders})
+		</foreach>
+	</insert>
 
 	<select id="getPlan" parameterType="int" resultMap="viewPlan">
-		select plan_no, title, start_date, end_date
+		select plan_no, title, date_format(start_date, '%Y-%m-%d') start_date, date_format(end_date, '%Y-%m-%d') end_date, user_id
 		from plan
 		where user_id = #{user_id}
 	</select>
@@ -34,9 +50,10 @@
 	</select>
 	
 	<select id="listPlan" parameterType="map" resultMap="plan">
-		select plan_no, title, start_date, end_date
+		select plan_no, title, date_format(start_date, '%Y-%m-%d') start_date, date_format(end_date, '%Y-%m-%d') end_date, user_id
 		from plan
 		where user_id = #{user_id}
+		order by start_date desc, end_date desc
 	</select>
 	
 	<select id="getTotalPlanCount" parameterType="map" resultType="int">

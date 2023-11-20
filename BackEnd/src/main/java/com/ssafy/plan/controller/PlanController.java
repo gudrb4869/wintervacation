@@ -9,10 +9,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ssafy.plan.model.PlanDto;
 import com.ssafy.plan.model.PlanListDto;
 import com.ssafy.plan.model.service.PlanService;
 import com.ssafy.util.JWTUtil;
@@ -35,6 +38,18 @@ public class PlanController {
 	private final JWTUtil jwtUtil;
 	private final PlanService planService;
 	
+	@ApiOperation(value = "Plan등록", notes = "새로운 Plan 정보를 입력한다.")
+	@PostMapping
+	public ResponseEntity<?> writePlan(
+			@RequestBody @ApiParam(value = "plan 정보", required = true) PlanDto planDto) {
+		log.info("writePlan planDto - {}", planDto);
+		try {
+			planService.writePlan(planDto);
+			return new ResponseEntity<Void>(HttpStatus.CREATED);
+ 		} catch (Exception e) {
+ 			return exceptionHandling(e);
+		}
+	}
 	@ApiOperation(value = "Plan목록", notes = "로그인한 사용자의 모든 Plan 정보를 반환한다.", response = List.class)
 	@ApiResponses({@ApiResponse(code = 200, message = "Plan목록 OK!!"), @ApiResponse(code = 404, message = "페이지 없어!!!"),
 		@ApiResponse(code = 500, message = "서버에러!!")})
@@ -46,6 +61,7 @@ public class PlanController {
 			log.info("회원 정보 {}");
 			PlanListDto planListDto = planService.listPlan(map);
 			HttpHeaders header = new HttpHeaders();
+			log.info("myPlanList planListDto - {}", planListDto);
 			header.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
 			return ResponseEntity.ok().headers(header).body(planListDto);			
 		} catch (Exception e) {

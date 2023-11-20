@@ -80,7 +80,12 @@ const router = createRouter({
           name: "plan-write",
           beforeEnter: onlyAuthUser,
           component: () => import("@/components/plan/PlanWrite.vue"),
-        }
+        },
+        {
+          path: ":plan_no",
+          name: "plan-view",
+          component: () => import("@/components/plan/PlanDetail.vue"),
+        },
       ],
     },
     {
@@ -124,7 +129,7 @@ const router = createRouter({
       ],
     },
     {
-      path : "/member",
+      path: "/member",
       name: "member",
       component: () => import("@/views/TheMemberView.vue"),
       children: [
@@ -143,7 +148,7 @@ const router = createRouter({
           path: "join",
           name: "member-join",
           component: () => import("@/components/member/MemberJoin.vue"),
-        }
+        },
       ],
     },
   ],

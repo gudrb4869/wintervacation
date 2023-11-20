@@ -24,5 +24,7 @@ public class PlanDto {
 	private String end_date;
 	@ApiModelProperty(value = "여행 코스정보")
 	private List<CourseDto> courses;
+	@ApiModelProperty(value = "사용자아이디")
+	private String user_id;
 
 }

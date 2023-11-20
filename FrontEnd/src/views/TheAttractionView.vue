@@ -6,8 +6,8 @@ import VKakaoMap from "@/components/common/VKakaoMap.vue";
 import VSelect from "@/components/common/VSelect.vue";
 import VSwitch from "@/components/common/VSwitch.vue";
 
-import { useMapStore } from '@/stores/map';
-import { storeToRefs } from 'pinia';
+import { useMapStore } from "@/stores/map";
+import { storeToRefs } from "pinia";
 
 const { VITE_OPEN_API_SERVICE_KEY } = import.meta.env;
 
@@ -79,32 +79,32 @@ const getCurrentMonth = () => {
       currentSeason.value = "겨울";
       break;
   }
-}
+};
 
 const param2 = ref({
   sido_code: 0,
   gugun_code: 0,
   // content_type_id: [12, 14, 15, 25, 28, 32, 38, 39]
-  content_type_id: [12, 32, 39]
-})
-const food = ref("")
-const location = ref("")
+  content_type_id: [12, 32, 39],
+});
+const food = ref("");
+const location = ref("");
 
 const randomRecommend = () => {
   console.log(bannerList.value);
   const banners = bannerList.value[currentSeason.value];
-  console.log('배너목록: ' + banners);
+  console.log("배너목록: " + banners);
   const length = banners.length;
-  console.log('길이: ' + length);
+  console.log("길이: " + length);
   const idx = parseInt(Math.random() * length);
-  console.log('인덱스: ' + idx);
+  console.log("인덱스: " + idx);
   const banner = banners[idx];
   console.log(banner);
-  food.value = banner[0]
+  food.value = banner[0];
   location.value = banner[1];
   param2.value.sido_code = banner[2];
   param2.value.gugun_code = banner[3];
-}
+};
 
 const getRecommendAttractions = () => {
   console.log("관광지 정보 api 호출! 22222222222222");
@@ -118,7 +118,7 @@ const getRecommendAttractions = () => {
       console.log(err);
     }
   );
-}
+};
 
 const getSidoList = () => {
   listSido(
@@ -190,12 +190,10 @@ const viewAttraction = (attraction) => {
 
 <template>
   <div class="text-center mt-3">
-    <div class="alert alert-warning" role="alert" @click='getRecommendAttractions'>{{ currentSeason }} 제철음식인 {{ food
-    }} 먹으러 {{ location }}(으)로 여행을 떠나보는건
-      어때요?
-      해당
-      지역으로 이동하려면 여기를
-      클릭하세요.</div>
+    <div class="alert alert-warning" role="alert" @click="getRecommendAttractions">
+      {{ currentSeason }} 제철음식인 {{ food }} 먹으러 {{ location }}(으)로 여행을 떠나보는건
+      어때요? 해당 지역으로 이동하려면 여기를 클릭하세요.
+    </div>
     <div class="d-flex justify-content-center mb-3">
       <VSelect v-model="param.sido_code" :selectOption="sidoList" @onKeySelect="onChangeSido" />
       <VSelect v-model="param.gugun_code" :selectOption="gugunList" @onKeySelect="onChangeGugun" />
@@ -221,8 +219,12 @@ const viewAttraction = (attraction) => {
         </tr>
       </thead>
       <tbody>
-        <tr class="text-center" v-for="attraction in attractions" :key="attraction.content_id"
-          @click="viewAttraction(attraction)">
+        <tr
+          class="text-center"
+          v-for="attraction in attractions"
+          :key="attraction.content_id"
+          @click="viewAttraction(attraction)"
+        >
           <th>{{ attraction.title }}</th>
           <td>{{ attraction.content_type_id }}</td>
           <td>{{ attraction.image }}</td>
