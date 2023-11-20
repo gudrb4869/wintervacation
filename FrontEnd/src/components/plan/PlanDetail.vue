@@ -34,12 +34,27 @@ onMounted(() => {
   getPlan();
 });
 
+const getDateDiff = (start_date, end_date) => {
+  let diff = end_date.getTime() - start_date.getTime();
+  diff = Math.ceil(diff / (1000 * 60 * 60 * 24) + 1);
+  console.log(diff);
+  return diff;
+};
+
 const getPlan = () => {
   console.log(plan_no + "번 plan 조회!!!");
   detailPlan(
     plan_no,
     ({ data }) => {
+      console.log(data);
       plan.value = data;
+      days.value = getDateDiff(new Date(plan.value.start_date), new Date(plan.value.end_date));
+      let courses = Array.from(Array(days.value), () => []);
+      plan.value.courses.forEach((course) => {
+        courses[course.date].push(course.attraction);
+      });
+      plan.value.courses = courses;
+      console.log(plan.value);
     },
     (error) => {
       console.log(error);
@@ -90,10 +105,10 @@ const moveList = () => {
           </div>
           <div class="mb-3" style="height: 450px">
             <div class="overflow-auto mh-100">
-              <template v-for="day in plan.courses.length" :key="day">
+              <template v-for="(course, index) in plan.courses" :key="index">
                 <div class="border p-3">
-                  <h3>{{ day }}일차</h3>
-                  <ul v-for="course in courses" class="list-group">
+                  <h3>{{ index + 1 }}일차</h3>
+                  <ul class="list-group">
                     <li class="list-group-item" v-for="element in course">
                       <h6>{{ element.title }}</h6>
                       <span>{{ element.addr }}</span>

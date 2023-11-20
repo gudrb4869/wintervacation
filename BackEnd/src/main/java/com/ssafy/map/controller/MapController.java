@@ -30,7 +30,6 @@ public class MapController {
 	
 	private final MapService mapService;
 	
-	
 	// 지도 
 	@ApiOperation(value = "지도 검색", notes = "지도 검색", response=List.class)
 	@GetMapping("/search")
@@ -41,23 +40,7 @@ public class MapController {
 		try {
 			log.info("/map/search, map - {}", params);
 			
-//			List<AttractionDto> list = mapService.getAttractions(params);
-			String content_type_id = params.get("content_type_id");
-			log.info("content_type_id - {}", content_type_id);
-			List<AttractionDto> list = mapService.attractionList(params);
-			
-			log.info("map list - {}", list);
-			
-//			HttpHeaders header = new HttpHeaders();
-//			header.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
-//			return ResponseEntity.ok().headers(header).body(list);	
-			return new ResponseEntity<List<AttractionDto>>(list, HttpStatus.OK);
-//			if (list != null && !list.isEmpty()) {
-//				return new ResponseEntity<List<AttractionDto>>(list, HttpStatus.OK);
-//			} else {
-//				log.info("Zzzzzzzzzzzzzzzzz");
-//				return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
-//			}
+			return new ResponseEntity<List<AttractionDto>>(mapService.attractionList(params), HttpStatus.OK);
 		} catch (Exception e) {
 			return exceptionHandling(e);
 		}

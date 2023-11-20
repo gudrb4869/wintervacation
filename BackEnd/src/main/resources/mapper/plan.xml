@@ -18,7 +18,20 @@
 	<resultMap type="courseDto" id="course">
 		<result column="date" property="date"/>
 		<result column="orders" property="orders"/>
-		<association property="attraction" resultMap="attractionDto"></association>
+		<association property="attraction" resultMap="attraction"></association>
+	</resultMap>
+	
+	<resultMap type="attractionDto" id="attraction">
+		<result column="content_id" property="content_id"/>
+		<result column="content_type_id" property="content_type_id"/>
+		<result column="title" property="title"/>
+		<result column="addr" property="addr"/>
+		<result column="image" property="image"/>
+		<result column="sido_code" property="sido_code"/>
+		<result column="gugun_code" property="gugun_code"/>
+		<result column="latitude" property="latitude"/>
+		<result column="longitude" property="longitude"/>
+		<result column="overview" property="overview"/>
 	</resultMap>
 	
 	<insert id="writePlan" parameterType="planDto">
@@ -43,10 +56,11 @@
 		where plan_no = #{plan_no}
 	</select>
 	
-	<select id="courseList" resultMap="course">
-		select 
-		from course c join attraction a on c.content_id = a.content_id;
+	<select id="courseList" parameterType="int" resultMap="course">
+		select c.content_id, c.date, c.orders, a.content_type_id, a.title, a.addr, a.image, a.sido_code, a.gugun_code, a.latitude, a.longitude, a.overview
+		from course c join attraction a on c.content_id = a.content_id
 		where c.plan_no = #{plan_no}
+		order by c.date, c.orders
 	</select>
 	
 	<select id="listPlan" parameterType="map" resultMap="plan">

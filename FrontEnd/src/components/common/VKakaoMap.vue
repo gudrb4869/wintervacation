@@ -279,14 +279,24 @@ const deleteMarkers = () => {
 </script>
 
 <template>
-  <div id="map"></div>
+  <div class='map_wrap'>
+
+    <div id="map">
+    </div>
+    <div class="search-box rounded-3 border border-dark">
+      <span>관광지 검색</span>
+    </div>
+  </div>
 </template>
 
 <style>
 /* style scoped로 설정하면 안됨 */
+.map_wrap {position:relative;overflow:hidden;width:100%;height:700px;}
 #map {
   width: 100%;
-  height: 700px;
+  height: 100%;
+  position:relative;
+  overflow:hidden;
 }
 
 .wrap {
@@ -413,4 +423,6 @@ const deleteMarkers = () => {
 .info .link {
   color: #5085bb;
 }
+
+.search-box {position:absolute;top:10px;left:10px;overflow:hidden;width:600px;height:150px;margin:0;padding:0;z-index:1;background-color: #fff700;}
 </style>

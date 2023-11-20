@@ -74,7 +74,9 @@ public class PlanController {
 			@PathVariable("plan_no") @ApiParam(value = "얻어올 plan의 plan번호", required = true) int plan_no) 
 					throws Exception {
 		log.info("viewPlan - 호출: " + plan_no);
-		return new ResponseEntity<PlanDto>(planService.getPlan(plan_no), HttpStatus.OK);
+		PlanDto planDto = planService.getPlan(plan_no);
+		log.info("getPlan planDto - {}", planDto);
+		return new ResponseEntity<PlanDto>(planDto, HttpStatus.OK);
 	}
 	
 	private ResponseEntity<String> exceptionHandling(Exception e) {

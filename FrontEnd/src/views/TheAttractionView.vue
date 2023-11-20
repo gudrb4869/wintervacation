@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
 import { listSido, listGugun, listAttractions } from "@/api/map";
+import festivals from "@/assets/festival.json";
 
 import VKakaoMap from "@/components/common/VKakaoMap.vue";
 import VSelect from "@/components/common/VSelect.vue";
@@ -11,10 +12,19 @@ import { storeToRefs } from "pinia";
 
 const { VITE_OPEN_API_SERVICE_KEY } = import.meta.env;
 
+let festivalList = []
+// 1 2 3 4 5 6 7 8 9 10 11 12
+
+const festival = ref({})
+
+//
+const getFestivals = (month) => {
+  return festivals.filter((f) => ((f.month - month + 12) % 12) < 4);  
+}
+
 const sidoList = ref([]);
 const gugunList = ref([{ text: "구군선택", value: "" }]);
 const contentTypeList = ref([
-  // { text: "모두", value: "0" },
   { text: "관광지", value: "12" },
   { text: "문화시설", value: "14" },
   { text: "축제공연행사", value: "15" },
@@ -34,12 +44,9 @@ const selectAttraction = ref({});
 //   zscode: 0,
 // });
 
-const currentMonth = ref(0);
 const currentSeason = ref("");
 
 const mapStore = useMapStore();
-
-const { bannerList } = storeToRefs(mapStore);
 
 const param = ref({
   sido_code: 0,
@@ -49,37 +56,8 @@ const param = ref({
 
 onMounted(() => {
   getSidoList();
-  getCurrentMonth();
   randomRecommend();
 });
-
-const getCurrentMonth = () => {
-  const current = new Date();
-  currentMonth.value = current.getMonth() + 1;
-  switch (currentMonth.value) {
-    case 3:
-    case 4:
-    case 5:
-      currentSeason.value = "봄";
-      break;
-    case 6:
-    case 7:
-    case 8:
-      currentSeason.value = "여름";
-      break;
-    case 9:
-    case 10:
-    case 11:
-      currentSeason.value = "가을";
-      break;
-    case 12:
-    case 1:
-    case 2:
-    default:
-      currentSeason.value = "겨울";
-      break;
-  }
-};
 
 const param2 = ref({
   sido_code: 0,
@@ -87,23 +65,43 @@ const param2 = ref({
   // content_type_id: [12, 14, 15, 25, 28, 32, 38, 39]
   content_type_id: [12, 32, 39],
 });
-const food = ref("");
-const location = ref("");
 
 const randomRecommend = () => {
-  console.log(bannerList.value);
-  const banners = bannerList.value[currentSeason.value];
-  console.log("배너목록: " + banners);
-  const length = banners.length;
+  let current = new Date();
+
+  let monthDate = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365];
+  for (let i = 1; i <= 12; i++) {
+    monthDate[i] += monthDate[i - 1];
+  }
+  // 2월 4일 (입춘) => 34
+  // 5월 5일 (입하) => 124
+  // 8월 7일 (입추) => 218
+  // 11월 7일 (입동) => 310
+  let currentDate = monthDate[current.getMonth()] + (current.getDate() - 1);
+  if (currentDate >= 34 && currentDate < 124) {
+    festivalList = getFestivals(2);
+  } else if (currentDate >= 124 && currentDate < 218) {
+    festivalList = getFestivals(5);
+  } else if (currentDate >= 218 && currentDate < 310) {
+    festivalList = getFestivals(8);
+  } else {
+    festivalList = getFestivals(11);
+  }
+  console.log(festivalList);
+  let length = festivalList.length;
   console.log("길이: " + length);
-  const idx = parseInt(Math.random() * length);
+  let idx = parseInt(Math.random() * length);
   console.log("인덱스: " + idx);
-  const banner = banners[idx];
-  console.log(banner);
-  food.value = banner[0];
-  location.value = banner[1];
-  param2.value.sido_code = banner[2];
-  param2.value.gugun_code = banner[3];
+  let f = festivalList[idx];
+  param2.value.sido_code = f.sido_code;
+  param2.value.gugun_code = f.gugun_code;
+  festival.value = f;
+  // const banner = banners[idx];
+  // console.log(banner);
+  // food.value = banner[0];
+  // location.value = banner[1];
+  // param2.value.sido_code = banner[2];
+  // param2.value.gugun_code = banner[3];
 };
 
 const getRecommendAttractions = () => {
@@ -191,7 +189,8 @@ const viewAttraction = (attraction) => {
 <template>
   <div class="text-center mt-3">
     <div class="alert alert-warning" role="alert" @click="getRecommendAttractions">
-      {{ currentSeason }} 제철음식인 {{ food }} 먹으러 {{ location }}(으)로 여행을 떠나보는건
+      <img :src='festival.image' style='width: 100px'>
+      {{festival.title}}이 있는 {{festival.sido}} {{festival.gugun}}(으)로 여행을 떠나보는건
       어때요? 해당 지역으로 이동하려면 여기를 클릭하세요.
     </div>
     <div class="d-flex justify-content-center mb-3">
@@ -207,7 +206,7 @@ const viewAttraction = (attraction) => {
       <VSwitch :switchOption="contentTypeList" @onChangeSwitch="onChangeContentType"></VSwitch>
     </div>
     <VKakaoMap :attractions="attractions" :selectAttraction="selectAttraction" />
-    <table class="table table-hover table-striped mt-3">
+    <!-- <table class="table table-hover table-striped mt-3">
       <thead>
         <tr class="text-center">
           <th scope="col">관광지명</th>
@@ -233,7 +232,7 @@ const viewAttraction = (attraction) => {
           <td>{{ attraction.addr }}</td>
         </tr>
       </tbody>
-    </table>
+    </table> -->
   </div>
 </template>
 
