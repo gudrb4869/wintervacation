@@ -1,6 +1,5 @@
 package com.ssafy.map.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -40,14 +39,14 @@ public class MapController {
 			Map<String, String> params) {
 		
 		try {
-			log.info("/map/search, map={}", params);
+			log.info("/map/search, map - {}", params);
 			
 //			List<AttractionDto> list = mapService.getAttractions(params);
-			String str = params.get("content_type_id");
-			log.info("content_type_id = {}", str);
-			List<AttractionDto> list = str != null && str.length() > 0 ? mapService.attractionList(params) : new ArrayList<>();
+			String content_type_id = params.get("content_type_id");
+			log.info("content_type_id - {}", content_type_id);
+			List<AttractionDto> list = mapService.attractionList(params);
 			
-			log.info("map list : {}", list);
+			log.info("map list - {}", list);
 			
 //			HttpHeaders header = new HttpHeaders();
 //			header.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));

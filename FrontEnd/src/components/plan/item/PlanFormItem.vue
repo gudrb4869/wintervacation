@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch, onMounted } from "vue";
+import { ref, watch, onMounted, computed } from "vue";
 import { listAttractions } from "@/api/map";
 import { registerPlan } from "@/api/plan";
 
@@ -8,6 +8,7 @@ import VKakaoMap from "@/components/common/VKakaoMap.vue";
 import { useRoute, useRouter } from "vue-router";
 import { useMemberStore } from "@/stores/member";
 import draggable from "vuedraggable";
+const drag = ref(false);
 
 const memberStore = useMemberStore();
 const userInfo = ref(memberStore.userInfo);
@@ -24,6 +25,13 @@ const selectAttraction = ref({});
 
 const days = ref(0);
 
+const param = ref({
+  sido_code: 0,
+  gugun_code: 0,
+  content_type_id: [12, 14, 15, 25, 28, 32, 38, 39],
+  title: "",
+});
+
 const plan = ref({
   plan_no: 0,
   user_id: userInfo.value.user_id,
@@ -37,8 +45,6 @@ const plan = ref({
 const courses = ref([]);
 
 const isDisabled = ref(true);
-
-onMounted(() => {});
 
 watch(
   () => plan.value.start_date,
@@ -74,9 +80,16 @@ watch(
 );
 
 const getAttractions = () => {
+  if (titleErrMsg.value) {
+    alert(titleErrMsg.value);
+    return;
+  }
+  //
   console.log("관광지 정보 api 호출!");
+  console.log(param.value);
+
   listAttractions(
-    { sido_code: 5, gugun_code: 1, content_type_id: 39 },
+    param.value,
     ({ data }) => {
       attractions.value = data;
       console.log(attractions.value);
@@ -122,35 +135,19 @@ const getDateDiff = (start_date, end_date) => {
   return diff;
 };
 
-// const subjectErrMsg = ref("");
-// const contentErrMsg = ref("");
-// watch(
-//   () => article.value.subject,
-//   (value) => {
-//     let len = value.length;
-//     if (len == 0 || len > 30) {
-//       subjectErrMsg.value = "제목을 확인해 주세요!!!";
-//     } else subjectErrMsg.value = "";
-//   },
-//   { immediate: true }
-// );
-// watch(
-//   () => article.value.content,
-//   (value) => {
-//     let len = value.length;
-//     if (len == 0 || len > 500) {
-//       contentErrMsg.value = "내용을 확인해 주세요!!!";
-//     } else contentErrMsg.value = "";
-//   },
-//   { immediate: true }
-// );
+const titleErrMsg = ref("");
+watch(
+  () => param.value.title,
+  (value) => {
+    let len = value.trim().length;
+    if (len == 0) {
+      titleErrMsg.value = "여행지 검색어를 확인해 주세요!!!";
+    } else titleErrMsg.value = "";
+  },
+  { immediate: true }
+);
 
 const onSubmit = () => {
-  //   if (subjectErrMsg.value) {
-  //     alert(subjectErrMsg.value);
-  //   } else if (contentErrMsg.value) {
-  //     alert(contentErrMsg.value);
-  //   } else {
   courses.value.forEach((course, i) => {
     course.forEach((c, j) => {
       console.log("i=", i, "j=", j);
@@ -162,9 +159,7 @@ const onSubmit = () => {
       plan.value.courses.push(obj);
     });
   });
-  // plan.value.courses = courses.value;
   props.type === "regist" ? writePlan() : updatePlan();
-  //   }
 };
 
 const writePlan = () => {
@@ -181,16 +176,6 @@ const writePlan = () => {
       console.log("plan 등록 실패!");
     }
   );
-  //   registArticle(
-  //     article.value,
-  //     (response) => {
-  //       console.log(response);
-  //       moveList();
-  //     },
-  //     (error) => {
-  //       console.log(error);
-  //     }
-  //   );
 };
 
 const updatePlan = () => {
@@ -210,13 +195,27 @@ const updatePlan = () => {
 const moveList = () => {
   router.push({ name: "plan-list" });
 };
+
+const removeAt = (i, j) => {
+  console.log(i, j);
+  courses.value[i].splice(j, 1);
+};
+
+const dragOptions = computed(() => {
+  return { animation: 200, group: "course", disabled: false, ghostClass: "ghost" };
+});
 </script>
 
 <template>
   <form @submit.prevent="onSubmit">
     <div class="mb-3">
-      <div class="row">
-        <div class="col-3">
+      <div class="row" style="height: 700px">
+        <div class="col-2 mh-100">
+          <div class="mb-3">
+            <h4 class="my-0 py-0 shadow-sm bg-light text-start">
+              <mark class="sky">여행 Plan 등록하기</mark>
+            </h4>
+          </div>
           <div class="mb-3">
             <label for="title" class="form-label">제목 : </label>
             <input
@@ -239,47 +238,71 @@ const moveList = () => {
               id="end_date"
               v-model="plan.end_date"
               :disabled="isDisabled"
-              @change="getAttractions"
             />
           </div>
-          <div class="mb-3 overflow-auto">
-            <template v-for="day in days" :key="day">
-              <div class="border p-3">
-                <h3>{{ day }}일차</h3>
-                <draggable
-                  class="dragArea list-group"
-                  :list="courses[day - 1]"
-                  group="course"
-                  item-key="content_id"
-                >
-                  <template #item="{ element, index }">
-                    <div class="list-group-item">
-                      {{ element.title }} {{ element.addr }} {{ index }}
-                    </div>
-                  </template>
-                </draggable>
-              </div>
-            </template>
+          <div class="mb-3" style="height: 450px">
+            <div class="overflow-auto mh-100">
+              <template v-for="day in days" :key="day">
+                <div class="border p-3">
+                  <h3>{{ day }}일차</h3>
+                  <draggable
+                    tag="ul"
+                    :list="courses[day - 1]"
+                    class="list-group"
+                    group="course"
+                    v-bind="dragOptions"
+                    item-key="content_id"
+                  >
+                    <template #item="{ element, index }">
+                      <li class="list-group-item">
+                        <h6>{{ element.title }}</h6>
+                        <span>{{ element.addr }}</span>
+                        <button type="button" class="btn ms-2" @click="removeAt(day - 1, index)">
+                          X
+                        </button>
+                      </li>
+                    </template>
+                  </draggable>
+                </div>
+              </template>
+            </div>
           </div>
         </div>
-        <div class="col-6 p-0">
+        <div class="col-8 p-0 mh-100">
           <v-kakao-map
             :attractions="attractions"
             :selectAttraction="selectAttraction"
           ></v-kakao-map>
         </div>
-        <div class="col-3 overflow-auto">
-          <h1>여행지 검색 목록</h1>
-          <draggable
-            class="dragArea list-group"
-            :list="attractions"
-            :group="{ name: 'course', pull: 'clone', put: false }"
-            item-key="content_id"
-          >
-            <template #item="{ element, index }">
-              <div class="list-group-item">{{ element.title }} {{ element.addr }} {{ index }}</div>
-            </template>
-          </draggable>
+        <div class="col-2 mh-100">
+          <div class="m-3">
+            <form class="d-flex" @submit.prevent="getAttractions">
+              <div class="input-group input-group-sm ms-1">
+                <input
+                  type="text"
+                  class="form-control"
+                  v-model="param.title"
+                  placeholder="여행지 검색..."
+                />
+                <button class="btn" type="button" @click="getAttractions">검색</button>
+              </div>
+            </form>
+          </div>
+          <div class="mh-100 overflow-auto">
+            <draggable
+              class="list-group"
+              :list="attractions"
+              :group="{ name: 'course', pull: 'clone', put: false }"
+              item-key="content_id"
+            >
+              <template #item="{ element }">
+                <div class="list-group-item">
+                  <h6>{{ element.title }}</h6>
+                  <span>{{ element.addr }}</span>
+                </div>
+              </template>
+            </draggable>
+          </div>
         </div>
       </div>
     </div>

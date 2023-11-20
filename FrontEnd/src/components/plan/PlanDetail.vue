@@ -1,7 +1,123 @@
-<script setup></script>
+<script setup>
+import { ref, onMounted } from "vue";
+import { detailPlan } from "@/api/plan";
+
+import VKakaoMap from "@/components/common/VKakaoMap.vue";
+
+import { useRoute, useRouter } from "vue-router";
+import { useMemberStore } from "@/stores/member";
+
+const memberStore = useMemberStore();
+const userInfo = ref(memberStore.userInfo);
+
+const router = useRouter();
+const route = useRoute();
+
+const { plan_no } = route.params;
+
+const attractions = ref([]);
+const selectAttraction = ref({});
+
+const days = ref(0);
+
+const plan = ref({
+  plan_no: 0,
+  user_id: userInfo.value.user_id,
+  title: "",
+  start_date: "",
+  end_date: "",
+  user_id: userInfo.value.user_id,
+  courses: [],
+});
+
+onMounted(() => {
+  getPlan();
+});
+
+const getPlan = () => {
+  console.log(plan_no + "번 plan 조회!!!");
+  detailPlan(
+    plan_no,
+    ({ data }) => {
+      plan.value = data;
+    },
+    (error) => {
+      console.log(error);
+    }
+  );
+};
+
+const moveList = () => {
+  router.push({ name: "plan-list" });
+};
+</script>
 
 <template>
-  <div>Plan 상세조회 화면입니당</div>
+  <form @submit.prevent="onSubmit">
+    <div class="mb-3">
+      <div class="row" style="height: 700px">
+        <div class="col-4 mh-100">
+          <div class="mb-3">
+            <label for="title" class="form-label">제목 : </label>
+            <input
+              type="text"
+              class="form-control"
+              id="title"
+              v-model="plan.title"
+              placeholder="제목..."
+              readonly="readOnly"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="start_date" class="form-label">여행 시작일 : </label>
+            <input
+              type="date"
+              class="form-control"
+              id="start_date"
+              v-model="plan.start_date"
+              readonly="readOnly"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="end_date" class="form-label">여행 종료일 : </label>
+            <input
+              type="date"
+              class="form-control"
+              id="end_date"
+              v-model="plan.end_date"
+              readonly="readonly"
+            />
+          </div>
+          <div class="mb-3" style="height: 450px">
+            <div class="overflow-auto mh-100">
+              <template v-for="day in plan.courses.length" :key="day">
+                <div class="border p-3">
+                  <h3>{{ day }}일차</h3>
+                  <ul v-for="course in courses" class="list-group">
+                    <li class="list-group-item" v-for="element in course">
+                      <h6>{{ element.title }}</h6>
+                      <span>{{ element.addr }}</span>
+                    </li>
+                  </ul>
+                </div>
+              </template>
+            </div>
+          </div>
+        </div>
+        <div class="col-8 p-0 mh-100">
+          <v-kakao-map
+            :attractions="attractions"
+            :selectAttraction="selectAttraction"
+          ></v-kakao-map>
+        </div>
+      </div>
+    </div>
+    <div class="col-auto text-center">
+      <button type="button" class="btn mb-3">수정</button>
+      <button type="button" class="btn mb-3 ms-1">삭제</button>
+      <button type="button" class="btn mb-3 ms-1" @click="moveList">목록으로이동</button>
+    </div>
+  </form>
 </template>
 
 <style scoped></style>

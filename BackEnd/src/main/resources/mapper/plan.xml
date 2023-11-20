@@ -40,7 +40,7 @@
 	<select id="getPlan" parameterType="int" resultMap="viewPlan">
 		select plan_no, title, date_format(start_date, '%Y-%m-%d') start_date, date_format(end_date, '%Y-%m-%d') end_date, user_id
 		from plan
-		where user_id = #{user_id}
+		where plan_no = #{plan_no}
 	</select>
 	
 	<select id="courseList" resultMap="course">
@@ -54,6 +54,7 @@
 		from plan
 		where user_id = #{user_id}
 		order by start_date desc, end_date desc
+		limit #{start}, #{listsize}
 	</select>
 	
 	<select id="getTotalPlanCount" parameterType="map" resultType="int">
