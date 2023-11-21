@@ -42,7 +42,7 @@
 	</select>
 	
 	<select id="viewArticle" parameterType="int" resultType="BoardDto">
-		select article_no, user_id, subject, content, hit, register_time
+		select article_no, user_id, subject, content, hit, date_format(register_time, '%Y-%m-%d %H:%i') register_time
 		from board
 		where article_no = #{article_No}
 	</select>

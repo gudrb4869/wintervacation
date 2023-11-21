@@ -62,4 +62,14 @@ public class FileUtil {
         
         return fileInfos;
     }
+    
+	public void deleteImg(List<FileDto> imgInfos) {
+		for(FileDto imgInfo : imgInfos) {
+			File file = new File(uploadImagePath + File.separator + imgInfo.getSaveFolder() + File.separator + imgInfo.getSaveFile());
+			if(file.exists()) {
+				file.delete();
+			}
+		}
+		
+	}
 }

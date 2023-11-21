@@ -217,6 +217,12 @@ public class BoardController extends HttpServlet {
 	@DeleteMapping("/{article_no}")
 	public ResponseEntity<String> delete(@PathVariable("article_no") @ApiParam(value = "삭제할 글의 글번호.", required = true) int article_no) throws Exception {
 		logger.info("delete(board) - 호출");
+		logger.info("article_no : {}", article_no);
+		
+		BoardDto boardDto = boardService.viewArticle(article_no);
+		boardDto.setFileInfos(fileService.fileInfoList(article_no));
+		fileUtil.deleteImg(boardDto.getFileInfos());
+		System.out.println(boardDto);
 		boardService.deleteArticle(article_no);
 
 		return ResponseEntity.ok().build();

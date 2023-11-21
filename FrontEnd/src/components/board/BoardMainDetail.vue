@@ -1,7 +1,8 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import { detailArticle } from "@/api/board";
+import { detailArticle, deleteArticle } from "@/api/board";
+import BoardMainDetailItem from './item/BoardMainDetailItem.vue';
 
 
 const router = useRouter();
@@ -9,10 +10,6 @@ const route = useRoute();
 
 const { article_no } = route.params;
 const board = ref({})
-
-const goDetail = () => {
-    router.push({ name: "board-main-detail"})
-}
 
 onMounted(() => {
     loadDetail();
@@ -24,6 +21,24 @@ const loadDetail = () => {
         ({ data }) => {
             console.log("boardMainDetail {}",data);
             board.value = data; 
+        },
+        (error) => {
+            console.log(error);
+        }
+    )
+}
+
+const moveList = () => {
+  router.push({ name: "board-main" });
+};
+
+const onDeleteArticle = () => {
+    deleteArticle(
+        article_no,
+        (response) => {
+            console.log("게시글 삭제!")
+            alert("게시글이 삭제 되었습니다!");
+            moveList();
         },
         (error) => {
             console.log(error);
@@ -52,27 +67,11 @@ const loadDetail = () => {
         <section class="py-5 text-center container">
             <div id="carouselExampleInterval" class="carousel slide" data-bs-ride="carousel" bis_skin_checked="1">
                 <div class="carousel-inner" bis_skin_checked="1">
-                    <div class="carousel-item active" data-bs-interval="3000" bis_skin_checked="1">
-                    <svg class="bd-placeholder-img bd-placeholder-img-lg d-block w-100" width="400" height="400" xmlns="http://www.w3.org/2000/svg" role="img" focusable="false">
-                        <title>Placeholder</title>
-                        <rect width="100%" height="100%" fill="#777"></rect>
-                        <text x="50%" y="50%" fill="#555" dy=".3em">First slide</text>
-                    </svg>
-                    </div>
-                    <div class="carousel-item" data-bs-interval="3000" bis_skin_checked="1">
-                    <svg class="bd-placeholder-img bd-placeholder-img-lg d-block w-100" width="400" height="400" xmlns="http://www.w3.org/2000/svg" role="img" focusable="false">
-                        <title>Placeholder</title>
-                        <rect width="100%" height="100%" fill="#666"></rect>
-                        <text x="50%" y="50%" fill="#444" dy=".3em">Second slide</text>
-                    </svg>
-                    </div>
-                    <div class="carousel-item" bis_skin_checked="1" data-bs-interval="3000" >
-                    <svg class="bd-placeholder-img bd-placeholder-img-lg d-block w-100" width="400" height="400" xmlns="http://www.w3.org/2000/svg" role="img" focusable="false">
-                        <title>Placeholder</title>
-                        <rect width="100%" height="100%" fill="#555"></rect>
-                        <text x="50%" y="50%" fill="#333" dy=".3em">Third slide</text>
-                    </svg>
-                    </div>
+                    <BoardMainDetailItem v-for="fileInfos in board.fileInfos" :fileInfos="fileInfos" :key="fileInfos.idx">
+                        
+                    
+
+                    </BoardMainDetailItem>
                 </div>
                 <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="prev">
                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -88,6 +87,12 @@ const loadDetail = () => {
         <div style='margin-bottom: 40px;'>
             {{ board.content }}
         </div>
+        <div style="display: flex; justify-content: flex-end;">
+            <button type="button" class="btn mb-3" @click="moveList">목록</button>
+            <button type="button" class="btn mb-3 ms-1" @click="onDeleteArticle">삭제</button>
+        </div>
+
+
         <h3>댓글</h3>
         <hr>
         <!-- Comments section-->

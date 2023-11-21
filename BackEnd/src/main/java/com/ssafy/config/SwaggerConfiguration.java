@@ -93,6 +93,17 @@ public class SwaggerConfiguration {
                 .apiInfo(apiInfo())
                 .useDefaultResponseMessages(false);
     }
+    
+    @Bean
+    public Docket MemoApi() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .groupName("Memo API")
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.ssafy.board.controller"))
+                .paths(regex("/board-memo.*")).build()
+                .apiInfo(apiInfo())
+                .useDefaultResponseMessages(false);
+    }
 	
 	private Set<String> getConsumeContentTypes() {
         Set<String> consumes = new HashSet<>();
