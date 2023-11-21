@@ -173,6 +173,7 @@ const convert = computed(() => {
       result.push(obj);
     });
   });
+  console.log(result);
   return result;
 });
 

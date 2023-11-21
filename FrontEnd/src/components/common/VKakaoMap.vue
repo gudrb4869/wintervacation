@@ -1,5 +1,10 @@
 <script setup>
 import { ref, watch, onMounted } from "vue";
+import { useMemberStore } from "@/stores/member";
+
+const memberStore = useMemberStore();
+const userInfo = ref(memberStore.userInfo);
+const user_id = ref(userInfo.value.user_id);
 
 var map;
 var polyline;
@@ -9,7 +14,7 @@ const lines = ref([]);
 const markers = ref([]);
 const courseMarkers = ref([]);
 const overlays = ref([]);
-const courseOverlays = ref([]);
+// const courseOverlays = ref([]);
 
 const props = defineProps({
   search: Boolean,
@@ -327,6 +332,8 @@ const loadLines = () => {
   console.log("여행경로생성!!!");
   console.log(lines.value);
 
+  if (lines.value.length === 0) return;
+
   polyline = new kakao.maps.Polyline({
     path: lines.value, // 선을 구성하는 좌표배열 입니다
     strokeWeight: 4, // 선의 두께 입니다
@@ -348,9 +355,10 @@ const loadLines = () => {
 };
 
 const deleteLines = () => {
-  console.log("여행경로삭제!!!");
+  console.log("여행경로삭제이동!!!");
   if (polyline) {
     polyline.setMap(null);
+    console.log("여행경로삭제완료!!!");
   }
 };
 </script>
