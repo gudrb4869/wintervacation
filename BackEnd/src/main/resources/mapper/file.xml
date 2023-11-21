@@ -19,6 +19,9 @@
 	</resultMap>
 
 	<resultMap type="fileDto" id="file">
+		<result column="index" property="index"/>
+		<result column="article_no" property="article_no"/>
+		<result column="user_id" property="user_id"/>
 		<result column="save_folder" property="saveFolder"/>
 		<result column="original_file" property="originalFile"/>
 		<result column="save_file" property="saveFile"/>
@@ -33,8 +36,9 @@
 		</foreach>
 	</insert>
 	
+	
 	<select id="fileInfoList" resultMap="file">
-		select index, article_no, user_id, save_folder, original_file, save_file
+		select idx, article_no, user_id, save_folder, original_file, save_file
 		from file_info
 		where article_no = #{articleNo}
 	</select>

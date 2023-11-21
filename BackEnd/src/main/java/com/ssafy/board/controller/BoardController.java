@@ -1,24 +1,27 @@
 package com.ssafy.board.controller;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URLEncoder;
 import java.nio.charset.Charset;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import javax.servlet.http.HttpServlet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,19 +29,18 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.util.UriUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.board.model.BoardDto;
-import com.ssafy.board.model.BoardListDto;
 import com.ssafy.board.model.service.BoardService;
 import com.ssafy.file.FileUtil;
 import com.ssafy.file.model.FileDto;
+import com.ssafy.file.service.FileService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -66,11 +68,14 @@ public class BoardController extends HttpServlet {
 
 	BoardService boardService;
 	FileUtil fileUtil;
+	FileService fileService;
+	
 
-	public BoardController(BoardService boardService, FileUtil fileUtil) {
+	public BoardController(BoardService boardService, FileUtil fileUtil, FileService fileService) {
 		super();
 		this.boardService = boardService;
 		this.fileUtil = fileUtil;
+		this.fileService = fileService;
 	}
 
 //	@ApiOperation(value = "여행후기 게시판 글작성", notes = "새로운 여행후기 게시글 정보를 입력한다.")
@@ -133,7 +138,12 @@ public class BoardController extends HttpServlet {
 		logger.info("listArticle map - {}", map);
 		
 		try {
-			BoardListDto boardListDto = boardService.boardList(map);
+			List<BoardDto> boardListDto = boardService.boardList(map);
+			
+			for(BoardDto dto : boardListDto) {
+				dto.setFileInfos(fileService.fileInfoList(dto.getArticle_no()));
+			}
+			
 			HttpHeaders header = new HttpHeaders();
 			header.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
 			return ResponseEntity.ok().headers(header).body(boardListDto);			
@@ -148,9 +158,13 @@ public class BoardController extends HttpServlet {
 			throws Exception {
 		System.out.println("view 들어옴 + articleNo " + article_no);
 		boardService.updateHit(article_no);
+		
+		BoardDto boardDto = boardService.viewArticle(article_no);
+		boardDto.setFileInfos(fileService.fileInfoList(article_no));
 
-		return new ResponseEntity<BoardDto>(boardService.viewArticle(article_no), HttpStatus.OK);
+		return new ResponseEntity<BoardDto>(boardDto, HttpStatus.OK);
 	}
+	
 
 //	@GetMapping("/serch")
 //	public ModelAndView search(@RequestParam Map<String, String> map) throws SQLException {
@@ -207,6 +221,31 @@ public class BoardController extends HttpServlet {
 
 		return ResponseEntity.ok().build();
 	}
+	
+    @GetMapping("/getImg/{saveFolder}/{originalName}/{saveName}")
+    public ResponseEntity<?> getImg(@PathVariable("saveFolder") String saveFolder, 
+                                            @PathVariable("originalName") String originalName, 
+                                            @PathVariable("saveName") String saveName)  {
+
+        String file = uploadImagePath + File.separator +saveFolder + File.separator + saveName;
+        
+        try {
+            Path filePath = Paths.get(file);
+            
+            Resource resource = new FileSystemResource(file);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Content-type", Files.probeContentType(filePath));
+            
+            System.out.println("resource : " + resource);
+            
+            return new ResponseEntity<Object>(resource, headers, HttpStatus.OK);
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new ResponseEntity<String>("Error : " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        
+    } 
 	
 	private ResponseEntity<String> exceptionHandling(Exception e) {
 		e.printStackTrace();

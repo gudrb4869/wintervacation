@@ -2,7 +2,7 @@ package com.ssafy.file.model;
 
 public class FileDto {
 	
-	private int index;
+	private int idx;
 	private int article_no;
 	private String user_id;
 	private String saveFolder;
@@ -27,12 +27,7 @@ public class FileDto {
 	public void setSaveFile(String saveFile) {
 		this.saveFile = saveFile;
 	}
-	public int getIndex() {
-		return index;
-	}
-	public void setIndex(int index) {
-		this.index = index;
-	}
+
 	public int getArticle_no() {
 		return article_no;
 	}
@@ -45,11 +40,18 @@ public class FileDto {
 	public void setUser_id(String user_id) {
 		this.user_id = user_id;
 	}
+	public int getIdx() {
+		return idx;
+	}
+	public void setIdx(int idx) {
+		this.idx = idx;
+	}
 	@Override
 	public String toString() {
-		return "FileDto [index=" + index + ", article_no=" + article_no + ", user_id=" + user_id + ", saveFolder="
+		return "FileDto [idx=" + idx + ", article_no=" + article_no + ", user_id=" + user_id + ", saveFolder="
 				+ saveFolder + ", originalFile=" + originalFile + ", saveFile=" + saveFile + "]";
 	}
+
 
 	
 }

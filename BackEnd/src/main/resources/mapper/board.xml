@@ -14,7 +14,7 @@
 	</insert>
 	
 	<select id="boardList" parameterType="map" resultType="BoardDto">
-		select article_no, user_id, subject, content, hit, register_time
+		select article_no, user_id, subject, content, hit, date_format(register_time, '%Y-%m-%d') register_time
 		from board
 		<where>
 			<include refid="search"></include>

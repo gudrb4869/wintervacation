@@ -12,7 +12,8 @@ import com.ssafy.board.model.BoardListDto;
 public interface BoardService {
 	
 	void writeArticle(BoardDto boardDto) throws Exception;
-	BoardListDto boardList(Map<String, String> map) throws Exception;
+//	BoardListDto boardList(Map<String, String> map) throws Exception;
+	List<BoardDto> boardList(Map<String, String> map) throws Exception;
 	BoardDto viewArticle(int articleNo) throws Exception;
 	void updateHit(int articleNo) throws Exception;
 

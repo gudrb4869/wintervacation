@@ -9,6 +9,11 @@ function listArticle(param, success, fail) {
     local.get(`${url}/list`, { params: param }).then(success).catch(fail);
 }
 
+function getImg( saveFolder, originalName, saveFile, success, fail) {
+    local.get(`${url}/getImg/${saveFolder}/${originalName}/${saveFile}`)
+        .then(success).catch(fail);
+}
+
 function detailArticle(articleno, success, fail) {
     local.get(`${url}/view/${articleno}`).then(success).catch(fail);
 }
@@ -40,6 +45,7 @@ function deleteArticle(articleno, success, fail) {
 
 export {
     listArticle,
+    getImg,
     detailArticle,
     registArticle,
     getModifyArticle,

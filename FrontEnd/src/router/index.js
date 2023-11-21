@@ -105,6 +105,11 @@ const router = createRouter({
           component: () => import("@/components/board/BoardMainRegist.vue"),
         },
         {
+          path: "detail/:article_no",
+          name: "board-main-detail",
+          component: () => import("@/components/board/boardMainDetail.vue"),
+        },
+        {
           path: "list",
           name: "board-list",
           component: () => import("@/components/board/BoardList.vue"),

@@ -3,17 +3,39 @@ import { ref, onMounted } from 'vue';
 import BoardMainItem from "./item/BoardMainItem.vue";
 import { useMemberStore } from "@/stores/member";
 import { useRouter } from "vue-router";
+import { listArticle } from "@/api/board";
 
 const router = useRouter();
 const memberStore = useMemberStore();
 const profile = ref(null);
 
-onMounted( () => {
-    profile.value = memberStore.userInfo;
-});
 
 const goToRegist = () => {
-    router.push({ name : "board-main-regist" })
+  router.push({ name : "board-main-regist" })
+}
+
+const boardList = ref([]);
+const param = ref({
+  key: "",
+  work: "",
+})
+
+onMounted( () => {
+  profile.value = memberStore.userInfo;
+  getBoardList();
+});
+
+const getBoardList = () => {
+  listArticle(
+    param.value,
+    ({ data }) => {
+      console.log(data);
+      boardList.value = data;
+    }, (error) => {
+      console.log(error);
+    }
+
+  )
 }
 
 </script>
@@ -57,16 +79,7 @@ const goToRegist = () => {
       <hr>
 
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3" bis_skin_checked="1">
-        <BoardMainItem>
-
-        </BoardMainItem>
-        <BoardMainItem>
-
-        </BoardMainItem>
-        <BoardMainItem>
-
-        </BoardMainItem>
-        <BoardMainItem>
+        <BoardMainItem v-for="board in boardList" :board="board" :key="board.article_no">
 
         </BoardMainItem>
 
