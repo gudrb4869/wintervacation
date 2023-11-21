@@ -1,14 +1,13 @@
 <script setup>
 import { ref, watch, onMounted, computed } from "vue";
 import { listAttractions } from "@/api/map";
-import { registerPlan } from "@/api/plan";
+import { registerPlan, modifyPlan, detailPlan } from "@/api/plan";
 
 import VKakaoMap from "@/components/common/VKakaoMap.vue";
 
 import { useRoute, useRouter } from "vue-router";
 import { useMemberStore } from "@/stores/member";
 import draggable from "vuedraggable";
-const drag = ref(false);
 
 const memberStore = useMemberStore();
 const userInfo = ref(memberStore.userInfo);
@@ -25,6 +24,8 @@ const selectAttraction = ref({});
 
 const days = ref(0);
 
+const courses = ref([]);
+
 const param = ref({
   sido_code: 0,
   gugun_code: 0,
@@ -34,7 +35,6 @@ const param = ref({
 
 const plan = ref({
   plan_no: 0,
-  user_id: userInfo.value.user_id,
   title: "",
   start_date: "",
   end_date: "",
@@ -42,42 +42,32 @@ const plan = ref({
   courses: [],
 });
 
-const courses = ref([]);
+onMounted(() => {});
 
-const isDisabled = ref(true);
-
-watch(
-  () => plan.value.start_date,
-  (newValue, oldValue) => {
-    if (newValue === "") {
-      plan.value.end_date = "";
-      days.value = 0;
-      isDisabled.value = true;
-      return;
+if (props.type === "modify") {
+  let { plan_no } = route.params;
+  detailPlan(
+    plan_no,
+    ({ data }) => {
+      plan.value = data;
+      days.value = getDateDiff(new Date(plan.value.start_date), new Date(plan.value.end_date));
+      let c = Array.from(Array(days.value), () => []);
+      plan.value.courses.forEach((course) => {
+        c[course.date].push(course.attraction);
+      });
+      console.log("zzzzzzzz");
+      console.log(c);
+      courses.value = c;
+      console.log(courses.value);
+    },
+    (error) => {
+      console.log(error);
     }
+  );
+}
 
-    if (isDisabled.value) {
-      isDisabled.value = false;
-      return;
-    }
-
-    if (plan.value.end_date === "") {
-      return;
-    }
-
-    let start_date = new Date(newValue);
-    let end_date = new Date(plan.value.end_date);
-
-    if (start_date > end_date) {
-      alert("여행 시작일은 여행 종료일보다 느릴 수 없습니다.");
-      plan.value.start_date = oldValue;
-      return;
-    }
-    days.value = getDateDiff(start_date, end_date);
-    courses.value = Array.from(Array(days.value), () => []);
-    console.log("days: " + days.value);
-  }
-);
+const selectedStartDate = ref("");
+const selectedEndDate = ref("");
 
 const getAttractions = () => {
   if (titleErrMsg.value) {
@@ -100,33 +90,54 @@ const getAttractions = () => {
   );
 };
 
-watch(
-  () => plan.value.end_date,
-  (newValue, oldValue) => {
-    if (newValue === "") {
-      days.value = 0;
-      return;
-    }
-    let start_date = new Date(plan.value.start_date);
-    let end_date = new Date(newValue);
-    console.log("시작일");
-    console.log(start_date);
-    console.log("종료일");
-    console.log(end_date);
+const onChangeStartDate = () => {
+  console.log("시작일 변경!!!");
 
-    console.log(start_date > end_date);
-    if (start_date > end_date) {
-      alert("여행 종료일은 여행 시작일보다 빠를 수 없습니다.");
-      plan.value.end_date = oldValue;
-    } else {
-      console.log("여행 일정 생성 성공");
-      days.value = getDateDiff(start_date, end_date);
-      courses.value = Array.from(Array(days.value), () => []);
-      console.log("days: " + days.value);
-      console.log(courses.value);
-    }
+  if (plan.value.start_date === "") {
+    days.value = 0;
+    return;
   }
-);
+
+  if (plan.value.end_date === "") {
+    return;
+  }
+
+  let start_date = new Date(plan.value.start_date);
+  let end_date = new Date(plan.value.end_date);
+
+  if (start_date > end_date) {
+    alert("여행 시작일은 여행 종료일보다 느릴 수 없습니다.");
+    plan.value.start_date = selectedStartDate.value;
+    return;
+  }
+  days.value = getDateDiff(start_date, end_date);
+  courses.value = Array.from(Array(days.value), () => []);
+  selectedStartDate.value = plan.value.start_date;
+};
+
+const onChangeEndDate = () => {
+  console.log("종료일 변경!!!");
+  if (plan.value.end_date === "") {
+    days.value = 0;
+    return;
+  }
+
+  if (plan.value.start_date === "") {
+    return;
+  }
+
+  let start_date = new Date(plan.value.start_date);
+  let end_date = new Date(plan.value.end_date);
+
+  if (start_date > end_date) {
+    alert("여행 종료일은 여행 시작일보다 빠를 수 없습니다.");
+    plan.value.end_date = selectedEndDate.value;
+    return;
+  }
+  days.value = getDateDiff(start_date, end_date);
+  courses.value = Array.from(Array(days.value), () => []);
+  selectedEndDate.value = plan.value.end_date;
+};
 
 const getDateDiff = (start_date, end_date) => {
   let diff = end_date.getTime() - start_date.getTime();
@@ -135,6 +146,7 @@ const getDateDiff = (start_date, end_date) => {
   return diff;
 };
 
+// 여행지 검색 조건
 const titleErrMsg = ref("");
 watch(
   () => param.value.title,
@@ -147,7 +159,9 @@ watch(
   { immediate: true }
 );
 
-const onSubmit = () => {
+const convert = computed(() => {
+  console.log("convert!!!!!!!!");
+  let result = [];
   courses.value.forEach((course, i) => {
     course.forEach((c, j) => {
       console.log("i=", i, "j=", j);
@@ -156,9 +170,14 @@ const onSubmit = () => {
       obj.date = i;
       obj.orders = j;
       obj.attraction = c;
-      plan.value.courses.push(obj);
+      result.push(obj);
     });
   });
+  return result;
+});
+
+const onSubmit = () => {
+  plan.value.courses = convert;
   props.type === "regist" ? writePlan() : updatePlan();
 };
 
@@ -168,7 +187,7 @@ const writePlan = () => {
     plan.value,
     (response) => {
       console.log(response);
-      console.log("plan 등록 성공!");
+      alert("plan 등록 성공!");
       moveList();
     },
     (error) => {
@@ -179,17 +198,19 @@ const writePlan = () => {
 };
 
 const updatePlan = () => {
-  console.log(plan.value.article_no + "번 Plan 수정!!!");
-  //   modifyArticle(
-  //     article.value,
-  //     (response) => {
-  //       console.log(response);
-  //       moveList();
-  //     },
-  //     (error) => {
-  //       console.log(error);
-  //     }
-  //   );
+  console.log(plan.value.plan_no + "번 Plan 수정!!!");
+  console.log(plan.value);
+  modifyPlan(
+    plan.value,
+    (response) => {
+      console.log(response);
+      alert("plan 수정 성공!");
+      moveList();
+    },
+    (error) => {
+      console.log(error);
+    }
+  );
 };
 
 const moveList = () => {
@@ -213,11 +234,11 @@ const dragOptions = computed(() => {
         <div class="col-2 mh-100">
           <div class="mb-3">
             <h4 class="my-0 py-0 shadow-sm bg-light text-start">
-              <mark class="sky">여행 Plan 등록하기</mark>
+              <mark class="sky">여행 Plan {{ type === "regist" ? "등록" : "수정" }}하기</mark>
             </h4>
           </div>
           <div class="mb-3">
-            <label for="title" class="form-label">제목 : </label>
+            <label for="title" class="form-label">제목</label>
             <input
               type="text"
               class="form-control"
@@ -227,17 +248,23 @@ const dragOptions = computed(() => {
             />
           </div>
           <div class="mb-3">
-            <label for="start_date" class="form-label">여행 시작일 : </label>
-            <input type="date" class="form-control" id="start_date" v-model="plan.start_date" />
+            <label for="start_date" class="form-label">여행 시작일</label>
+            <input
+              type="date"
+              class="form-control"
+              id="start_date"
+              @change="onChangeStartDate"
+              v-model="plan.start_date"
+            />
           </div>
           <div class="mb-3">
-            <label for="end_date" class="form-label">여행 종료일 : </label>
+            <label for="end_date" class="form-label">여행 종료일</label>
             <input
               type="date"
               class="form-control"
               id="end_date"
+              @change="onChangeEndDate"
               v-model="plan.end_date"
-              :disabled="isDisabled"
             />
           </div>
           <div class="mb-3" style="height: 450px">
@@ -270,6 +297,8 @@ const dragOptions = computed(() => {
         </div>
         <div class="col-8 p-0 mh-100">
           <v-kakao-map
+            :search="true"
+            :courses="convert"
             :attractions="attractions"
             :selectAttraction="selectAttraction"
           ></v-kakao-map>

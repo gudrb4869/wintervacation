@@ -2,15 +2,26 @@
 import { ref, watch, onMounted } from "vue";
 
 var map;
+var polyline;
 const positions = ref([]);
+const coursePositions = ref([]);
+const lines = ref([]);
 const markers = ref([]);
+const courseMarkers = ref([]);
 const overlays = ref([]);
+const courseOverlays = ref([]);
 
-const props = defineProps({ attractions: Array, selectAttraction: Object });
+const props = defineProps({
+  search: Boolean,
+  courses: Array,
+  attractions: Array,
+  selectAttraction: Object,
+});
 
 watch(
   () => props.selectAttraction.value,
   () => {
+    console.log("VKakaoMap 선택여행지 변경!!!");
     // 이동할 위도 경도 위치를 생성합니다
     var moveLatLon = new kakao.maps.LatLng(
       props.selectAttraction.latitude,
@@ -27,25 +38,57 @@ watch(
 watch(
   () => props.attractions.value,
   () => {
+    console.log("VKakaoMap 여행지목록 변경!!!");
     positions.value = [];
-    if (props.attractions.length == 0) {
-      deleteMarkers();
-      return;
+    // deleteMarkers(markers.value);
+    console.log(props.attractions);
+    if (props.attractions.length > 0) {
+      props.attractions.forEach((attraction) => {
+        let obj = {};
+        obj.content_id = attraction.content_id;
+        obj.latlng = new kakao.maps.LatLng(attraction.latitude, attraction.longitude);
+        obj.title = attraction.title;
+        obj.content_type_id = attraction.content_type_id;
+        obj.addr = attraction.addr;
+        obj.image = attraction.image;
+        obj.overview = attraction.overview;
+        positions.value.push(obj);
+      });
     }
-    props.attractions.forEach((attraction) => {
-      let obj = {};
-      obj.content_id = attraction.content_id;
-      obj.latlng = new kakao.maps.LatLng(attraction.latitude, attraction.longitude);
-      obj.title = attraction.title;
-      obj.content_type_id = attraction.content_type_id;
-      obj.addr = attraction.addr;
-      obj.image = attraction.image;
-      obj.overview = attraction.overview;
-      positions.value.push(obj);
-    });
-    loadMarkers();
+    loadMarkers(positions, markers);
   },
   { deep: true } // 객체나 배열 안에 있는 내용들이 바뀔때는 깊은 감시를 해야함.
+);
+
+watch(
+  () => props.courses.value,
+  () => {
+    console.log("VKakaoMap 여행경로 변경!!!");
+    lines.value = [];
+    coursePositions.value = [];
+    deleteLines();
+    // deleteMarkers(courseMarkers.value);
+    console.log(props.courses);
+    if (props.courses.length > 0) {
+      props.courses.forEach((course) => {
+        let obj = {};
+        obj.content_id = course.attraction.content_id;
+        obj.latlng = new kakao.maps.LatLng(course.attraction.latitude, course.attraction.longitude);
+        obj.title = course.attraction.title;
+        obj.content_type_id = course.attraction.content_type_id;
+        obj.addr = course.attraction.addr;
+        obj.image = course.attraction.image;
+        obj.overview = course.attraction.overview;
+        coursePositions.value.push(obj);
+        lines.value.push(
+          new kakao.maps.LatLng(course.attraction.latitude, course.attraction.longitude)
+        );
+      });
+    }
+    loadMarkers(coursePositions, courseMarkers);
+    loadLines();
+  },
+  { deep: true }
 );
 
 onMounted(() => {
@@ -75,12 +118,13 @@ const initMap = () => {
   // loadMarkers();
 };
 
-const loadMarkers = () => {
+const loadMarkers = (positions, markers) => {
   // 현재 표시되어있는 marker들이 있다면 map에 등록된 marker를 제거한다.
-  deleteMarkers();
+  deleteMarkers(markers);
 
   // 마커를 생성합니다
   markers.value = [];
+  if (positions.value.length === 0) return;
   positions.value.forEach((position) => {
     // 마커 이미지를 생성합니다
     // const imgSrc = require("@/assets/map/markerStar.png");
@@ -116,10 +160,10 @@ const loadMarkers = () => {
         color = "red";
         break;
     }
-    const imgSrc = window.location.origin + "/src/assets/img/marker-" + color + ".png";
+    var imgSrc = window.location.origin + "/src/assets/img/marker-" + color + ".png";
     // const imgSrc = "src/assets/img/marker.png";
-    const imgSize = new kakao.maps.Size(27, 30);
-    const markerImage = new kakao.maps.MarkerImage(imgSrc, imgSize);
+    var imgSize = new kakao.maps.Size(27, 30);
+    var markerImage = new kakao.maps.MarkerImage(imgSrc, imgSize);
 
     var marker = new kakao.maps.Marker({
       map: map, // 마커를 표시할 지도
@@ -132,7 +176,7 @@ const loadMarkers = () => {
 
     // 마커 위에 커스텀오버레이를 표시합니다
     // 마커를 중심으로 커스텀 오버레이를 표시하기위해 CSS를 이용해 위치를 설정했습니다
-    const overlay = new kakao.maps.CustomOverlay({
+    var overlay = new kakao.maps.CustomOverlay({
       map: map,
       position: marker.getPosition(),
     });
@@ -271,19 +315,50 @@ const loadMarkers = () => {
   map.setBounds(bounds);
 };
 
-const deleteMarkers = () => {
-  if (markers.value.length > 0) {
-    markers.value.forEach((marker) => marker.setMap(null));
+const deleteMarkers = (markers) => {
+  console.log("marker 삭제");
+  console.log(markers.value.length);
+  if (markers.value.length === 0) return;
+  markers.value.forEach((marker) => marker.setMap(null));
+  console.log("marker제거완료");
+};
+
+const loadLines = () => {
+  console.log("여행경로생성!!!");
+  console.log(lines.value);
+
+  polyline = new kakao.maps.Polyline({
+    path: lines.value, // 선을 구성하는 좌표배열 입니다
+    strokeWeight: 4, // 선의 두께 입니다
+    strokeColor: "#0d6efd", // 선의 색깔입니다
+    strokeOpacity: 1, // 선의 불투명도 입니다 1에서 0 사이의 값이며 0에 가까울수록 투명합니다
+    strokeStyle: "solid", // 선의 스타일입니다
+  });
+  // // 지도에 선을 표시합니다
+  polyline.setMap(map);
+
+  console.log("sdfsdfds");
+
+  const bounds = lines.value.reduce(
+    (bounds, line) => bounds.extend(line),
+    new kakao.maps.LatLngBounds()
+  );
+
+  map.setBounds(bounds);
+};
+
+const deleteLines = () => {
+  console.log("여행경로삭제!!!");
+  if (polyline) {
+    polyline.setMap(null);
   }
 };
 </script>
 
 <template>
-  <div class='map_wrap'>
-
-    <div id="map">
-    </div>
-    <div class="search-box rounded-3 border border-dark">
+  <div class="map_wrap">
+    <div id="map"></div>
+    <div v-if="search" class="search-box rounded-3 border border-dark">
       <span>관광지 검색</span>
     </div>
   </div>
@@ -291,12 +366,17 @@ const deleteMarkers = () => {
 
 <style>
 /* style scoped로 설정하면 안됨 */
-.map_wrap {position:relative;overflow:hidden;width:100%;height:700px;}
+.map_wrap {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 700px;
+}
 #map {
   width: 100%;
   height: 100%;
-  position:relative;
-  overflow:hidden;
+  position: relative;
+  overflow: hidden;
 }
 
 .wrap {
@@ -424,5 +504,16 @@ const deleteMarkers = () => {
   color: #5085bb;
 }
 
-.search-box {position:absolute;top:10px;left:10px;overflow:hidden;width:600px;height:150px;margin:0;padding:0;z-index:1;background-color: #fff700;}
+.search-box {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  overflow: hidden;
+  width: 600px;
+  height: 150px;
+  margin: 0;
+  padding: 0;
+  z-index: 1;
+  background-color: #fff700;
+}
 </style>

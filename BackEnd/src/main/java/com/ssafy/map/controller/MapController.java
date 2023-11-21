@@ -40,7 +40,7 @@ public class MapController {
 		try {
 			log.info("/map/search, map - {}", params);
 			
-			return new ResponseEntity<List<AttractionDto>>(mapService.attractionList(params), HttpStatus.OK);
+			return new ResponseEntity<List<AttractionDto>>(mapService.getAttractions(params), HttpStatus.OK);
 		} catch (Exception e) {
 			return exceptionHandling(e);
 		}

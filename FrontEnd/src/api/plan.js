@@ -16,4 +16,16 @@ function registerPlan(plan, success, fail) {
   local.post(`${url}`, JSON.stringify(plan)).then(success).catch(fail);
 }
 
-export { listPlan, detailPlan, registerPlan };
+function getModifyPlan(plan_no, success, fail) {
+  local.get(`${url}/modify/${plan_no}`).then(success).catch(fail);
+}
+
+function modifyPlan(plan, success, fail) {
+  local.put(`${url}`, JSON.stringify(plan)).then(success).catch(fail);
+}
+
+function deletePlan(plan_no, success, fail) {
+  local.delete(`${url}/${plan_no}`).then(success).catch(fail);
+}
+
+export { listPlan, detailPlan, registerPlan, getModifyPlan, modifyPlan, deletePlan };

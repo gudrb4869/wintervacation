@@ -12,15 +12,17 @@ import { storeToRefs } from "pinia";
 
 const { VITE_OPEN_API_SERVICE_KEY } = import.meta.env;
 
-let festivalList = []
+let festivalList = [];
 // 1 2 3 4 5 6 7 8 9 10 11 12
 
-const festival = ref({})
+const festival = ref({});
 
 //
 const getFestivals = (month) => {
-  return festivals.filter((f) => ((f.month - month + 12) % 12) < 4);  
-}
+  return festivals.filter((f) => (f.month - month + 12) % 12 < 4);
+};
+
+const courses = ref([]);
 
 const sidoList = ref([]);
 const gugunList = ref([{ text: "구군선택", value: "" }]);
@@ -139,12 +141,14 @@ const onChangeSido = (val) => {
   listGugun(
     { sido_code: val },
     ({ data }) => {
+      param.value.gugun_code = 0;
       let options = [];
       options.push({ text: "구군선택", value: "" });
       data.forEach((gugun) => {
         options.push({ text: gugun.gugun_name, value: gugun.gugun_code });
       });
       gugunList.value = options;
+      getAttractions();
     },
     (err) => {
       console.log(err);
@@ -189,8 +193,8 @@ const viewAttraction = (attraction) => {
 <template>
   <div class="text-center mt-3">
     <div class="alert alert-warning" role="alert" @click="getRecommendAttractions">
-      <img :src='festival.image' style='width: 100px'>
-      {{festival.title}}이 있는 {{festival.sido}} {{festival.gugun}}(으)로 여행을 떠나보는건
+      <img :src="festival.image" style="width: 100px" />
+      {{ festival.title }}이 있는 {{ festival.sido }} {{ festival.gugun }}(으)로 여행을 떠나보는건
       어때요? 해당 지역으로 이동하려면 여기를 클릭하세요.
     </div>
     <div class="d-flex justify-content-center mb-3">
@@ -205,7 +209,12 @@ const viewAttraction = (attraction) => {
     <div class="d-flex justify-content-evenly mb-3">
       <VSwitch :switchOption="contentTypeList" @onChangeSwitch="onChangeContentType"></VSwitch>
     </div>
-    <VKakaoMap :attractions="attractions" :selectAttraction="selectAttraction" />
+    <VKakaoMap
+      :search="true"
+      :courses="courses"
+      :attractions="attractions"
+      :selectAttraction="selectAttraction"
+    />
     <!-- <table class="table table-hover table-striped mt-3">
       <thead>
         <tr class="text-center">

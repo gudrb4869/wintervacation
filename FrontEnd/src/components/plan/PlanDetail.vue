@@ -1,14 +1,10 @@
 <script setup>
 import { ref, onMounted } from "vue";
-import { detailPlan } from "@/api/plan";
+import { detailPlan, deletePlan } from "@/api/plan";
 
 import VKakaoMap from "@/components/common/VKakaoMap.vue";
 
 import { useRoute, useRouter } from "vue-router";
-import { useMemberStore } from "@/stores/member";
-
-const memberStore = useMemberStore();
-const userInfo = ref(memberStore.userInfo);
 
 const router = useRouter();
 const route = useRoute();
@@ -20,13 +16,13 @@ const selectAttraction = ref({});
 
 const days = ref(0);
 
+const courses = ref([]);
+
 const plan = ref({
   plan_no: 0,
-  user_id: userInfo.value.user_id,
   title: "",
   start_date: "",
   end_date: "",
-  user_id: userInfo.value.user_id,
   courses: [],
 });
 
@@ -49,12 +45,14 @@ const getPlan = () => {
       console.log(data);
       plan.value = data;
       days.value = getDateDiff(new Date(plan.value.start_date), new Date(plan.value.end_date));
-      let courses = Array.from(Array(days.value), () => []);
+      courses.value = Array.from(Array(days.value), () => []);
       plan.value.courses.forEach((course) => {
-        courses[course.date].push(course.attraction);
+        courses.value[course.date].push(course);
       });
-      plan.value.courses = courses;
+      console.log("zzzzzzzz");
       console.log(plan.value);
+      console.log("zzzzzzzz");
+      console.log(courses.value);
     },
     (error) => {
       console.log(error);
@@ -65,13 +63,34 @@ const getPlan = () => {
 const moveList = () => {
   router.push({ name: "plan-list" });
 };
+
+const moveModify = () => {
+  console.log(plan_no + "번 여행 계획글 수정 페이지로 이동!!!");
+  router.push({ name: "plan-modify", params: { plan_no } });
+};
+
+const onDeletePlan = () => {
+  console.log(plan_no + "번 여행 계획글 삭제!!!");
+  // API 호출
+  deletePlan(
+    plan_no,
+    (response) => {
+      console.log(response);
+      alert("삭제 성공!");
+      moveList();
+    },
+    (error) => {
+      console.log(error);
+    }
+  );
+};
 </script>
 
 <template>
   <form @submit.prevent="onSubmit">
     <div class="mb-3">
       <div class="row" style="height: 700px">
-        <div class="col-4 mh-100">
+        <div class="col-3 mh-100">
           <div class="mb-3">
             <label for="title" class="form-label">제목 : </label>
             <input
@@ -105,13 +124,13 @@ const moveList = () => {
           </div>
           <div class="mb-3" style="height: 450px">
             <div class="overflow-auto mh-100">
-              <template v-for="(course, index) in plan.courses" :key="index">
+              <template v-for="day in days" :key="day">
                 <div class="border p-3">
-                  <h3>{{ index + 1 }}일차</h3>
+                  <h3>{{ day }}일차</h3>
                   <ul class="list-group">
-                    <li class="list-group-item" v-for="element in course">
-                      <h6>{{ element.title }}</h6>
-                      <span>{{ element.addr }}</span>
+                    <li class="list-group-item" v-for="course in courses[day - 1]">
+                      <h6>{{ course.attraction.title }}</h6>
+                      <span>{{ course.attraction.addr }}</span>
                     </li>
                   </ul>
                 </div>
@@ -119,8 +138,10 @@ const moveList = () => {
             </div>
           </div>
         </div>
-        <div class="col-8 p-0 mh-100">
+        <div class="col-9 p-0 mh-100">
           <v-kakao-map
+            :search="false"
+            :courses="plan.courses"
             :attractions="attractions"
             :selectAttraction="selectAttraction"
           ></v-kakao-map>
@@ -128,8 +149,8 @@ const moveList = () => {
       </div>
     </div>
     <div class="col-auto text-center">
-      <button type="button" class="btn mb-3">수정</button>
-      <button type="button" class="btn mb-3 ms-1">삭제</button>
+      <button type="button" class="btn mb-3" @click="moveModify">수정</button>
+      <button type="button" class="btn mb-3 ms-1" @click="onDeletePlan">삭제</button>
       <button type="button" class="btn mb-3 ms-1" @click="moveList">목록으로이동</button>
     </div>
   </form>

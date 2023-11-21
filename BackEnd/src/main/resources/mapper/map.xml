@@ -32,25 +32,12 @@
 		select content_id, content_type_id, title, addr,
 		image, sido_code, gugun_code, latitude, longitude, overview
 		from attraction
-		where sido_code = #{sido_code}
-		<if test="gugun_code != 0">
-			 and gugun_code = #{gugun_code}
-		</if>
-		<if test="content_type_id != 0">
-			and content_type_id = #{content_type_id}
-		</if>
-	</select>
-	
-	<select id="attractionList" parameterType="map" resultType="attractionDto">
-	select content_id, content_type_id, title, addr,
-		image, sido_code, gugun_code, latitude, longitude, overview
-		from attraction
 		<where>
 			<if test="sido_code != 0">
 				sido_code = #{sido_code}
 			</if>
 			<if test="gugun_code != 0">
-				and gugun_code = #{gugun_code}
+				 and gugun_code = #{gugun_code}
 			</if>
 			<if test="content_type_id != null">
 				and content_type_id IN
@@ -58,6 +45,17 @@
 					#{value}
 				</foreach>
 			</if>
+			<if test="title != null">
+				and title like CONCAT('%', #{title}, '%')
+			</if>
+		</where>
+	</select>
+	
+	<select id="attractionList" parameterType="map" resultType="attractionDto">
+	select content_id, content_type_id, title, addr,
+		image, sido_code, gugun_code, latitude, longitude, overview
+		from attraction
+		<where>
 			<if test="title != null">
 				and title like CONCAT('%', #{title}, '%')
 			</if>

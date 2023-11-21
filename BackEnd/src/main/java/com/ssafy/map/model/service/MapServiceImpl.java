@@ -33,12 +33,7 @@ public class MapServiceImpl implements MapService{
 	}
 	
 	@Override
-	public List<AttractionDto> getAttractions(Map<String, Integer> map) throws Exception {
-		return mapMapper.getAttractions(map);
-	}
-
-	@Override
-	public List<AttractionDto> attractionList(Map<String, String> map) throws Exception {
+	public List<AttractionDto> getAttractions(Map<String, String> map) throws Exception {
 		Map<String, Object> param = new HashMap<>();
 		
 		int sido_code = Integer.parseInt(map.get("sido_code") == null ? "0" : map.get("sido_code"));
@@ -54,8 +49,13 @@ public class MapServiceImpl implements MapService{
 		                .collect(Collectors.toList());
 		
 		param.put("content_type_id", content_type_id);
-		
 		param.put("title", map.get("title"));
+		return mapMapper.getAttractions(param);
+	}
+
+	@Override
+	public List<AttractionDto> attractionList(Map<String, String> map) throws Exception {
+		Map<String, Object> param = new HashMap<>();
 		
 		return mapMapper.attractionList(param);
 	}

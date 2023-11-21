@@ -74,7 +74,9 @@ public class PlanServiceImpl implements PlanService {
 	@Transactional
 	public void modifyPlan(PlanDto planDto) throws Exception {
 		// ???
+		planMapper.deleteCourse(planDto.getPlan_no());
 		planMapper.modifyPlan(planDto);
+		planMapper.registerCourse(planDto);
 		// ???
 	}
 
