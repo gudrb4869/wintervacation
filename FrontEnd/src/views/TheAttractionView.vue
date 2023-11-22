@@ -10,6 +10,12 @@ import VSwitch from "@/components/common/VSwitch.vue";
 import { useMapStore } from "@/stores/map";
 import { storeToRefs } from "pinia";
 
+import { useMemberStore } from "@/stores/member";
+
+const memberStore = useMemberStore();
+const userInfo = ref(memberStore.userInfo);
+const user_id = ref(userInfo.value == null ? null : userInfo.value.user_id);
+
 const { VITE_OPEN_API_SERVICE_KEY } = import.meta.env;
 
 let festivalList = [];
@@ -54,6 +60,7 @@ const param = ref({
   sido_code: 0,
   gugun_code: 0,
   content_type_id: [],
+  user_id: user_id.value,
 });
 
 onMounted(() => {

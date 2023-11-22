@@ -28,6 +28,6 @@ public interface PlanMapper {
 	
 	void deletePlan(int plan_no) throws SQLException;
 	
-	List<CourseDto> courseList(int plan_no) throws SQLException;
+	List<CourseDto> courseList(Map<String, String> map) throws SQLException;
 
 }

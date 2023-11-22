@@ -39,8 +39,9 @@ public class MapController {
 		
 		try {
 			log.info("/map/search, map - {}", params);
-			
-			return new ResponseEntity<List<AttractionDto>>(mapService.getAttractions(params), HttpStatus.OK);
+			List<AttractionDto> list = mapService.getAttractions(params);
+			log.info("list - {}", list);
+			return new ResponseEntity<List<AttractionDto>>(list, HttpStatus.OK);
 		} catch (Exception e) {
 			return exceptionHandling(e);
 		}

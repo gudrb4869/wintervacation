@@ -26,27 +26,33 @@
 		<result column="latitude" property="latitude"/>
 		<result column="longitude" property="longitude"/>
 		<result column="overview" property="overview"/>
+		<result column="favorite_date" property="favorite_date"/>
 	</resultMap>
 	
 	<select id="getAttractions" parameterType="map" resultMap="attraction">
-		select content_id, content_type_id, title, addr,
-		image, sido_code, gugun_code, latitude, longitude, overview
-		from attraction
+		select a.content_id, a.content_type_id, a.title, a.addr,
+		a.image, a.sido_code, a.gugun_code, a.latitude, a.longitude, a.overview, tmp.favorite_date
+		from attraction a
+		left outer join (select f.content_id, f.favorite_date
+		from favorite f
+		left outer join member m on f.user_id = m.user_id
+		where m.user_id = #{user_id}) tmp
+		on a.content_id = tmp.content_id
 		<where>
 			<if test="sido_code != 0">
-				sido_code = #{sido_code}
+				a.sido_code = #{sido_code}
 			</if>
 			<if test="gugun_code != 0">
-				 and gugun_code = #{gugun_code}
+				 and a.gugun_code = #{gugun_code}
 			</if>
 			<if test="content_type_id != null">
-				and content_type_id IN
+				and a.content_type_id IN
 				<foreach collection="content_type_id" item="value" separator="," open="(" close=")">
 					#{value}
 				</foreach>
 			</if>
 			<if test="title != null">
-				and title like CONCAT('%', #{title}, '%')
+				and a.title like CONCAT('%', #{title}, '%')
 			</if>
 		</where>
 	</select>

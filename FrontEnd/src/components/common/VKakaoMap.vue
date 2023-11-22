@@ -1,6 +1,7 @@
 <script setup>
 import { ref, watch, onMounted } from "vue";
 import { useMemberStore } from "@/stores/member";
+import { registerFavorite, deleteFavorite } from "@/api/favorite";
 
 const memberStore = useMemberStore();
 const userInfo = ref(memberStore.userInfo);
@@ -22,6 +23,46 @@ const props = defineProps({
   attractions: Array,
   selectAttraction: Object,
 });
+
+const onAddFavorite = (content_id) => {
+  if (!user_id.value) {
+    alert("로그인한 사용자만 찜추가 가능!");
+    return false;
+  }
+  let favorite = { user_id: user_id.value, content_id };
+  registerFavorite(
+    favorite,
+    (response) => {
+      console.log(response);
+      console.log("찜목록 추가 성공!!!");
+    },
+    (error) => {
+      console.log(error);
+      console.log("찜목록 추가 실패!!!");
+    }
+  );
+  return true;
+};
+
+const onRemoveFavorite = (content_id) => {
+  if (!user_id.value) {
+    alert("로그인한 사용자만 찜제거 가능!");
+    return false;
+  }
+  let favorite = { user_id: user_id.value, content_id };
+  deleteFavorite(
+    favorite,
+    (response) => {
+      console.log(response);
+      console.log("찜목록 제거 성공!!!");
+    },
+    (error) => {
+      console.log(error);
+      console.log("찜목록 제거 실패!!!");
+    }
+  );
+  return true;
+};
 
 watch(
   () => props.selectAttraction.value,
@@ -45,7 +86,6 @@ watch(
   () => {
     console.log("VKakaoMap 여행지목록 변경!!!");
     positions.value = [];
-    // deleteMarkers(markers.value);
     console.log(props.attractions);
     if (props.attractions.length > 0) {
       props.attractions.forEach((attraction) => {
@@ -57,6 +97,7 @@ watch(
         obj.addr = attraction.addr;
         obj.image = attraction.image;
         obj.overview = attraction.overview;
+        obj.favorite_date = attraction.favorite_date;
         positions.value.push(obj);
       });
     }
@@ -72,7 +113,6 @@ watch(
     lines.value = [];
     coursePositions.value = [];
     deleteLines();
-    // deleteMarkers(courseMarkers.value);
     console.log(props.courses);
     if (props.courses.length > 0) {
       props.courses.forEach((course) => {
@@ -84,6 +124,7 @@ watch(
         obj.addr = course.attraction.addr;
         obj.image = course.attraction.image;
         obj.overview = course.attraction.overview;
+        obj.favorite_date = course.attraction.favorite_date;
         coursePositions.value.push(obj);
         lines.value.push(
           new kakao.maps.LatLng(course.attraction.latitude, course.attraction.longitude)
@@ -130,7 +171,7 @@ const loadMarkers = (positions, markers) => {
   // 마커를 생성합니다
   markers.value = [];
   if (positions.value.length === 0) return;
-  positions.value.forEach((position) => {
+  positions.value.forEach((position, idx) => {
     // 마커 이미지를 생성합니다
     // const imgSrc = require("@/assets/map/markerStar.png");
     // 마커 이미지의 이미지 크기 입니다
@@ -274,7 +315,6 @@ const loadMarkers = (positions, markers) => {
 
     var favorite = document.createElement("div");
     favorite.className = "favorite";
-    var name = document.createTextNode("찜하기");
 
     `<img
       :src="product.isFavorite ? 'src/assets/img/heart-red.png' : 'src/assets/img/heart-white.png'"
@@ -282,17 +322,52 @@ const loadMarkers = (positions, markers) => {
       @click="changeProductFavorite(product.name)"
     />`;
 
-    var heart = document.createElement("img");
-    heart.src = window.location.origin + "/src/assets/img/heart-red.png";
-    heart.width = "30";
-    heart.height = "30";
-    heart.onclick = () => {
-      console.log("찜하기 버튼 클릭!!!");
-      changeAttractionFavorite(position.content_id);
+    var heartWhite = document.createElement("img");
+    heartWhite.src = window.location.origin + "/src/assets/img/heart-white.png";
+    heartWhite.width = "20";
+    heartWhite.style.cursor = "pointer";
+
+    var heartRed = document.createElement("img");
+    heartRed.src = window.location.origin + "/src/assets/img/heart-red.png";
+    heartRed.width = "20";
+    heartRed.style.cursor = "pointer";
+
+    console.log("좋아요한 시간");
+    console.log(position.favorite_date);
+    if (position.favorite_date) {
+      heartWhite.style.display = "none";
+    } else {
+      heartRed.style.display = "none";
+    }
+
+    heartWhite.onclick = () => {
+      console.log("찜추가 버튼 클릭!!!");
+      let flag = onAddFavorite(position.content_id);
+      console.log(flag);
+      if (flag) {
+        console.log("하트 빨강으로 변경 성공");
+        heartWhite.style.display = "none";
+        heartRed.style.display = "inline-block";
+      } else {
+        console.log("하트 빨강으로 변경 실패");
+      }
     };
-    heart.style.cursor = "pointer";
-    favorite.appendChild(heart);
-    favorite.appendChild(name);
+
+    heartRed.onclick = () => {
+      console.log("찜제거 버튼 클릭!!!");
+      let flag = onRemoveFavorite(position.content_id);
+      console.log(flag);
+      if (flag) {
+        console.log("하트 하양으로 변경 성공");
+        heartRed.style.display = "none";
+        heartWhite.style.display = "inline-block";
+      } else {
+        console.log("하트 빨강으로 변경 실패");
+      }
+    };
+
+    favorite.appendChild(heartWhite);
+    favorite.appendChild(heartRed);
 
     info.appendChild(favorite);
 

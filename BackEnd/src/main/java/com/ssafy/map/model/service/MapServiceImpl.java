@@ -36,6 +36,10 @@ public class MapServiceImpl implements MapService{
 	public List<AttractionDto> getAttractions(Map<String, String> map) throws Exception {
 		Map<String, Object> param = new HashMap<>();
 		
+		String user_id = map.get("user_id") == null ? "" : map.get("user_id");
+		
+		param.put("user_id", user_id);
+		
 		int sido_code = Integer.parseInt(map.get("sido_code") == null ? "0" : map.get("sido_code"));
 		int gugun_code = Integer.parseInt(map.get("gugun_code") == null ? "0" : map.get("gugun_code"));
 		

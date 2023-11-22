@@ -11,6 +11,7 @@ import draggable from "vuedraggable";
 
 const memberStore = useMemberStore();
 const userInfo = ref(memberStore.userInfo);
+const user_id = ref(userInfo.value == null ? null : userInfo.value.user_id);
 
 const router = useRouter();
 const route = useRoute();
@@ -31,6 +32,7 @@ const param = ref({
   gugun_code: 0,
   content_type_id: [12, 14, 15, 25, 28, 32, 38, 39],
   title: "",
+  user_id: user_id,
 });
 
 const plan = ref({

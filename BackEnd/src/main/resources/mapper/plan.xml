@@ -32,6 +32,7 @@
 		<result column="latitude" property="latitude"/>
 		<result column="longitude" property="longitude"/>
 		<result column="overview" property="overview"/>
+		<result column="favorite_date" property="favorite_date"/>
 	</resultMap>
 	
 	<insert id="writePlan" parameterType="planDto">
@@ -63,6 +64,19 @@
 		where c.plan_no = #{plan_no}
 		order by c.date, c.orders
 	</select>
+	
+	<!-- <select id="courseList" parameterType="map" resultMap="course">
+		select rs.*, tmp.favorite_date
+		from (select c.content_id, c.date, c.orders, a.content_type_id, a.title, a.addr, a.image, a.sido_code, a.gugun_code, a.latitude, a.longitude, a.overview
+		from course c join attraction a on c.content_id = a.content_id
+		where c.plan_no = #{plan_no}
+		order by c.date, c.orders) rs
+		left outer join (select f.*
+		from favorite f
+		left outer join member m on f.user_id = m.user_id
+		where m.user_id = #{user_id}) tmp
+		on rs.content_id = tmp.content_id
+	</select> -->
 	
 	<update id="modifyPlan" parameterType="planDto">
 		update plan
