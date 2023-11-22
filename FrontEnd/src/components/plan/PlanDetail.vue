@@ -87,73 +87,75 @@ const onDeletePlan = () => {
 </script>
 
 <template>
-  <form @submit.prevent="onSubmit">
-    <div class="mb-3">
-      <div class="row" style="height: 700px">
-        <div class="col-3 mh-100">
-          <div class="mb-3">
-            <label for="title" class="form-label">제목 : </label>
-            <input
-              type="text"
-              class="form-control"
-              id="title"
-              v-model="plan.title"
-              placeholder="제목..."
-              readonly="readOnly"
-            />
-          </div>
-          <div class="mb-3">
-            <label for="start_date" class="form-label">여행 시작일 : </label>
-            <input
-              type="date"
-              class="form-control"
-              id="start_date"
-              v-model="plan.start_date"
-              readonly="readOnly"
-            />
-          </div>
-          <div class="mb-3">
-            <label for="end_date" class="form-label">여행 종료일 : </label>
-            <input
-              type="date"
-              class="form-control"
-              id="end_date"
-              v-model="plan.end_date"
-              readonly="readonly"
-            />
-          </div>
-          <div class="mb-3" style="height: 450px">
-            <div class="overflow-auto mh-100">
-              <template v-for="day in days" :key="day">
-                <div class="border p-3">
-                  <h3>{{ day }}일차</h3>
-                  <ul class="list-group">
-                    <li class="list-group-item" v-for="course in courses[day - 1]">
-                      <h6>{{ course.attraction.title }}</h6>
-                      <span>{{ course.attraction.addr }}</span>
-                    </li>
-                  </ul>
-                </div>
-              </template>
+  <div class="container-fluid">
+    <div class="mt-3 text-center">
+      <div class="mb-3">
+        <div class="row" style="height: 700px">
+          <div class="col-3 mh-100">
+            <div class="mb-3">
+              <label for="title" class="form-label">제목 : </label>
+              <input
+                type="text"
+                class="form-control"
+                id="title"
+                v-model="plan.title"
+                placeholder="제목..."
+                readonly="readOnly"
+              />
+            </div>
+            <div class="mb-3">
+              <label for="start_date" class="form-label">여행 시작일 : </label>
+              <input
+                type="date"
+                class="form-control"
+                id="start_date"
+                v-model="plan.start_date"
+                readonly="readOnly"
+              />
+            </div>
+            <div class="mb-3">
+              <label for="end_date" class="form-label">여행 종료일 : </label>
+              <input
+                type="date"
+                class="form-control"
+                id="end_date"
+                v-model="plan.end_date"
+                readonly="readonly"
+              />
+            </div>
+            <div class="mb-3" style="height: 450px">
+              <div class="overflow-auto mh-100">
+                <template v-for="day in days" :key="day">
+                  <div class="border p-3">
+                    <h3>{{ day }}일차</h3>
+                    <ul class="list-group">
+                      <li class="list-group-item" v-for="course in courses[day - 1]">
+                        <h6>{{ course.attraction.title }}</h6>
+                        <span>{{ course.attraction.addr }}</span>
+                      </li>
+                    </ul>
+                  </div>
+                </template>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="col-9 p-0 mh-100">
-          <v-kakao-map
-            :search="false"
-            :courses="plan.courses"
-            :attractions="attractions"
-            :selectAttraction="selectAttraction"
-          ></v-kakao-map>
+          <div class="col-9 p-0 mh-100">
+            <v-kakao-map
+              :search="false"
+              :courses="plan.courses"
+              :attractions="attractions"
+              :selectAttraction="selectAttraction"
+            ></v-kakao-map>
+          </div>
         </div>
       </div>
+      <div class="col-auto text-center">
+        <button type="button" class="btn mb-3" @click="moveModify">수정</button>
+        <button type="button" class="btn mb-3 ms-1" @click="onDeletePlan">삭제</button>
+        <button type="button" class="btn mb-3 ms-1" @click="moveList">목록으로이동</button>
+      </div>
     </div>
-    <div class="col-auto text-center">
-      <button type="button" class="btn mb-3" @click="moveModify">수정</button>
-      <button type="button" class="btn mb-3 ms-1" @click="onDeletePlan">삭제</button>
-      <button type="button" class="btn mb-3 ms-1" @click="moveList">목록으로이동</button>
-    </div>
-  </form>
+  </div>
 </template>
 
 <style scoped></style>

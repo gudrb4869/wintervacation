@@ -17,7 +17,7 @@ watch(
 </script>
 
 <template>
-  <div v-for="option in switchOption" :key="option.value" class="form-check form-switch me-4">
+  <div v-for="option in switchOption" :key="option.value" class="form-check form-switch">
     <input
       class="form-check-input"
       type="checkbox"

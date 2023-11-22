@@ -169,7 +169,7 @@ const onDeleteFavorite = (val) => {
     <br />
     <br />
     <p style="font-size: 30px">찜 목록</p>
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-6 g-3">
       <favorite-list-item
         v-for="(attraction, index) in attractions"
         :key="index"

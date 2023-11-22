@@ -19,7 +19,7 @@ const path = ref(window.location.origin);
   <div class="col">
     <div class="card h-100 text-center">
       <img
-        class="card-img-top img-thumbnail"
+        class="card-img-top"
         :src="attraction.image ? attraction.image : `${path}/src/assets/img/no_image.png`"
         alt="이미지가 없습니다!"
       />
@@ -33,6 +33,10 @@ const path = ref(window.location.origin);
 </template>
 
 <style scoped>
+.card-img-top {
+  height: 10rem;
+  object-fit: contain;
+}
 img:hover {
   cursor: pointer;
 }

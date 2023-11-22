@@ -228,6 +228,10 @@ const removeAt = (i, j) => {
 const dragOptions = computed(() => {
   return { animation: 200, group: "course", disabled: false, ghostClass: "ghost" };
 });
+
+const onChangeAttractions = (val) => {
+  attractions.value = val;
+};
 </script>
 
 <template>
@@ -236,7 +240,7 @@ const dragOptions = computed(() => {
       <div class="row" style="height: 700px">
         <div class="col-2 mh-100">
           <div class="mb-3">
-            <h4 class="my-0 py-0 shadow-sm bg-light text-start">
+            <h4 class="my-0 py-0 shadow-sm bg-light">
               <mark class="sky">여행 Plan {{ type === "regist" ? "등록" : "수정" }}하기</mark>
             </h4>
           </div>
@@ -304,6 +308,7 @@ const dragOptions = computed(() => {
             :courses="convert"
             :attractions="attractions"
             :selectAttraction="selectAttraction"
+            @onChangeAttractions="onChangeAttractions"
           ></v-kakao-map>
         </div>
         <div class="col-2 mh-100">

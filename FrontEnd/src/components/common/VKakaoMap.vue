@@ -2,6 +2,10 @@
 import { ref, watch, onMounted } from "vue";
 import { useMemberStore } from "@/stores/member";
 import { registerFavorite, deleteFavorite } from "@/api/favorite";
+import { listSido, listGugun, listAttractions } from "@/api/map";
+
+import VSelect from "@/components/common/VSelect.vue";
+import VSwitch from "@/components/common/VSwitch.vue";
 
 const memberStore = useMemberStore();
 const userInfo = ref(memberStore.userInfo);
@@ -15,7 +19,93 @@ const lines = ref([]);
 const markers = ref([]);
 const courseMarkers = ref([]);
 const overlays = ref([]);
-// const courseOverlays = ref([]);
+
+const sidoList = ref([]);
+const gugunList = ref([{ text: "구군선택", value: "" }]);
+const contentTypeList = ref([
+  { text: "관광지", value: "12" },
+  { text: "문화시설", value: "14" },
+  { text: "축제공연행사", value: "15" },
+  { text: "여행코스", value: "25" },
+  { text: "레포츠", value: "28" },
+  { text: "숙박", value: "32" },
+  { text: "쇼핑", value: "38" },
+  { text: "음식점", value: "39" },
+]);
+const attractions = ref([]);
+
+const emit = defineEmits(["onChangeAttractions"]);
+
+const param = ref({
+  sido_code: 0,
+  gugun_code: 0,
+  content_type_id: [],
+  user_id: user_id.value,
+});
+
+const getSidoList = () => {
+  listSido(
+    ({ data }) => {
+      let options = [];
+      options.push({ text: "시도선택", value: "" });
+      data.forEach((sido) => {
+        options.push({ text: sido.sido_name, value: sido.sido_code });
+      });
+      sidoList.value = options;
+      param.value.gugun_code = 0;
+    },
+    (err) => {
+      console.log(err);
+    }
+  );
+};
+
+const onChangeSido = (val) => {
+  listGugun(
+    { sido_code: val },
+    ({ data }) => {
+      param.value.gugun_code = 0;
+      let options = [];
+      options.push({ text: "구군선택", value: "" });
+      data.forEach((gugun) => {
+        options.push({ text: gugun.gugun_name, value: gugun.gugun_code });
+      });
+      gugunList.value = options;
+      getAttractions();
+    },
+    (err) => {
+      console.log(err);
+    }
+  );
+};
+
+const onChangeGugun = (val) => {
+  console.log("구군 변경!");
+  getAttractions();
+};
+
+const onChangeContentType = (val) => {
+  console.log("콘텐츠 변경!");
+  console.log(val);
+  param.value.content_type_id = val;
+  console.log(param.value);
+  getAttractions();
+};
+
+const getAttractions = () => {
+  console.log("관광지 정보 api 호출!");
+  listAttractions(
+    param.value,
+    ({ data }) => {
+      attractions.value = data;
+      emit("onChangeAttractions", attractions.value);
+      console.log(attractions.value);
+    },
+    (err) => {
+      console.log(err);
+    }
+  );
+};
 
 const props = defineProps({
   search: Boolean,
@@ -26,7 +116,7 @@ const props = defineProps({
 
 const onAddFavorite = (content_id) => {
   if (!user_id.value) {
-    alert("로그인한 사용자만 찜추가 가능!");
+    alert("로그인한 사용자만 찜 등록 가능!");
     return false;
   }
   let favorite = { user_id: user_id.value, content_id };
@@ -46,7 +136,7 @@ const onAddFavorite = (content_id) => {
 
 const onRemoveFavorite = (content_id) => {
   if (!user_id.value) {
-    alert("로그인한 사용자만 찜제거 가능!");
+    alert("로그인한 사용자만 찜 제거 가능!");
     return false;
   }
   let favorite = { user_id: user_id.value, content_id };
@@ -151,6 +241,7 @@ onMounted(() => {
     script.onload = () => kakao.maps.load(() => initMap());
     document.head.appendChild(script);
   }
+  getSidoList();
 });
 
 const initMap = () => {
@@ -172,10 +263,6 @@ const loadMarkers = (positions, markers) => {
   markers.value = [];
   if (positions.value.length === 0) return;
   positions.value.forEach((position, idx) => {
-    // 마커 이미지를 생성합니다
-    // const imgSrc = require("@/assets/map/markerStar.png");
-    // 마커 이미지의 이미지 크기 입니다
-    // const imgSrc = "https://t1.daumcdn.net/localimg/ocalimages/07/mapapidoc/markerStar.png";
     var color;
     switch (position.content_type_id) {
       case 12: // 관광지
@@ -206,8 +293,9 @@ const loadMarkers = (positions, markers) => {
         color = "red";
         break;
     }
+    // 마커 이미지를 생성합니다
     var imgSrc = window.location.origin + "/src/assets/img/marker-" + color + ".png";
-    // const imgSrc = "src/assets/img/marker.png";
+    // 마커 이미지의 이미지 크기 입니다
     var imgSize = new kakao.maps.Size(27, 30);
     var markerImage = new kakao.maps.MarkerImage(imgSrc, imgSize);
 
@@ -246,27 +334,6 @@ const loadMarkers = (positions, markers) => {
     title.appendChild(closeBtn);
     info.appendChild(title);
 
-    // 커스텀 오버레이에 표시할 컨텐츠 입니다
-    // 커스텀 오버레이는 아래와 같이 사용자가 자유롭게 컨텐츠를 구성하고 이벤트를 제어할 수 있기 때문에
-    // 별도의 이벤트 메소드를 제공하지 않습니다
-    // const content = '<div class="wrap">' +
-    //   '    <div class="info">' +
-    //   '        <div class="title">' +
-    //   '            카카오 스페이스닷원' +
-    //   '            <div class="close" onclick="closeOverlay()" title="닫기"></div>' +
-    //   '        </div>' +
-    //   '        <div class="body">' +
-    //   '            <div class="img">' +
-    //   '                <img src="https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/thumnail.png" width="73" height="70">' +
-    //   '           </div>' +
-    //   '            <div class="desc">' +
-    //   '                <div class="ellipsis">제주특별자치도 제주시 첨단로 242</div>' +
-    //   '                <div class="jibun ellipsis">(우) 63309 (지번) 영평동 2181</div>' +
-    //   '                <div><a href="https://www.kakaocorp.com/main" target="_blank" class="link">홈페이지</a></div>' +
-    //   '            </div>' +
-    //   '        </div>' +
-    //   '    </div>' +
-    //   '</div>';
     var body = document.createElement("div");
     body.className = "body";
 
@@ -289,15 +356,6 @@ const loadMarkers = (positions, markers) => {
     var address = document.createTextNode(position.addr);
     ellipsis.appendChild(address);
     desc.appendChild(ellipsis);
-
-    // var link = document.createElement("div");
-    // var a = document.createElement("a");
-    // a.href = "https://www.kakaocorp.com/main";
-    // a.target = "_blank";
-    // a.className = "link";
-    // a.appendChild(document.createTextNode("홈페이지"));
-    // link.appendChild(a);
-    // desc.appendChild(link);
 
     body.appendChild(desc);
     info.appendChild(body);
@@ -332,8 +390,6 @@ const loadMarkers = (positions, markers) => {
     heartRed.width = "20";
     heartRed.style.cursor = "pointer";
 
-    console.log("좋아요한 시간");
-    console.log(position.favorite_date);
     if (position.favorite_date) {
       heartWhite.style.display = "none";
     } else {
@@ -441,8 +497,19 @@ const deleteLines = () => {
 <template>
   <div class="map_wrap">
     <div id="map"></div>
-    <div v-if="search" class="search-box rounded-3 border border-dark">
-      <span>관광지 검색</span>
+    <div v-if="search" class="search-box rounded-3">
+      <span style="font-size: 1.25rem">관광지 검색</span>
+      <div class="d-flex justify-content-center">
+        <VSelect v-model="param.sido_code" :selectOption="sidoList" @onKeySelect="onChangeSido" />
+        <VSelect
+          v-model="param.gugun_code"
+          :selectOption="gugunList"
+          @onKeySelect="onChangeGugun"
+        />
+      </div>
+      <div class="d-flex justify-content-evenly mb-3 row row-cols-4 px-4">
+        <VSwitch :switchOption="contentTypeList" @onChangeSwitch="onChangeContentType"></VSwitch>
+      </div>
     </div>
   </div>
 </template>
@@ -481,9 +548,9 @@ const deleteLines = () => {
 .wrap .info {
   width: 286px;
   height: 250px;
-  border: 1px solid black;
+  border: 1px solid #8493c9;
   /* box-shadow: 0px 1px 2px #888; */
-  border-radius: 0px;
+  border-radius: 5%;
   /* border-bottom: 2px solid #ccc; */
   /* border-right: 1px solid #ccc; */
   overflow: hidden;
@@ -597,6 +664,7 @@ const deleteLines = () => {
   margin: 0;
   padding: 0;
   z-index: 1;
-  background-color: #fff700;
+  background-color: #b9d3ed87;
+  border: 1px solid #99b4cf;
 }
 </style>

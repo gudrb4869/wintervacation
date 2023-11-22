@@ -1,20 +1,9 @@
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted } from "vue";
 import { listSido, listGugun, listAttractions } from "@/api/map";
 import festivals from "@/assets/festival.json";
 
 import VKakaoMap from "@/components/common/VKakaoMap.vue";
-import VSelect from "@/components/common/VSelect.vue";
-import VSwitch from "@/components/common/VSwitch.vue";
-
-import { useMapStore } from "@/stores/map";
-import { storeToRefs } from "pinia";
-
-import { useMemberStore } from "@/stores/member";
-
-const memberStore = useMemberStore();
-const userInfo = ref(memberStore.userInfo);
-const user_id = ref(userInfo.value == null ? null : userInfo.value.user_id);
 
 const { VITE_OPEN_API_SERVICE_KEY } = import.meta.env;
 
@@ -30,18 +19,6 @@ const getFestivals = (month) => {
 
 const courses = ref([]);
 
-const sidoList = ref([]);
-const gugunList = ref([{ text: "구군선택", value: "" }]);
-const contentTypeList = ref([
-  { text: "관광지", value: "12" },
-  { text: "문화시설", value: "14" },
-  { text: "축제공연행사", value: "15" },
-  { text: "여행코스", value: "25" },
-  { text: "레포츠", value: "28" },
-  { text: "숙박", value: "32" },
-  { text: "쇼핑", value: "38" },
-  { text: "음식점", value: "39" },
-]);
 const attractions = ref([]);
 const selectAttraction = ref({});
 
@@ -52,23 +29,11 @@ const selectAttraction = ref({});
 //   zscode: 0,
 // });
 
-const currentSeason = ref("");
-
-const mapStore = useMapStore();
-
-const param = ref({
-  sido_code: 0,
-  gugun_code: 0,
-  content_type_id: [],
-  user_id: user_id.value,
-});
-
 onMounted(() => {
-  getSidoList();
   randomRecommend();
 });
 
-const param2 = ref({
+const param = ref({
   sido_code: 0,
   gugun_code: 0,
   // content_type_id: [12, 14, 15, 25, 28, 32, 38, 39]
@@ -103,82 +68,13 @@ const randomRecommend = () => {
   let idx = parseInt(Math.random() * length);
   console.log("인덱스: " + idx);
   let f = festivalList[idx];
-  param2.value.sido_code = f.sido_code;
-  param2.value.gugun_code = f.gugun_code;
+  param.value.sido_code = f.sido_code;
+  param.value.gugun_code = f.gugun_code;
   festival.value = f;
-  // const banner = banners[idx];
-  // console.log(banner);
-  // food.value = banner[0];
-  // location.value = banner[1];
-  // param2.value.sido_code = banner[2];
-  // param2.value.gugun_code = banner[3];
 };
 
 const getRecommendAttractions = () => {
   console.log("관광지 정보 api 호출! 22222222222222");
-  listAttractions(
-    param2.value,
-    ({ data }) => {
-      attractions.value = data;
-      console.log(attractions.value);
-    },
-    (err) => {
-      console.log(err);
-    }
-  );
-};
-
-const getSidoList = () => {
-  listSido(
-    ({ data }) => {
-      let options = [];
-      options.push({ text: "시도선택", value: "" });
-      data.forEach((sido) => {
-        options.push({ text: sido.sido_name, value: sido.sido_code });
-      });
-      sidoList.value = options;
-      param.value.gugun_code = 0;
-    },
-    (err) => {
-      console.log(err);
-    }
-  );
-};
-
-const onChangeSido = (val) => {
-  listGugun(
-    { sido_code: val },
-    ({ data }) => {
-      param.value.gugun_code = 0;
-      let options = [];
-      options.push({ text: "구군선택", value: "" });
-      data.forEach((gugun) => {
-        options.push({ text: gugun.gugun_name, value: gugun.gugun_code });
-      });
-      gugunList.value = options;
-      getAttractions();
-    },
-    (err) => {
-      console.log(err);
-    }
-  );
-};
-
-const onChangeGugun = (val) => {
-  console.log("구군 변경!");
-  getAttractions();
-};
-
-const onChangeContentType = (val) => {
-  console.log("콘텐츠 변경!");
-  console.log(val);
-  param.value.content_type_id = val;
-  console.log(param.value);
-  getAttractions();
-};
-
-const getAttractions = () => {
-  console.log("관광지 정보 api 호출!");
   listAttractions(
     param.value,
     ({ data }) => {
@@ -191,10 +87,8 @@ const getAttractions = () => {
   );
 };
 
-const viewAttraction = (attraction) => {
-  console.log("클릭한 관광지로 지도 이동!");
-  selectAttraction.value = attraction;
-  console.log(selectAttraction.value);
+const onChangeAttractions = (val) => {
+  attractions.value = val;
 };
 </script>
 
@@ -205,51 +99,13 @@ const viewAttraction = (attraction) => {
       {{ festival.title }}이 있는 {{ festival.sido }} {{ festival.gugun }}(으)로 여행을 떠나보는건
       어때요? 해당 지역으로 이동하려면 여기를 클릭하세요.
     </div>
-    <div class="d-flex justify-content-center mb-3">
-      <VSelect v-model="param.sido_code" :selectOption="sidoList" @onKeySelect="onChangeSido" />
-      <VSelect v-model="param.gugun_code" :selectOption="gugunList" @onKeySelect="onChangeGugun" />
-      <!-- <VSelect
-        v-model="param.content_type_id"
-        :selectOption="contentTypeList"
-        @onKeySelect="onChangeContentType"
-      ></VSelect> -->
-    </div>
-    <div class="d-flex justify-content-evenly mb-3">
-      <VSwitch :switchOption="contentTypeList" @onChangeSwitch="onChangeContentType"></VSwitch>
-    </div>
     <VKakaoMap
       :search="true"
       :courses="courses"
       :attractions="attractions"
       :selectAttraction="selectAttraction"
+      @onChangeAttractions="onChangeAttractions"
     />
-    <!-- <table class="table table-hover table-striped mt-3">
-      <thead>
-        <tr class="text-center">
-          <th scope="col">관광지명</th>
-          <th scope="col">관광지유형</th>
-          <th scope="col">이미지</th>
-          <th scope="col">위도</th>
-          <th scope="col">경도</th>
-          <th scope="col">주소</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr
-          class="text-center"
-          v-for="attraction in attractions"
-          :key="attraction.content_id"
-          @click="viewAttraction(attraction)"
-        >
-          <th>{{ attraction.title }}</th>
-          <td>{{ attraction.content_type_id }}</td>
-          <td>{{ attraction.image }}</td>
-          <td>{{ attraction.latitude }}</td>
-          <td>{{ attraction.longitude }}</td>
-          <td>{{ attraction.addr }}</td>
-        </tr>
-      </tbody>
-    </table> -->
   </div>
 </template>
 
