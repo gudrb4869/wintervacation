@@ -1,10 +1,12 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useMemberStore } from "@/stores/member";
 import { useMenuStore } from "@/stores/menu";
 import { modify_pw, idDelete } from "@/api/user";
 import { httpStatusCode } from "@/util/http-status";
+import FavoriteListItem from "@/components/member/item/FavoriteListItem.vue";
+import { listFavorite, deleteFavorite } from "@/api/favorite";
 
 const menuStore = useMenuStore();
 const memberStore = useMemberStore();
@@ -15,24 +17,21 @@ const router = useRouter();
 const profile = ref(null);
 profile.value = memberStore.userInfo;
 
-const password = ref('');
-const confirmPassword = ref('');
+const password = ref("");
+const confirmPassword = ref("");
 
 // 가입일을 원하는 형식으로 가공하는 computed 프로퍼티
 const formattedJoinDate = computed(() => {
   const joinDate = profile.value ? profile.value.join_date : null;
 
   // joinDate가 null 또는 undefined가 아니고, 비어 있지 않을 때만 처리
-  if (joinDate !== null && joinDate !== undefined && joinDate.trim() !== '') {
-    return joinDate.split(' ')[0];
+  if (joinDate !== null && joinDate !== undefined && joinDate.trim() !== "") {
+    return joinDate.split(" ")[0];
   }
-  return '';
+  return "";
 });
 
-
-const loadProfil = async () => {
-  
-}
+const loadProfil = async () => {};
 
 const changePass = async () => {
   if (password.value == confirmPassword.value) {
@@ -42,7 +41,7 @@ const changePass = async () => {
       (response) => {
         if (response.status === httpStatusCode.OK) {
           console.log("비밀번호 변경 성공");
-  
+
           userLogout(profile.value.user_id);
           console.log("로그아웃!!!!");
           changeMenuState();
@@ -60,7 +59,7 @@ const changePass = async () => {
   } else {
     alert("비밀 번호가 같은지 확인해 주세요");
   }
-}
+};
 
 const withdrawal = async () => {
   await idDelete(
@@ -79,65 +78,112 @@ const withdrawal = async () => {
     (error) => {
       console.log(error);
     }
-  )
-}
+  );
+};
 
+const user_id = ref(profile.value.user_id);
+const attractions = ref([]);
+
+onMounted(() => {
+  console.log("찜목록 가지고오기!!!");
+  getFavoriteAttractionList();
+});
+
+const getFavoriteAttractionList = () => {
+  console.log("찜한 관광지목록 가져오자!!!");
+  listFavorite(
+    user_id.value,
+    ({ data }) => {
+      console.log("목록 가져오기 성공!!!");
+      console.log(data);
+      attractions.value = data;
+    },
+    (error) => {
+      console.log(error);
+    }
+  );
+};
+
+const onDeleteFavorite = (val) => {
+  console.log("찜한 관광지 " + val + "번 없애보자!!!");
+  let param = {
+    user_id: user_id.value,
+    content_id: val,
+  };
+  console.log(param);
+  deleteFavorite(
+    param,
+    (response) => {
+      console.log(response);
+      console.log(val + "번 관광지 찜목록에서 제거 성공!!!");
+      getFavoriteAttractionList();
+    },
+    (error) => {
+      console.log(error);
+    }
+  );
+};
 </script>
 
-
 <template>
-    <div id='total'>
-  <div id="container">
-    <!-- 왼쪽 사이드에 프로필 사진 -->
-    <div id='container2'>
-      <div id="profil">
+  <div id="total">
+    <div id="container">
+      <!-- 왼쪽 사이드에 프로필 사진 -->
+      <div id="container2">
+        <div id="profil"></div>
 
+        <!-- 프로필 정보 -->
+        <!-- 아이디, 가입일, 이름을 프로필 사진 오른쪽에 위치 -->
+        <div>
+          <p><strong>아이디 : </strong> {{ profile.user_id }}</p>
+          <p><strong>가입일 : </strong> {{ formattedJoinDate }}</p>
+          <p><strong>이름 : </strong> {{ profile.user_name }}</p>
+        </div>
       </div>
 
-      <!-- 프로필 정보 -->
-      <!-- 아이디, 가입일, 이름을 프로필 사진 오른쪽에 위치 -->
-      <div>
-        <p><strong>아이디 : </strong> {{ profile.user_id }}</p>
-        <p><strong>가입일 : </strong> {{ formattedJoinDate }}</p>
-        <p><strong>이름 : </strong> {{ profile.user_name }}</p>
+      <div id="container3">
+        <div>
+          <label for="password">비밀번호 변경 : </label>
+          <br />
+          <input type="password" id="password" v-model="password" />
+        </div>
+
+        <div>
+          <label for="confirmPassword">비밀번호 확인 : </label>
+          <br />
+          <input type="password" id="confirmPassword" v-model="confirmPassword" />
+        </div>
+      </div>
+
+      <div id="buttons">
+        <button @click="changePass">비밀번호 변경</button>
+        <button @click="withdrawal">탈퇴</button>
       </div>
     </div>
 
-    <div id='container3'>
-      <div>
-        <label for="password">비밀번호 변경 : </label>
-        <br>
-        <input type="password" id="password" v-model="password" />
-      </div>
+    <br />
+    <br />
+    <p style="font-size: 30px">내 작성 글</p>
+    <hr style="margin-top: -12px" />
 
-      <div>
-        <label for="confirmPassword">비밀번호 확인 : </label>
-        <br>
-        <input type="password" id="confirmPassword" v-model="confirmPassword" />
-      </div>
+    <br />
+    <br />
+    <p style="font-size: 30px">찜 목록</p>
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+      <favorite-list-item
+        v-for="(attraction, index) in attractions"
+        :key="index"
+        :attraction="attraction"
+        @onChangeFavorite="onDeleteFavorite"
+      ></favorite-list-item>
     </div>
-
-    <div id='buttons'>
-      <button @click="changePass">비밀번호 변경</button>
-      <button @click="withdrawal">탈퇴</button>
-    </div>
+    <hr />
   </div>
-
-  <br>
-  <br>
-  <p style='font-size:30px'>내 작성 글</p>
-  <hr style='margin-top: -12px;'>
-
-  <br>
-  <br>
-  <p style='font-size:30px'>찜 목록</p>
-  <hr style='margin-top: -12px;'>
-    </div>
 </template>
 
 <style scoped>
 #total {
-    margin: 20px;
+  margin: 20px;
 }
 
 #container {
@@ -185,6 +231,6 @@ input {
 }
 
 button {
-    margin: 10px;
+  margin: 10px;
 }
 </style>

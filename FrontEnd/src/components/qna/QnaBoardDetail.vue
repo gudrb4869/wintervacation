@@ -3,7 +3,7 @@ import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { detailArticle, deleteArticle } from "@/api/qna-board";
 import { listMemo, registMemo, deleteMemo } from "@/api/qna-memo";
-import QnaMemoFormItem from '@/components/qna/item/QnaMemoFormItem.vue';
+import QnaMemoFormItem from "@/components/qna/item/QnaMemoFormItem.vue";
 import QnaMemoListItem from "@/components/qna/item/QnaMemoListItem.vue";
 
 const route = useRoute();
@@ -83,19 +83,20 @@ const onDeleteArticle = () => {
 };
 
 const writeMemo = (memo) => {
-  console.log('부모 컴포넌트에서 댓글 작성 요청 받음!');
+  console.log("부모 컴포넌트에서 댓글 작성 요청 받음!");
   // API 호출
   registMemo(
     memo,
     (response) => {
       console.log(response);
-      console.log('댓글 작성 성공!');
+      console.log("댓글 작성 성공!");
       getMemoList();
-    }, (error) => {
+    },
+    (error) => {
       console.log(error);
     }
-  )
-}
+  );
+};
 
 const onDeleteMemo = (memo_no) => {
   console.log(memo_no + "번 댓글 삭제 요청 부모 컴포넌트에서 받음!");
@@ -130,8 +131,10 @@ const onDeleteMemo = (memo_no) => {
         <div class="row">
           <div class="col-md-8">
             <div class="clearfix align-content-center">
-              <img class="avatar me-2 float-md-start bg-light p-2"
-                src="https://raw.githubusercontent.com/twbs/icons/main/icons/person-fill.svg" />
+              <img
+                class="avatar me-2 float-md-start bg-light p-2"
+                src="https://raw.githubusercontent.com/twbs/icons/main/icons/person-fill.svg"
+              />
               <p>
                 <span class="fw-bold">{{ article.user_id }}</span> <br />
                 <span class="text-secondary fw-light">
@@ -154,9 +157,16 @@ const onDeleteMemo = (memo_no) => {
           <h3>
             <mark class="sky">댓글 ({{ memoCount }})</mark>
           </h3>
-          <qna-memo-form-item :article_no='article_no' @regist-memo='writeMemo'></qna-memo-form-item>
-          <qna-memo-list-item v-for="memo in memos" :key="memo.memo_no" :memo="memo"
-            @delete-memo="onDeleteMemo"></qna-memo-list-item>
+          <qna-memo-form-item
+            :article_no="article_no"
+            @regist-memo="writeMemo"
+          ></qna-memo-form-item>
+          <qna-memo-list-item
+            v-for="memo in memos"
+            :key="memo.memo_no"
+            :memo="memo"
+            @delete-memo="onDeleteMemo"
+          ></qna-memo-list-item>
         </div>
       </div>
     </div>

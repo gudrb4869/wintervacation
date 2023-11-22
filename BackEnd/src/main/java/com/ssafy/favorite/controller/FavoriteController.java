@@ -2,7 +2,6 @@ package com.ssafy.favorite.controller;
 
 import java.nio.charset.Charset;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.favorite.model.FavoriteDto;
@@ -77,7 +75,9 @@ public class FavoriteController {
 	
 	@ApiOperation(value = "찜삭제", notes = "관광지번호에 해당하는 찜정보를 삭제한다. 그리고 DB삭제 성공여부에 따라 'success' 또는 'fail' 문자열을 반환한다.", response = String.class)
 	@DeleteMapping
-	public ResponseEntity<String> deleteFavorite(@RequestBody @ApiParam(value = "찜정보", required = true) FavoriteDto favoriteDto) throws Exception {
+	public ResponseEntity<String> deleteFavorite(
+			@ApiParam(value = "찜정보", required = true) FavoriteDto favoriteDto)
+					throws Exception {
 		log.info("deletePlan - 호출");
 		favoriteService.deleteFavorite(favoriteDto);
 		return ResponseEntity.ok().build();
