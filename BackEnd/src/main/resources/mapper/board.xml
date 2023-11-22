@@ -14,12 +14,21 @@
 	</insert>
 	
 	<select id="boardList" parameterType="map" resultType="BoardDto">
-		select article_no, user_id, subject, content, hit, date_format(register_time, '%Y-%m-%d') register_time
+		select article_no, user_id, subject, content, hit, date_format(register_time, '%Y-%m-%d %H:%i') register_time
 		from board
 		<where>
 			<include refid="search"></include>
 		</where>
-		order by article_no desc
+		order by register_time desc
+	</select>
+	
+	<select id="boardList2" parameterType="map" resultType="BoardDto">
+		select article_no, user_id, subject, content, hit, date_format(register_time, '%Y-%m-%d %H:%i') register_time
+		from board
+		<where>
+			<include refid="search"></include>
+		</where>
+		order by hit desc
 	</select>
 	
 	<sql id="search">

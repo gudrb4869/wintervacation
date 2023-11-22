@@ -11,4 +11,5 @@ import com.ssafy.file.model.FileDto;
 public interface FileMapper {
 	void registerFile(BoardDto boardDto) throws Exception;
 	List<FileDto> fileInfoList(int article_no) throws Exception;
+	int deleteFile(int article_no) throws Exception;
 }

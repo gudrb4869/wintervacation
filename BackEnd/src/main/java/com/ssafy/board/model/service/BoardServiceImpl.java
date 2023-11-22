@@ -5,9 +5,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.ssafy.board.model.BoardDto;
 import com.ssafy.board.model.mapper.BoardMapper;
+import com.ssafy.board.model.mapper.BoardMemoMapper;
 import com.ssafy.file.model.FileDto;
 import com.ssafy.file.model.mapper.FileMapper;
 
@@ -16,18 +18,18 @@ public class BoardServiceImpl implements BoardService {
 
 	BoardMapper boardMapper;
 	FileMapper fileMapper;
+	BoardMemoMapper boardMemoMapper;
 	
-	public BoardServiceImpl(BoardMapper boardMapper, FileMapper fileMapper) {
+	public BoardServiceImpl(BoardMapper boardMapper, FileMapper fileMapper, BoardMemoMapper boardMemoMapper) {
 		super();
 		this.boardMapper = boardMapper;
 		this.fileMapper = fileMapper;
+		this.boardMemoMapper = boardMemoMapper;
 	}
 	
 	@Override
 	public void writeArticle(BoardDto boardDto) throws Exception {
-		System.out.println("글입력 전 dto : " + boardDto);
 		boardMapper.writeArticle(boardDto);
-		System.out.println("글입력 후 dto : " + boardDto);
 		List<FileDto> fileInfos = boardDto.getFileInfos();
 		if (fileInfos != null && !fileInfos.isEmpty()) {
 			fileMapper.registerFile(boardDto);
@@ -44,7 +46,14 @@ public class BoardServiceImpl implements BoardService {
 		if ("user_id".equals(key))
 			param.put("key", key == null ? "" : "user_id");
 		
-		List<BoardDto> boards = boardMapper.boardList(map);
+		System.out.println("boardList sort : " + map.get("sort"));
+		
+		List<BoardDto> boards = null;
+		if (map.get("sort").equals("recent")) {
+			boards = boardMapper.boardList(map);
+		} else {
+			boards = boardMapper.boardList2(map);
+		}
 		
 		return boards;
 	}
@@ -60,7 +69,11 @@ public class BoardServiceImpl implements BoardService {
 	}
 
 	@Override
+	@Transactional
 	public int deleteArticle(int articleNo) throws Exception {
+		fileMapper.deleteFile(articleNo);
+		boardMemoMapper.deleteMemoAll(articleNo);
+		
 		return boardMapper.deleteArticle(articleNo);
 	}
 

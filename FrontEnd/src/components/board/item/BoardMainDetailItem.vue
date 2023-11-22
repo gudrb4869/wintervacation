@@ -5,16 +5,12 @@ const props = defineProps({
     fileInfos: Object,
 });
 
-console.log("로그 ",props.fileInfos);
-
 const originalName = props.fileInfos.originalFile;
 const saveFolder = props.fileInfos.saveFolder;
 const saveFile = props.fileInfos.saveFile;
 
 const path = ref("");
 path.value = "http://localhost/board-api/getImg/" + saveFolder + "/" + originalName + "/" + saveFile;
-
-console.log(path.value);
 
 </script>
 

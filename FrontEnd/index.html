@@ -1,16 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title id="pageTitle">여름방학</title>
+    <link id="seasonalLogo" rel="icon" type="image/png" href="" />
+  </head>
 
-<head>
-  <meta charset="UTF-8">
-  <link rel="icon" href="/favicon.ico">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>여름방학</title>
-</head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.js"></script>
+    <script>
+      const getSeason = () => {
+        let current = new Date();
 
-<body>
-  <div id="app"></div>
-  <script type="module" src="/src/main.js"></script>
-</body>
+        let monthDate = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365];
+        for (let i = 1; i <= 12; i++) {
+          monthDate[i] += monthDate[i - 1];
+        }
+        // 2월 4일 (입춘) => 34
+        // 5월 5일 (입하) => 124
+        // 8월 7일 (입추) => 218
+        // 11월 7일 (입동) => 310
+        let currentDate = monthDate[current.getMonth()] + (current.getDate() - 1);
 
+        let season = "";
+        let logoPath = "";
+
+        if (currentDate >= 34 && currentDate < 124) {
+          season = "봄방학";
+          logoPath = "spring_title_logo.png";
+        } else if (currentDate >= 124 && currentDate < 218) {
+          season = "여름방학";
+          logoPath = "summer_title_logo.png";
+        } else if (currentDate >= 218 && currentDate < 310) {
+          season = "가을방학";
+          logoPath = "automn_title_logo.png";
+        } else {
+          season = "겨울방학";
+          logoPath = "winter_title_logo.png";
+        }
+
+        // 동적으로 title 변경
+        document.getElementById("pageTitle").innerText = season;
+
+        // 동적으로 favicon 변경
+        document.getElementById("seasonalLogo").setAttribute("href", logoPath);
+      };
+
+      // 페이지 로드 시 계절에 따라 title 및 favicon 변경
+      window.onload = getSeason;
+    </script>
+  </body>
 </html>

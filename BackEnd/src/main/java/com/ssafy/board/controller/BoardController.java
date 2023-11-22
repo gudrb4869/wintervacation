@@ -223,6 +223,7 @@ public class BoardController extends HttpServlet {
 		boardDto.setFileInfos(fileService.fileInfoList(article_no));
 		fileUtil.deleteImg(boardDto.getFileInfos());
 		System.out.println(boardDto);
+		
 		boardService.deleteArticle(article_no);
 
 		return ResponseEntity.ok().build();

@@ -46,12 +46,16 @@ const getImges = () => {
         <div class="card shadow-sm" bis_skin_checked="1" @click='goDetail'>
           <img class="bd-placeholder-img card-img-top" :src="path" alt="이미지가 없습니다!">
           <div class="card-body" bis_skin_checked="1">
-            <p class="card-text" >{{ board.content }}</p>
+            <p class="card-text" style='font-size: 25px;'>{{ board.subject }}</p>
+            <p class="card-text text-truncate">{{ board.content }}</p>
             <div class="d-flex justify-content-between align-items-center" bis_skin_checked="1">
               <div class="btn-group text-truncate" style="max-width: 150px;" bis_skin_checked="1">
                 <p>{{ board.user_id }}</p>
               </div>
-              <small class="text-muted">{{ board.register_time }}</small>
+              <div class='d-flex gap-3'>
+                <h5>조회수 : {{ board.hit }}</h5>
+                <h5>{{ board.register_time }}</h5>
+              </div>
             </div>
           </div>
         </div>
@@ -62,5 +66,9 @@ const getImges = () => {
 img {
   width: auto;
   height: 300px;
+}
+
+p {
+  margin-top: -5px;
 }
 </style>

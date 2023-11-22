@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { useMenuStore } from "@/stores/menu";
 import { useMemberStore } from "@/stores/member";
 import { storeToRefs } from "pinia";
@@ -20,6 +20,35 @@ const toLogout = () => {
   changeMenuState();
 };
 
+onMounted(() => {
+  getSeason();
+})
+
+const state = ref(0);
+
+const getSeason = () => {
+  let current = new Date();
+
+let monthDate = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365];
+for (let i = 1; i <= 12; i++) {
+  monthDate[i] += monthDate[i - 1];
+}
+// 2월 4일 (입춘) => 34
+// 5월 5일 (입하) => 124
+// 8월 7일 (입추) => 218
+// 11월 7일 (입동) => 310
+let currentDate = monthDate[current.getMonth()] + (current.getDate() - 1);
+if (currentDate >= 34 && currentDate < 124) {
+  state.value = 1
+} else if (currentDate >= 124 && currentDate < 218) {
+  state.value = 2
+} else if (currentDate >= 218 && currentDate < 310) {
+  state.value = 3
+} else {
+  state.value = 4
+}
+}
+
 </script>
 
 <template>
@@ -27,7 +56,18 @@ const toLogout = () => {
   <nav class="navbar navbar-expand-lg bg-light navbar-light shadow fixed-top">
     <div class="container">
       <router-link class="navbar-brand" :to="{ name: 'main' }">
-        <img src="@/assets/img/logo.png" style="width: 150px; height: 60px" />
+        <div v-if="state === 1">
+          <img src="@/assets/img/spring_logo.png" style="width: 200px; height: 80px" />
+        </div>
+        <div v-else-if='state === 2'>
+          <img src="@/assets/img/summer_logo.png" style="width: 200px; height: 80px" />
+        </div>
+        <div v-else-if='state === 3'>
+          <img src="@/assets/img/autom_logo.png" style="width: 200px; height: 80px" />
+        </div>
+        <div v-else-if='state === 4'>
+          <img src="@/assets/img/winter_logo.png" style="width: 200px; height: 80px" />
+        </div>
       </router-link>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar">
         <span class="navbar-toggler-icon"></span>

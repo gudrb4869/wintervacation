@@ -43,4 +43,13 @@
 		where article_no = #{articleNo}
 	</select>
 
+	<delete id="deleteFile" parameterType="int">
+		delete from file_info
+		where article_no = #{articleNo}
+	</delete>
+	
+
+
+
+
 </mapper>

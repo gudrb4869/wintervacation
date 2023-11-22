@@ -12,4 +12,6 @@ public interface BoardMemoMapper {
 	int writeMemo(BoardMemoDto MemoDto) throws SQLException;
 	// 댓글 삭제
 	int deleteMemo(int memo_no) throws SQLException;
+	
+	int deleteMemoAll(int article_no) throws SQLException;
 }

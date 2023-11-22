@@ -2,17 +2,28 @@
 import { ref, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { detailArticle, deleteArticle } from "@/api/board";
+import { memoList, writeMemo, deleteMemo } from "@/api/memo";
 import BoardMainDetailItem from './item/BoardMainDetailItem.vue';
+import BoardMainMeoItem from './item/BoardMainMeoItem.vue';
+import BoardMainMemoList from './item/BoardMainMemoList.vue';
+import { useMemberStore } from "@/stores/member";
 
+
+const memberStore = useMemberStore();
+const profile = ref(null);
 
 const router = useRouter();
 const route = useRoute();
 
 const { article_no } = route.params;
 const board = ref({})
+const memos = ref([]);
+const memoCount = ref(0);
 
 onMounted(() => {
     loadDetail();
+    getMemoList();
+    profile.value = memberStore.userInfo;
 })
 
 const loadDetail = () => {
@@ -45,6 +56,52 @@ const onDeleteArticle = () => {
         }
     )
 }
+
+
+const getMemoList = () => {
+  console.log(article_no + "번 qna게시글의 댓글들 조회!!!!");
+  // API 호출
+  memoList(
+    article_no,
+    ({ data }) => {
+      console.log(data);
+      memos.value = data;
+      memoCount.value = memos.value.length;
+    },
+    (error) => {
+      console.log(error);
+    }
+  );
+};
+
+const registMemo = (memo) => {
+  // API 호출
+  writeMemo(
+    memo,
+    (response) => {
+      console.log(response);
+      console.log('댓글 작성 성공!');
+      getMemoList();
+    }, (error) => {
+      console.log(error);
+    }
+  )
+}
+
+const onDeleteMemo = (memo_no) => {
+  console.log(memo_no + "번 댓글 삭제 요청 부모 컴포넌트에서 받음!");
+  // API 호출
+  deleteMemo(
+    memo_no,
+    (response) => {
+      console.log(memo_no + "번 댓글 삭제 성공!");
+      getMemoList();
+    },
+    (error) => {
+      console.log(error);
+    }
+  );
+};
 
 
 </script>
@@ -93,23 +150,22 @@ const onDeleteArticle = () => {
         </div>
 
 
-        <h3>댓글</h3>
+        <h3>댓글 ({{ memoCount }})</h3>
         <hr>
         <!-- Comments section-->
         <section class="mb-5">
         <div class="card bg-light">
             <div class="card-body">
                 <!-- Comment form-->
-                <form class="mb-4"><textarea class="form-control" rows="3" placeholder="Join the discussion and leave a comment!"></textarea></form>
-                <!-- Comment with nested comments-->
-                <div class="d-flex mb-4">
-                    <!-- Parent comment-->
-                    <div class="flex-shrink-0"><img class="rounded-circle" src="https://dummyimage.com/50x50/ced4da/6c757d.jpg" alt="..." /></div>
-                    <div class="ms-3">
-                        <div class="fw-bold">작성자</div>
-                        댓글
-                    </div>
+                <div v-if="profile !== null">
+                    <BoardMainMeoItem :article_no='article_no' @regist-memo='registMemo'>
+                    </BoardMainMeoItem>
                 </div>
+                <!-- Comment with nested comments-->
+                <BoardMainMemoList v-for="memo in memos" :key="memo.memo_no" :memo="memo"
+                @delete-memo="onDeleteMemo">
+
+                </BoardMainMemoList>
             </div>
         </div>
         </section>
@@ -122,5 +178,9 @@ const onDeleteArticle = () => {
   margin-left: 40px;
   margin-right: 40px;
   padding: 20px; /* Add padding here */
+}
+
+.card:hover{
+    filter: brightness(1) !important;
 }
 </style>

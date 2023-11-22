@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watchEffect } from 'vue';
 import BoardMainItem from "./item/BoardMainItem.vue";
 import { useMemberStore } from "@/stores/member";
 import { useRouter } from "vue-router";
@@ -9,7 +9,6 @@ const router = useRouter();
 const memberStore = useMemberStore();
 const profile = ref(null);
 
-
 const goToRegist = () => {
   router.push({ name : "board-main-regist" })
 }
@@ -18,11 +17,7 @@ const boardList = ref([]);
 const param = ref({
   key: "",
   work: "",
-})
-
-onMounted( () => {
-  profile.value = memberStore.userInfo;
-  getBoardList();
+  sort: "recent", // 초기 값은 "최신순 정렬"
 });
 
 const getBoardList = () => {
@@ -31,13 +26,22 @@ const getBoardList = () => {
     ({ data }) => {
       console.log(data);
       boardList.value = data;
-    }, (error) => {
+    }, 
+    (error) => {
       console.log(error);
     }
+  );
+};
 
-  )
-}
+// param.sort 값이 변경될 때마다 getBoardList 호출
+watchEffect(() => {
+  getBoardList();
+});
 
+onMounted(() => {
+  profile.value = memberStore.userInfo;
+  getBoardList();
+});
 </script>
 
 <template>
@@ -71,10 +75,24 @@ const getBoardList = () => {
       <div class="container" bis_skin_checked="1">
         <div style='display: flex; justify-content: space-between; align-items: center;'>
             <h3 style='margin: 0;'>여행후기 공유</h3>
-            <div v-if="profile !== null">
-                <!-- TODO : click 이벤트 -->
-                <button class="float-right btn" @click="goToRegist"> 나도 공유 하기</button>
+          <div class="d-flex">
+            <div class="btn-group" role="group" aria-label="Basic radio toggle button group" style='margin-right: 20px;'>
+              <div class="form-check form-check-inline">
+                <input v-model="param.sort" class="form-check-input" type="radio" id="inlineRadio1" value="recent">
+                <label class="form-check-label" for="inlineRadio1">최신순 정렬</label>
+              </div>
+
+              <div class="form-check form-check-inline">
+                <input v-model="param.sort" class="form-check-input" type="radio" id="inlineRadio2" value="hit">
+                <label class="form-check-label" for="inlineRadio2">조회순 정렬</label>
+              </div>
             </div>
+            <div v-if="profile !== null">
+              <!-- TODO : click 이벤트 -->
+              <button class="float-right btn" @click="goToRegist"> 나도 공유 하기</button>
+            </div>
+          </div>
+
       </div>
       <hr>
 
