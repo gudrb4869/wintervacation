@@ -15,14 +15,24 @@ const goDetail = () => {
   router.push({ name: "board-main-detail", params: { article_no: articleNo }})
 }
 
-const originalName = props.board.fileInfos[0].originalFile;
-const saveFolder = props.board.fileInfos[0].saveFolder;
-const saveFile = props.board.fileInfos[0].saveFile;
+let originalName = null;
+let saveFolder = null;
+let saveFile = null;
+
+if (props.board.fileInfos.length !== 0) {
+  originalName = props.board.fileInfos[0].originalFile;
+  saveFolder = props.board.fileInfos[0].saveFolder;
+  saveFile = props.board.fileInfos[0].saveFile;
+}
 
 const path = ref("");
 
 onMounted(() => {
-  getImges();
+  if (props.board.fileInfos.length !== 0) {
+    getImges();
+  } else {
+    path.value = window.location.origin + "/src/assets/img/no_img.jpg";
+  }
 })
 
 const getImges = () => {
@@ -42,9 +52,9 @@ const getImges = () => {
 </script>
 
 <template>
-      <div class="col" bis_skin_checked="1" style='height: 500px;'>
-        <div class="card shadow-sm" bis_skin_checked="1" @click='goDetail'>
-          <img class="bd-placeholder-img card-img-top" :src="path" alt="이미지가 없습니다!">
+      <div class="col" bis_skin_checked="1" style='height: 450px;'>
+        <div class="card shadow-sm h-100" bis_skin_checked="1" @click='goDetail'>
+          <img class="bd-placeholder-img card-img-top" :src="path" alt="이미지가 없습니다!" >
           <div class="card-body" bis_skin_checked="1">
             <p class="card-text" style='font-size: 25px;'>{{ board.subject }}</p>
             <p class="card-text text-truncate">{{ board.content }}</p>

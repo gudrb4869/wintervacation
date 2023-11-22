@@ -30,9 +30,7 @@ const getSeason = () => {
   let current = new Date();
 
 let monthDate = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365];
-for (let i = 1; i <= 12; i++) {
-  monthDate[i] += monthDate[i - 1];
-}
+
 // 2월 4일 (입춘) => 34
 // 5월 5일 (입하) => 124
 // 8월 7일 (입추) => 218
