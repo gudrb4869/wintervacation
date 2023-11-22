@@ -70,6 +70,7 @@ const param2 = ref({
 
 const randomRecommend = () => {
   let current = new Date();
+  console.log(current);
 
   let monthDate = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365];
   for (let i = 1; i <= 12; i++) {

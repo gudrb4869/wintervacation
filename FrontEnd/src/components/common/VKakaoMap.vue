@@ -4,7 +4,7 @@ import { useMemberStore } from "@/stores/member";
 
 const memberStore = useMemberStore();
 const userInfo = ref(memberStore.userInfo);
-const user_id = ref(userInfo.value.user_id);
+const user_id = ref(userInfo.value == null ? null : userInfo.value.user_id);
 
 var map;
 var polyline;

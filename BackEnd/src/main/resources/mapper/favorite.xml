@@ -10,8 +10,7 @@
 		join favorite f on a.content_id = f.content_id
 		join member m on f.user_id = m.user_id
 		where m.user_id = #{user_id}
-		order by f.favorite_date desc;
-		order by 
+		order by f.favorite_date desc
 	</select>
 	
 	<insert id="registFavorite" parameterType="favoriteDto">

@@ -49,6 +49,17 @@ public class SwaggerConfiguration {
                 .apiInfo(apiInfo())
                 .useDefaultResponseMessages(false);
     }
+    
+    @Bean
+    public Docket favoriteApi() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .groupName("Favorite API")
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.ssafy.favorite.controller"))
+                .paths(regex("/favorite.*")).build()
+                .apiInfo(apiInfo())
+                .useDefaultResponseMessages(false);
+    }
 
     @Bean
     public Docket qnaMemoApi() {
