@@ -61,7 +61,7 @@ if (currentDate >= 34 && currentDate < 124) {
           <img src="@/assets/img/summer_logo.png" style="width: 200px; height: 80px" />
         </div>
         <div v-else-if='state === 3'>
-          <img src="@/assets/img/autom_logo.png" style="width: 200px; height: 80px" />
+          <img src="@/assets/img/automn_logo.png" style="width: 200px; height: 80px" />
         </div>
         <div v-else-if='state === 4'>
           <img src="@/assets/img/winter_logo.png" style="width: 200px; height: 80px" />
