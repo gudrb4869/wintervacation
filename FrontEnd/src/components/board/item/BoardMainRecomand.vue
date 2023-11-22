@@ -1,19 +1,59 @@
 <script setup>
-
+const props = defineProps({
+  festival: Object,
+});
 </script>
 
 <template>
-    <div class="carousel-item active" data-bs-interval="3000" bis_skin_checked="1">
-      <svg class="bd-placeholder-img bd-placeholder-img-lg d-block w-100" 
-      width="800" height="400" xmlns="http://www.w3.org/2000/svg" role="img" 
-      aria-label="Placeholder: First slide" preserveAspectRatio="xMidYMid slice" 
-      focusable="false">
-      <title>Placeholder</title>
-      <rect width="100%" height="100%" fill="#777"></rect>
-      <text x="50%" y="50%" fill="#555" dy=".3em">First slide</text></svg>
-    </div>
+        <div class="carousel-item active .d-none" data-bs-interval="3000">
+          <img :src="festival.image" class="d-block h-100" alt="대체 텍스트" style="max-height: 600px; object-fit: cover;">
+          <div class="carousel-caption d-none d-md-block text-center align-items-end">
+            <h6 class='text_under'>{{ festival.title }}이 있는 {{ festival.sido }} {{ festival.gugun }}(으)로 여행을 떠나보는건 어때요? </h6>
+            <p class='text_under'>해당 지역으로 이동하려면 여기를 클릭하세요.</p>
+          </div>
+        </div>
 </template>
 
 <style scoped>
+.slidercontents {
+  height: 480px;
+  background-image: url(../public/img/slider.jpg);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  display: flex;
+  align-items: center;
+}
+
+
+.carousel-caption {
+  width : 600px;
+  height : 100px;
+  position: absolute;
+  font-size: 20px;
+  top: 70%;
+  left: 15%;
+  z-index: 10;
+    color: #222020;
+    text-align: center;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, .6);
+}
+
+
+.text_under {
+  position:relative;
+}
+
+.text_under::after {
+  content: "";
+  width: 600px;
+  height: 23px;
+  background-color: #99fee7;
+  position:absolute;
+  display: inline-block;
+  left: 0;
+  bottom: 1px;
+  z-index: -1;
+}
 
 </style>
