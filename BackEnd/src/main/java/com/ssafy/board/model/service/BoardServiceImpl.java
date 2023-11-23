@@ -84,4 +84,10 @@ public class BoardServiceImpl implements BoardService {
 		
 	}
 
+	@Override
+	public List<BoardDto> myBoardList(Map<String, String> map) throws Exception {
+		
+		return boardMapper.myBoardList(map);
+	}
+
 }

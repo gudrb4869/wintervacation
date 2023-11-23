@@ -31,6 +31,13 @@
 		order by hit desc
 	</select>
 	
+	<select id="myBoardList" parameterType="map" resultType="BoardDto">
+		select article_no, user_id, subject, content, hit, date_format(register_time, '%Y-%m-%d %H:%i') register_time
+		from board
+		where user_id = #{user_id}
+		order by register_time desc
+	</select>
+	
 	<sql id="search">
 		<if test="word != null and word != ''">
 			<if test="key == 'subject'">

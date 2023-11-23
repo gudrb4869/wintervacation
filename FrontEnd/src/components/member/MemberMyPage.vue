@@ -3,7 +3,9 @@ import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useMemberStore } from "@/stores/member";
 import { useMenuStore } from "@/stores/menu";
+import BoardMainItem from "@/components/board/item/BoardMainItem.vue";
 import { modify, idDelete, getImg, registProfile, modify_pw, getFileInfo } from "@/api/user";
+import { myListArticle } from "@/api/board";
 import { httpStatusCode } from "@/util/http-status";
 import FavoriteListItem from "@/components/member/item/FavoriteListItem.vue";
 import { listFavorite, deleteFavorite } from "@/api/favorite";
@@ -27,16 +29,27 @@ const Fileinfo = ref(null);
 const namePattern = /^[가-힣]{2,4}$/;
 const emailPattern = /^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z]{2,}$/;
 
-// 가입일을 원하는 형식으로 가공하는 computed 프로퍼티
-const formattedJoinDate = computed(() => {
-  const joinDate = profile.value ? profile.value.join_date : null;
-
-  // joinDate가 null 또는 undefined가 아니고, 비어 있지 않을 때만 처리
-  if (joinDate !== null && joinDate !== undefined && joinDate.trim() !== "") {
-    return joinDate.split(" ")[0];
-  }
-  return "";
+const boardList = ref([]);
+const param = ref({
+  key: "",
+  work: "",
+  sort: "recent", // 초기 값은 "최신순 정렬"
+  user_id: profile.value.user_id,
 });
+
+const getBoardList = () => {
+  console.log(param.value.sort);
+  myListArticle(
+    param.value,
+    ({ data }) => {
+      console.log(data);
+      boardList.value = data;
+    },
+    (error) => {
+      console.log(error);
+    }
+  );
+};
 
 const loadProfil = async () => {
   console.log("초기 프로필 로드 아이디 : ", profile.value.user_id);
@@ -155,6 +168,7 @@ onMounted(() => {
   console.log("찜목록 가지고오기!!!");
   getFavoriteAttractionList();
   loadProfil();
+  getBoardList();
 });
 
 const getFavoriteAttractionList = () => {
@@ -363,7 +377,10 @@ const profilImgUpload = () => {
     <br />
     <p style="font-size: 30px">내 작성 글</p>
     <hr style="margin-top: -12px" />
-
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3" bis_skin_checked="1">
+      <BoardMainItem v-for="board in boardList" :board="board" :key="board.article_no">
+      </BoardMainItem>
+    </div>
     <br />
     <br />
     <p style="font-size: 30px">찜 목록</p>

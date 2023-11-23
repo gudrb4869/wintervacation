@@ -9,7 +9,10 @@ import java.util.Map;
 import javax.xml.bind.DatatypeConverter;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.ssafy.board.model.mapper.BoardMemoMapper;
+import com.ssafy.file.model.mapper.FileMapper;
 import com.ssafy.member.model.MemberDto;
 import com.ssafy.member.model.mapper.MemberMapper;
 
@@ -25,6 +28,8 @@ public class MemberServiceImpl implements MemberService {
 	private static final int KEY_STRETCHING_COUNT = 500; // 키 스트레칭 횟수
 	
 	private final MemberMapper memberMapper;
+	private final FileMapper fileMapper;
+	private final BoardMemoMapper boardMemoMapper;
 	
 //	@Override
 //	public MemberDto login(Map<String, String> map) throws Exception {
@@ -104,7 +109,10 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	@Override
+	@Transactional
 	public int delete(String userId) throws Exception {
+		
+		
 		return memberMapper.delete(userId);
 	}
 

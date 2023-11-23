@@ -279,6 +279,10 @@ body {
   background: linear-gradient(to top right, #92b5db 0%, #1d466c 100%);
 }
 
+p {
+  color: rgb(250, 75, 75);
+}
+
 .input-form {
   max-width: 680px;
   margin-top: 60px;

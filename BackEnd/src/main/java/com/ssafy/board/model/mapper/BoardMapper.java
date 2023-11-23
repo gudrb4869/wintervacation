@@ -18,6 +18,9 @@ public interface BoardMapper {
 	// 정렬기준 : 조회수
 	List<BoardDto> boardList2(Map<String, String> map) throws SQLException;
 	
+	// 내 게시글(최신순)
+	List<BoardDto> myBoardList(Map<String, String> map) throws SQLException;
+	
 	// 게시글 개수
 	int getTotalBoardCount(Map<String, Object> param) throws SQLException;
 	

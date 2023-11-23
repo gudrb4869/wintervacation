@@ -151,6 +151,26 @@ public class BoardController extends HttpServlet {
 			return exceptionHandling(e);
 		} 
 	}
+	
+	@GetMapping("/myList")
+	public ResponseEntity<?> myListArticle(@RequestParam @ApiParam(value = "QnA 게시글을 얻기위한 부가정보.", required = true) Map<String, String> map) {
+		logger.info("My listArticle map - {}", map);
+		System.out.println("My listArticle map : "+map);
+		
+		try {
+			List<BoardDto> boardListDto = boardService.myBoardList(map);
+			
+			for(BoardDto dto : boardListDto) {
+				dto.setFileInfos(fileService.fileInfoList(dto.getArticle_no()));
+			}
+			
+			HttpHeaders header = new HttpHeaders();
+			header.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
+			return ResponseEntity.ok().headers(header).body(boardListDto);			
+		} catch (Exception e) {
+			return exceptionHandling(e);
+		} 
+	}
 
 	@ApiOperation(value = "게시판 글보기", notes = "글번호에 해당하는 게시글의 정보를 반환한다.", response = BoardDto.class)
 	@GetMapping("/view/{article_no}")

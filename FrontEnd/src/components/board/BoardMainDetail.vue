@@ -164,7 +164,7 @@ const onDeleteMemo = (memo_no) => {
     </section>
 
     <div style="margin-bottom: 40px">
-      {{ board.content }}
+      <p>{{ board.content }}</p>
     </div>
     <div style="display: flex; justify-content: flex-end">
       <button type="button" class="btn mb-3" @click="moveList">목록</button>
@@ -201,6 +201,10 @@ const onDeleteMemo = (memo_no) => {
   margin-left: 40px;
   margin-right: 40px;
   padding: 20px; /* Add padding here */
+}
+
+p {
+  font-size: 30px;
 }
 
 .card:hover {
