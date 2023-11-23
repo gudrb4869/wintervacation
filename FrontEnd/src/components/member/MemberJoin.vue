@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watchEffect } from "vue";
+import { ref, watch, watchEffect } from "vue";
 import { useRouter } from "vue-router";
 import { join, idCheck } from "@/api/user";
 
@@ -35,56 +35,108 @@ const birthdayErrorMessage = ref("");
 const namePattern = /^[가-힣]{2,4}$/;
 const emailPattern = /^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z]{2,}$/;
 
-watchEffect(() => {
-  if (user.value.user_id.length < 4 || user.value.user_id.length >= 16) {
-    idErrorMessage.value = "아이디는 4자리 이상, 16자리 이하입니다.";
-  } else {
-    idCheck(
-      user.value.user_id,
-      (response) => {
-        console.log(response.data);
-        if (response.data === 0) {
-          idErrorMessage.value = "";
-        } else {
-          idErrorMessage.value = "이미 존재하는 아이디 입니다.";
+watch(
+  () => user.value.user_id,
+  (value) => {
+    let len = value.trim().length;
+    if (len < 4 || len >= 16) {
+      idErrorMessage.value = "아이디는 4자리 이상, 16자리 이하입니다.";
+    } else {
+      idCheck(
+        value,
+        (response) => {
+          console.log(response.data);
+          if (response.data === 0) {
+            idErrorMessage.value = "";
+          } else {
+            idErrorMessage.value = "이미 존재하는 아이디 입니다.";
+          }
+        },
+        (error) => {
+          console.log(error);
         }
-      },
-      (error) => {
-        console.log(error);
-      }
-    );
+      );
+    }
   }
+);
 
-  if (user.value.user_pass.length < 4 || user.value.user_pass.length > 12) {
-    pwErrorMessage.value = "비밀번호는 4자리 이상 12자리 이하로 입력하세요.";
-  } else {
-    pwErrorMessage.value = "";
+watch(
+  () => user.value.user_pass,
+  (value) => {
+    let len = value.trim().length;
+    if (len < 4 || len > 12) {
+      pwErrorMessage.value = "비밀번호는 4자리 이상 12자리 이하로 입력하세요.";
+    } else {
+      pwErrorMessage.value = "";
+    }
   }
+);
 
-  if (user.value.user_pass !== confirmPassword.value) {
-    pwConfirmErrorMessage.value = "비밀번호가 일치하지 않습니다.";
-  } else {
-    pwConfirmErrorMessage.value = "";
+watch(
+  () => confirmPassword.value,
+  (value) => {
+    if (user.value.user_pass !== value) {
+      pwConfirmErrorMessage.value = "비밀번호가 일치하지 않습니다.";
+    } else {
+      pwConfirmErrorMessage.value = "";
+    }
   }
+);
 
-  if (!namePattern.test(user.value.user_name)) {
-    nameErrorMessage.value = "이름을 2자 이상 4자 이하의 한글로 입력하세요.";
-  } else {
-    nameErrorMessage.value = "";
+watch(
+  () => user.value.user_name,
+  (value) => {
+    if (!namePattern.test(value)) {
+      nameErrorMessage.value = "이름을 2자 이상 4자 이하의 한글로 입력하세요.";
+    } else {
+      nameErrorMessage.value = "";
+    }
   }
+);
 
-  if (!emailPattern.test(user.value.email)) {
-    emailErrorMessage.value = "이메일을 형식에 알맞게 입력해주세요";
-  } else {
-    emailErrorMessage.value = "";
+watch(
+  () => user.value.gender,
+  (value) => {
+    if (!value) {
+      genderErrorMessage.value = "성별을 선택하세요.";
+    } else {
+      genderErrorMessage.value = "";
+    }
   }
+);
 
-  if (!user.value.gender) {
-    genderErrorMessage.value = "성별을 선택하세요.";
-  } else {
-    genderErrorMessage.value = "";
+watch(
+  () => user.value.address,
+  (value) => {
+    if (!value) {
+      addressErrorMessage.value = "주소를 입력하세요.";
+    } else {
+      addressErrorMessage.value = "";
+    }
   }
-});
+);
+
+watch(
+  () => user.value.birth_date,
+  (value) => {
+    if (!value) {
+      birthdayErrorMessage.value = "생일을 입력하세요.";
+    } else {
+      birthdayErrorMessage.value = "";
+    }
+  }
+);
+
+watch(
+  () => user.value.email,
+  (value) => {
+    if (!emailPattern.test(value)) {
+      emailErrorMessage.value = "이메일을 형식에 알맞게 입력해주세요";
+    } else {
+      emailErrorMessage.value = "";
+    }
+  }
+);
 
 const userJoin = () => {
   // 오류 메시지가 하나라도 있는지 확인
@@ -219,7 +271,7 @@ const goToIndex = () => {
               v-model="user.address"
               required
             />
-            <p>{{ !user.address ? "주소를 입력하세요." : addressErrorMessage }}</p>
+            <p>{{ addressErrorMessage }}</p>
           </div>
           <div class="mb-3">
             <label for="birthday">생일</label>
@@ -230,7 +282,7 @@ const goToIndex = () => {
               v-model="user.birth_date"
               required
             />
-            <p>{{ !user.birth_date ? "생일을 입력하세요." : birthdayErrorMessage }}</p>
+            <p>{{ birthdayErrorMessage }}</p>
           </div>
           <div class="row">
             <div class="mb-3">
