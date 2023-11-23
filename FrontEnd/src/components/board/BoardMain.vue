@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, watchEffect } from 'vue';
+import { ref, onMounted, watchEffect } from "vue";
 import BoardMainItem from "./item/BoardMainItem.vue";
 import BoardMainRecomand from "./item/BoardMainRecomand.vue";
 import { useMemberStore } from "@/stores/member";
@@ -12,9 +12,8 @@ const memberStore = useMemberStore();
 const profile = ref(null);
 
 const goToRegist = () => {
-  router.push({ name : "board-main-regist" })
-}
-
+  router.push({ name: "board-main-regist" });
+};
 
 const getFestivals = (month) => {
   return festivals.filter((f) => (f.month - month + 12) % 12 < 4);
@@ -36,20 +35,18 @@ const getBoardList = () => {
     ({ data }) => {
       console.log(data);
       boardList.value = data;
-    }, 
+    },
     (error) => {
       console.log(error);
     }
   );
 };
 
-
 onMounted(() => {
   profile.value = memberStore.userInfo;
   getBoardList();
   randomRecommend();
 });
-
 
 const randomRecommend = () => {
   let current = new Date();
@@ -87,80 +84,124 @@ const randomRecommend = () => {
 
   // 추천된 축제 리스트를 저장
   festivalList = recommendedFestivals;
-
 };
 
 // param.sort 값이 변경될 때마다 getBoardList 호출
 watchEffect(() => {
   getBoardList();
 });
-
-
 </script>
 
 <template>
-<main>
-
-  <div id="carouselExampleCaptions" class="carousel slide py-5 bg-light custom-carousel-container h-100" data-bs-ride="carousel">
+  <main>
+    <div
+      id="carouselExampleCaptions"
+      class="carousel slide my-5 bg-light custom-carousel-container h-100"
+      data-bs-ride="carousel"
+    >
       <div class="carousel-indicators">
-        <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-        <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="1" aria-label="Slide 2"></button>
-        <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="2" aria-label="Slide 3"></button>
+        <button
+          type="button"
+          data-bs-target="#carouselExampleCaptions"
+          data-bs-slide-to="0"
+          class="active"
+          aria-current="true"
+          aria-label="Slide 1"
+        ></button>
+        <button
+          type="button"
+          data-bs-target="#carouselExampleCaptions"
+          data-bs-slide-to="1"
+          aria-label="Slide 2"
+        ></button>
+        <button
+          type="button"
+          data-bs-target="#carouselExampleCaptions"
+          data-bs-slide-to="2"
+          aria-label="Slide 3"
+        ></button>
       </div>
       <div class="carousel-inner">
-        <BoardMainRecomand v-for='festival in festivalList' :festival='festival' :key='festival.id'>
-
+        <BoardMainRecomand
+          v-for="(festival, index) in festivalList"
+          :festival="festival"
+          :index="index"
+          :key="festival.id"
+        >
         </BoardMainRecomand>
       </div>
-      <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
+      <button
+        class="carousel-control-prev"
+        type="button"
+        data-bs-target="#carouselExampleCaptions"
+        data-bs-slide="prev"
+      >
         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
         <span class="visually-hidden">Previous</span>
       </button>
-      <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
+      <button
+        class="carousel-control-next"
+        type="button"
+        data-bs-target="#carouselExampleCaptions"
+        data-bs-slide="next"
+      >
         <span class="carousel-control-next-icon" aria-hidden="true"></span>
         <span class="visually-hidden">Next</span>
       </button>
-  </div>
+    </div>
 
-  <div class="album py-5 bg-light" bis_skin_checked="1">
+    <div class="album py-5 bg-light" bis_skin_checked="1">
       <div class="container" bis_skin_checked="1">
-        <div style='display: flex; justify-content: space-between; align-items: center;'>
-            <h3 style='margin: 0;'>여행후기 공유</h3>
+        <div style="display: flex; justify-content: space-between; align-items: center">
+          <h3 style="margin: 0">여행후기 공유</h3>
           <div class="d-flex">
-            <div class="btn-group" role="group" aria-label="Basic radio toggle button group" style='margin-right: 20px;'>
+            <div
+              class="btn-group"
+              role="group"
+              aria-label="Basic radio toggle button group"
+              style="margin-right: 20px"
+            >
               <div class="form-check form-check-inline">
-                <input v-model="param.sort" class="form-check-input" type="radio" id="inlineRadio1" value="recent">
+                <input
+                  v-model="param.sort"
+                  class="form-check-input"
+                  type="radio"
+                  id="inlineRadio1"
+                  value="recent"
+                />
                 <label class="form-check-label" for="inlineRadio1">최신순 정렬</label>
               </div>
 
               <div class="form-check form-check-inline">
-                <input v-model="param.sort" class="form-check-input" type="radio" id="inlineRadio2" value="hit">
+                <input
+                  v-model="param.sort"
+                  class="form-check-input"
+                  type="radio"
+                  id="inlineRadio2"
+                  value="hit"
+                />
                 <label class="form-check-label" for="inlineRadio2">조회순 정렬</label>
               </div>
             </div>
             <div v-if="profile !== null">
               <!-- TODO : click 이벤트 -->
-              <button class="float-right btn" @click="goToRegist"> 나도 공유 하기</button>
+              <button class="float-right btn" @click="goToRegist">나도 공유 하기</button>
             </div>
           </div>
+        </div>
+        <hr />
 
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3" bis_skin_checked="1">
+          <BoardMainItem v-for="board in boardList" :board="board" :key="board.article_no">
+          </BoardMainItem>
+        </div>
       </div>
-      <hr>
-
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3" bis_skin_checked="1">
-        <BoardMainItem v-for="board in boardList" :board="board" :key="board.article_no">
-
-        </BoardMainItem>
-
     </div>
-  </div>
-</div>
-
-</main>
+  </main>
 </template>
 
 <style scoped>
-.slidercontents {
+/* .slidercontents {
   height: 480px;
   background-image: url(../public/img/slider.jpg);
   background-repeat: no-repeat;
@@ -168,51 +209,47 @@ watchEffect(() => {
   background-size: cover;
   display: flex;
   align-items: center;
-}
+} */
 
 .custom-carousel-container {
-    max-width: 800px; /* 원하는 최대 너비로 설정 */
-    margin: auto; /* 중앙 정렬을 위해 margin을 auto로 설정 */
-  }
+  max-width: 800px; /* 원하는 최대 너비로 설정 */
+  margin: auto; /* 중앙 정렬을 위해 margin을 auto로 설정 */
+}
 
 .carousel-indicators [data-bs-target] {
-box-sizing: content-box;
-flex: 0 1 auto;
-width: 10px;
-height: 10px;
-border-radius:5px;
-padding: 0;
-margin-right: 3px;
-margin-left: 3px;
-text-indent: -999px;
-cursor: pointer;
-background-color: white;
-background-clip: padding-box;
-border: 0;
-opacity: .8;
-transition: opacity .6s ease;
-
+  box-sizing: content-box;
+  flex: 0 1 auto;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  padding: 0;
+  margin-right: 3px;
+  margin-left: 3px;
+  text-indent: -999px;
+  cursor: pointer;
+  background-color: white;
+  background-clip: padding-box;
+  border: 0;
+  opacity: 0.8;
+  transition: opacity 0.6s ease;
 }
 
 .carousel-caption {
-  width : 300px;
-  height : 100px;
+  width: 300px;
+  height: 100px;
   position: absolute;
   font-size: 20px;
   top: 70%;
   left: 32%;
-    color: #222020;
-    text-align: center;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, .6);
+  color: #222020;
+  text-align: center;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
 }
 
-
-
-.carousel-indicators .active{
-width: 40px;
-height: 10px;
-background-color: #35c5f0;
-
+.carousel-indicators .active {
+  width: 40px;
+  height: 10px;
+  background-color: #35c5f0;
 }
 
 .wrapText {
