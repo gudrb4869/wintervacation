@@ -3,11 +3,14 @@ import { ref, onMounted } from "vue";
 import { detailPlan, deletePlan } from "@/api/plan";
 
 import VKakaoMap from "@/components/common/VKakaoMap.vue";
+import IconClipBoard from "@/components/icons/IconClipBoard.vue";
 
 import { useRoute, useRouter } from "vue-router";
 
 const router = useRouter();
 const route = useRoute();
+
+const currentUrl = ref(window.location.href);
 
 const { plan_no } = route.params;
 
@@ -84,6 +87,13 @@ const onDeletePlan = () => {
     }
   );
 };
+
+const handleCopy = (e) => {
+  navigator.clipboard
+    .writeText(currentUrl.value)
+    .then(() => alert("웹링크 복사에 성공했습니다!"))
+    .catch(() => alert("웹링크 복사에 실패했습니다!"));
+};
 </script>
 
 <template>
@@ -122,6 +132,19 @@ const onDeletePlan = () => {
                 v-model="plan.end_date"
                 readonly="readonly"
               />
+            </div>
+            <div class="mb-3">
+              <div class="row g-3 align-items-center">
+                <div class="col-auto">
+                  <icon-clip-board />
+                </div>
+                <div class="col">
+                  <input class="form-control" type="url" v-model="currentUrl" readonly="readOnly" />
+                </div>
+                <div class="col-auto">
+                  <button type="button" class="btn" @click="handleCopy">웹 링크 복사</button>
+                </div>
+              </div>
             </div>
             <div class="mb-3" style="height: 450px">
               <div class="overflow-auto mh-100">
