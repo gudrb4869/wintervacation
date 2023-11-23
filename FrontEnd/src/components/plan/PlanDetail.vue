@@ -88,7 +88,7 @@ const onDeletePlan = () => {
   );
 };
 
-const handleCopy = (e) => {
+const handleCopy = () => {
   navigator.clipboard
     .writeText(currentUrl.value)
     .then(() => alert("웹링크 복사에 성공했습니다!"))
