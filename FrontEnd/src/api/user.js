@@ -36,9 +36,9 @@ async function registProfile(params, success, fail) {
   file.post(`${file_url}/register`, formData).then(success).catch(fail);
 }
 
-async function getImg(saveFolder, originalName, saveFile, success, fail) {
-  await local
-    .get(`${url}/getImg/${saveFolder}/${originalName}/${saveFile}`)
+function getImg(saveFolder, originalName, saveFile, success, fail) {
+  local
+    .get(`${file_url}/getImg/${saveFolder}/${originalName}/${saveFile}`)
     .then(success)
     .catch(fail);
 }

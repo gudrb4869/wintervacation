@@ -39,26 +39,28 @@ const formattedJoinDate = computed(() => {
 });
 
 const loadProfil = async () => {
+  console.log("초기 프로필 로드 아이디 : ", profile.value.user_id);
   getFileInfo(
     profile.value.user_id,
     ({ data }) => {
-      console.log("불러온 프로필 정보 : ", data);
+      console.log("불러온 프로필 정보 : {}", data);
       Fileinfo.value = data;
-      if (data === "") {
+      if (data.saveFile === undefined) {
         path.value = window.location.origin + "/src/assets/img/no_img.jpg";
       } else {
+        console.log("프로필 가져오기 : ", Fileinfo.value.saveFile);
         getImg(
-          data.saveFolder,
-          data.originalName,
-          data.saveFile,
+          Fileinfo.value.saveFolder,
+          Fileinfo.value.originalFile,
+          Fileinfo.value.saveFile,
           ({ data }) => {
             path.value =
-              "http://localhost/board-api/getImg/" +
-              data.saveFolder +
+              "http://localhost/file/getImg/" +
+              Fileinfo.value.saveFolder +
               "/" +
-              data.originalName +
+              Fileinfo.value.originalFile +
               "/" +
-              data.saveFile;
+              Fileinfo.value.saveFile;
           },
           (error) => {
             console.log("프로필 이미지 로딩 에러");

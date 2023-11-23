@@ -1,4 +1,4 @@
-package com.ssafy.file;
+package com.ssafy.file.controller;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,6 +31,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.board.controller.BoardController;
+import com.ssafy.file.FileUtil;
 import com.ssafy.file.model.FileDto;
 import com.ssafy.file.service.FileService;
 
@@ -129,7 +130,7 @@ public class FileController extends HttpServlet {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Content-type", Files.probeContentType(filePath));
             
-            System.out.println("resource : " + resource);
+            System.out.println("resource! : " + resource);
             
             return new ResponseEntity<Object>(resource, headers, HttpStatus.OK);
             

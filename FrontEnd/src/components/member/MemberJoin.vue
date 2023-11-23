@@ -27,6 +27,9 @@ const pwErrorMessage = ref("");
 const pwConfirmErrorMessage = ref("");
 const nameErrorMessage = ref("");
 const emailErrorMessage = ref("");
+const genderErrorMessage = ref("");
+const addressErrorMessage = ref("");
+const birthdayErrorMessage = ref("");
 
 // 정규식 패턴
 const namePattern = /^[가-힣]{2,4}$/;
@@ -75,6 +78,12 @@ watchEffect(() => {
   } else {
     emailErrorMessage.value = "";
   }
+
+  if (!user.value.gender) {
+    genderErrorMessage.value = "성별을 선택하세요.";
+  } else {
+    genderErrorMessage.value = "";
+  }
 });
 
 const userJoin = () => {
@@ -84,7 +93,10 @@ const userJoin = () => {
     pwErrorMessage.value ||
     pwConfirmErrorMessage.value ||
     nameErrorMessage.value ||
-    emailErrorMessage.value
+    emailErrorMessage.value ||
+    genderErrorMessage.value ||
+    addressErrorMessage.value ||
+    birthdayErrorMessage.value
   ) {
     // 오류 메시지가 있으면 가입을 중단하고 오류를 표시
     console.log("회원가입 실패: 입력값에 오류가 있습니다.");
@@ -155,19 +167,71 @@ const goToIndex = () => {
             <p>{{ pwConfirmErrorMessage }}</p>
           </div>
 
+          <div class="row">
+            <!-- 왼쪽에 이름 입력란 -->
+            <div class="col-md-6 mb-3">
+              <label for="name">이름</label>
+              <input
+                type="text"
+                class="form-control"
+                id="name"
+                placeholder=""
+                v-model="user.user_name"
+                required
+              />
+              <p>{{ nameErrorMessage }}</p>
+            </div>
+
+            <!-- 오른쪽에 성별 라벨과 라디오 버튼 -->
+            <div class="col-md-6 mb-3">
+              <label>성별</label>
+              <div>
+                <div class="form-check form-check-inline">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    id="male"
+                    value="male"
+                    v-model="user.gender"
+                  />
+                  <label class="form-check-label" for="male">남성</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    id="female"
+                    value="female"
+                    v-model="user.gender"
+                  />
+                  <label class="form-check-label" for="female">여성</label>
+                </div>
+              </div>
+              <p>{{ genderErrorMessage }}</p>
+            </div>
+          </div>
           <div class="mb-3">
-            <label for="name">이름</label>
+            <label for="address">주소</label>
             <input
               type="text"
               class="form-control"
-              id="name"
-              placeholder=""
-              v-model="user.user_name"
+              placeholder="주소를 입력하세요"
+              v-model="user.address"
               required
             />
-            <p>{{ nameErrorMessage }}</p>
+            <p>{{ !user.address ? "주소를 입력하세요." : addressErrorMessage }}</p>
           </div>
-
+          <div class="mb-3">
+            <label for="birthday">생일</label>
+            <input
+              type="date"
+              class="form-control"
+              id="birthday"
+              v-model="user.birth_date"
+              required
+            />
+            <p>{{ !user.birth_date ? "생일을 입력하세요." : birthdayErrorMessage }}</p>
+          </div>
           <div class="row">
             <div class="mb-3">
               <label for="root">이메일</label>
@@ -217,7 +281,7 @@ body {
 
 .input-form {
   max-width: 680px;
-  margin-top: 80px;
+  margin-top: 60px;
   padding: 32px;
   background: #fff;
   -webkit-border-radius: 10px;

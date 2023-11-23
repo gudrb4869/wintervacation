@@ -13,7 +13,6 @@ const props = defineProps({
         {{ festival.title }}이 있는 {{ festival.sido }} {{ festival.gugun }}(으)로 여행을 떠나보는건
         어때요?
       </h6>
-      <p class="text_under">해당 지역으로 이동하려면 여기를 클릭하세요.</p>
     </div>
   </div>
 </template>
