@@ -237,7 +237,7 @@ const onChangeAttractions = (val) => {
 <template>
   <form @submit.prevent="onSubmit">
     <div class="mb-3">
-      <div class="row" style="height: 700px">
+      <div class="row">
         <div class="col-2 mh-100">
           <div class="mb-3">
             <h4 class="my-0 py-0 shadow-sm bg-light">
@@ -245,34 +245,52 @@ const onChangeAttractions = (val) => {
             </h4>
           </div>
           <div class="mb-3">
-            <label for="title" class="form-label">제목</label>
-            <input
-              type="text"
-              class="form-control"
-              id="title"
-              v-model="plan.title"
-              placeholder="제목..."
-            />
+            <div class="row g-3 align-items-center">
+              <div class="col-auto">
+                <label for="title" class="form-label">제목</label>
+              </div>
+              <div class="col">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="title"
+                  v-model="plan.title"
+                  placeholder="제목..."
+                />
+              </div>
+            </div>
           </div>
           <div class="mb-3">
-            <label for="start_date" class="form-label">여행 시작일</label>
-            <input
-              type="date"
-              class="form-control"
-              id="start_date"
-              @change="onChangeStartDate"
-              v-model="plan.start_date"
-            />
+            <div class="row g-3 align-items-center">
+              <div class="col-auto">
+                <label for="start_date" class="form-label">여행 시작일</label>
+              </div>
+              <div class="col">
+                <input
+                  type="date"
+                  class="form-control"
+                  id="start_date"
+                  @change="onChangeStartDate"
+                  v-model="plan.start_date"
+                />
+              </div>
+            </div>
           </div>
           <div class="mb-3">
-            <label for="end_date" class="form-label">여행 종료일</label>
-            <input
-              type="date"
-              class="form-control"
-              id="end_date"
-              @change="onChangeEndDate"
-              v-model="plan.end_date"
-            />
+            <div class="row g-3 align-items-center">
+              <div class="col-auto">
+                <label for="end_date" class="form-label">여행 종료일</label>
+              </div>
+              <div class="col">
+                <input
+                  type="date"
+                  class="form-control"
+                  id="end_date"
+                  @change="onChangeEndDate"
+                  v-model="plan.end_date"
+                />
+              </div>
+            </div>
           </div>
           <div class="mb-3" style="height: 450px">
             <div class="overflow-auto mh-100">

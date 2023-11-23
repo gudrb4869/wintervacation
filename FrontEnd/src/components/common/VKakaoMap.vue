@@ -1,4 +1,5 @@
 <script setup>
+/* global kakao */
 import { ref, watch, onMounted } from "vue";
 import { useMemberStore } from "@/stores/member";
 import { registerFavorite, deleteFavorite } from "@/api/favorite";
@@ -34,6 +35,13 @@ const contentTypeList = ref([
 ]);
 const attractions = ref([]);
 
+const props = defineProps({
+  search: Boolean,
+  courses: Array,
+  attractions: Array,
+  selectAttraction: Object,
+});
+
 const emit = defineEmits(["onChangeAttractions"]);
 
 const param = ref({
@@ -41,6 +49,23 @@ const param = ref({
   gugun_code: 0,
   content_type_id: [],
   user_id: user_id.value,
+});
+
+onMounted(() => {
+  if (window.kakao && window.kakao.maps) {
+    initMap();
+  } else {
+    const script = document.createElement("script");
+    // autoload=false 꼭 설정해주기
+    // clusterer -> 마커많을때 하나로 합쳐주는기능
+    script.src = `//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=${
+      import.meta.env.VITE_KAKAO_MAP_SERVICE_KEY
+    }&libraries=services,clusterer`;
+    /* global kakao */
+    script.onload = () => kakao.maps.load(() => initMap());
+    document.head.appendChild(script);
+  }
+  getSidoList();
 });
 
 const getSidoList = () => {
@@ -106,13 +131,6 @@ const getAttractions = () => {
     }
   );
 };
-
-const props = defineProps({
-  search: Boolean,
-  courses: Array,
-  attractions: Array,
-  selectAttraction: Object,
-});
 
 const onAddFavorite = (content_id) => {
   if (!user_id.value) {
@@ -226,23 +244,6 @@ watch(
   },
   { deep: true }
 );
-
-onMounted(() => {
-  if (window.kakao && window.kakao.maps) {
-    initMap();
-  } else {
-    const script = document.createElement("script");
-    // autoload=false 꼭 설정해주기
-    // clusterer -> 마커많을때 하나로 합쳐주는기능
-    script.src = `//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=${
-      import.meta.env.VITE_KAKAO_MAP_SERVICE_KEY
-    }&libraries=services,clusterer`;
-    /* global kakao */
-    script.onload = () => kakao.maps.load(() => initMap());
-    document.head.appendChild(script);
-  }
-  getSidoList();
-});
 
 const initMap = () => {
   const container = document.getElementById("map");
