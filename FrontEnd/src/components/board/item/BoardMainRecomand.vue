@@ -6,7 +6,7 @@ const props = defineProps({
 </script>
 
 <template>
-  <div class="carousel-item" :class="{ active: index == 0 }" data-bs-interval="3000">
+  <div class="carousel-item" :class="{ active: index == 0 }">
     <img :src="festival.image" class="d-block w-100" alt="대체 텍스트" style="min-height: 600px" />
     <div class="carousel-caption d-none d-md-block">
       <h6 class="text_under">
