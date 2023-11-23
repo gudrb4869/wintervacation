@@ -7,6 +7,12 @@ import IconClipBoard from "@/components/icons/IconClipBoard.vue";
 
 import { useRoute, useRouter } from "vue-router";
 
+import { useMemberStore } from "@/stores/member";
+
+const memberStore = useMemberStore();
+const userInfo = ref(memberStore.userInfo);
+const user_id = ref(userInfo.value == null ? null : userInfo.value.user_id);
+
 const router = useRouter();
 const route = useRoute();
 
@@ -191,8 +197,17 @@ const handleCopy = () => {
         </div>
       </div>
       <div class="col-auto text-center">
-        <button type="button" class="btn mb-3" @click="moveModify">수정</button>
-        <button type="button" class="btn mb-3 ms-1" @click="onDeletePlan">삭제</button>
+        <button type="button" class="btn mb-3" v-if="plan.user_id === user_id" @click="moveModify">
+          수정
+        </button>
+        <button
+          type="button"
+          class="btn mb-3 ms-1"
+          v-if="plan.user_id === user_id"
+          @click="onDeletePlan"
+        >
+          삭제
+        </button>
         <button type="button" class="btn mb-3 ms-1" @click="moveList">목록으로이동</button>
       </div>
     </div>
