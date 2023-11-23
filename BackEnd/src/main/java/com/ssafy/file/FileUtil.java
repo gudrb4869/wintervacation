@@ -22,7 +22,7 @@ public class FileUtil {
     @Value("${file.path.upload-images}")
     private String uploadImagePath;
     
-    // 이미지 저장 및 dto변환
+    // 이미지 저장 및 dto변환 (board)
     public FileDto storeImg(MultipartFile multipartFile, BoardDto boardDto) throws IOException {
         if(multipartFile.isEmpty()) {
             return null;
@@ -43,7 +43,34 @@ public class FileUtil {
             imgInfoDto.setOriginalFile(originalFileName);
             imgInfoDto.setSaveFile(saveFileName);
             imgInfoDto.setArticle_no(boardDto.getArticle_no());
-            imgInfoDto.setUser_id(boardDto.getUser_id());
+            // 파일 실제 저장
+            multipartFile.transferTo(new File(folder, saveFileName));
+        }
+        
+        return imgInfoDto;
+    }
+    
+    // 이미지 저장 및 dto변환 (profile)
+    public FileDto storeImg(MultipartFile multipartFile, FileDto fileDto) throws IOException {
+        if(multipartFile.isEmpty()) {
+            return null;
+        }
+        
+        String today = new SimpleDateFormat("yyMMdd").format(new Date());
+        String saveFolder = uploadImagePath + File.separator + today;
+        File folder = new File(saveFolder);
+        if (!folder.exists())
+            folder.mkdirs();
+        
+        FileDto imgInfoDto = new FileDto();
+        String originalFileName = multipartFile.getOriginalFilename();
+        if (!originalFileName.isEmpty()) {
+            String saveFileName = UUID.randomUUID().toString()
+                    + originalFileName.substring(originalFileName.lastIndexOf('.'));
+            imgInfoDto.setSaveFolder(today);
+            imgInfoDto.setOriginalFile(originalFileName);
+            imgInfoDto.setSaveFile(saveFileName);
+            imgInfoDto.setUser_id(fileDto.getUser_id());
             // 파일 실제 저장
             multipartFile.transferTo(new File(folder, saveFileName));
         }
@@ -63,6 +90,19 @@ public class FileUtil {
         return fileInfos;
     }
     
+    // 이미지 저장 및 dto변환(board)
+    public List<FileDto> storeImgs(List<MultipartFile> multipartFiles, FileDto fileDto) throws IOException {
+        List<FileDto> fileInfos = new ArrayList<FileDto>();
+        for(MultipartFile multipartFile : multipartFiles) {
+            if(!multipartFile.isEmpty()) {
+                fileInfos.add(storeImg(multipartFile, fileDto));
+            }
+        }
+        
+        return fileInfos;
+    }
+    
+    // 이미지 저장 및 dto변환(profile)
 	public void deleteImg(List<FileDto> imgInfos) {
 		for(FileDto imgInfo : imgInfos) {
 			File file = new File(uploadImagePath + File.separator + imgInfo.getSaveFolder() + File.separator + imgInfo.getSaveFile());

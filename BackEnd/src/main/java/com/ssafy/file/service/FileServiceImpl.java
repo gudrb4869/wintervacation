@@ -24,4 +24,14 @@ public class FileServiceImpl implements FileService {
 		return fileMapper.fileInfoList(article_no);
 	}
 
+	@Override
+	public void registerProfile(FileDto fileDto) throws Exception {
+		fileMapper.registerProfile(fileDto);
+	}
+
+	@Override
+	public FileDto getProfileFile(String user_id) throws Exception {
+		return fileMapper.getProfileFile(user_id);
+	}
+
 }

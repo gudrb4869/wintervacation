@@ -12,6 +12,7 @@ import com.ssafy.board.model.BoardListDto;
 public interface BoardService {
 	
 	void writeArticle(BoardDto boardDto) throws Exception;
+//  페이징 처리가 필요할때 이런식으로 사용
 //	BoardListDto boardList(Map<String, String> map) throws Exception;
 	List<BoardDto> boardList(Map<String, String> map) throws Exception;
 	BoardDto viewArticle(int articleNo) throws Exception;

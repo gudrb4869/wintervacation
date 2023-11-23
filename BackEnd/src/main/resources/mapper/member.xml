@@ -35,10 +35,7 @@
 	
 	<update id="modify" parameterType="memberDto">
 		update member
-		<trim prefix="set" suffixOverrides=",">
-			<if test="email != null">email = #{email},</if>
-			<if test="userName != null">user_name = #{user_name},</if>
-		</trim>
+		set user_name = #{user_name}, email = #{email}, address = #{address}
 		where user_id = #{user_id}
 	</update>
 	

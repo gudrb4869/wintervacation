@@ -13,8 +13,9 @@ public interface BoardMapper {
 
 	void writeArticle(BoardDto boardDto) throws SQLException;
 	
+	// 정렬기준 : 최신순
 	List<BoardDto> boardList(Map<String, String> map) throws SQLException;
-	
+	// 정렬기준 : 조회수
 	List<BoardDto> boardList2(Map<String, String> map) throws SQLException;
 	
 	// 게시글 개수

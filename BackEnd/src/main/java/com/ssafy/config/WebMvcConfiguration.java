@@ -28,7 +28,7 @@ public class WebMvcConfiguration implements WebMvcConfigurer {
 	
 	private final Logger logger = LoggerFactory.getLogger(WebMvcConfiguration.class);
 
-	private final List<String> patterns = Arrays.asList("/board/register", "/member/modify");
+	private final List<String> patterns = Arrays.asList("/board/register");
 
 	@Autowired
 	private ConfirmInterceptor confirmInterceptor;

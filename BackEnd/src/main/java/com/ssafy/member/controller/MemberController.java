@@ -208,9 +208,6 @@ public class MemberController {
 	}
 
 	
-	
-	
-	
 	@ApiOperation(value = "비밀번호 수정", notes = "비밀번호를 수정한다. DB수정 성공여부에 따라 'success' 또는 'fail' 문자열을 반환", response=String.class)
 	@PutMapping("/modify_pw")
 	public ResponseEntity<?> modify_pw(@RequestParam String user_id, @RequestParam String user_pass) throws Exception {
