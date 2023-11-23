@@ -125,17 +125,19 @@ const onDeleteMemo = (memo_no) => {
         <h5>{{ board.register_time }}</h5>
       </div>
     </div>
-    <section class="py-5 text-center container">
+
+    <section class="my-5 text-center container">
       <div
         id="carouselExampleInterval"
         class="carousel slide"
+        style="max-width: 800px; margin: auto"
         data-bs-ride="carousel"
-        bis_skin_checked="1"
       >
-        <div class="carousel-inner" bis_skin_checked="1">
+        <div class="carousel-inner">
           <BoardMainDetailItem
-            v-for="fileInfos in board.fileInfos"
+            v-for="(fileInfos, index) in board.fileInfos"
             :fileInfos="fileInfos"
+            :index="index"
             :key="fileInfos.idx"
           >
           </BoardMainDetailItem>

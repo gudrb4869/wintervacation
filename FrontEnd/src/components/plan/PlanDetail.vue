@@ -3,11 +3,20 @@ import { ref, onMounted } from "vue";
 import { detailPlan, deletePlan } from "@/api/plan";
 
 import VKakaoMap from "@/components/common/VKakaoMap.vue";
+import IconClipBoard from "@/components/icons/IconClipBoard.vue";
 
 import { useRoute, useRouter } from "vue-router";
 
+import { useMemberStore } from "@/stores/member";
+
+const memberStore = useMemberStore();
+const userInfo = ref(memberStore.userInfo);
+const user_id = ref(userInfo.value == null ? null : userInfo.value.user_id);
+
 const router = useRouter();
 const route = useRoute();
+
+const currentUrl = ref(window.location.href);
 
 const { plan_no } = route.params;
 
@@ -84,46 +93,84 @@ const onDeletePlan = () => {
     }
   );
 };
+
+const handleCopy = () => {
+  navigator.clipboard
+    .writeText(currentUrl.value)
+    .then(() => alert("웹링크 복사에 성공했습니다!"))
+    .catch(() => alert("웹링크 복사에 실패했습니다!"));
+};
 </script>
 
 <template>
-  <div class="container-fluid">
+  <div class="container-fluid mt-4">
     <div class="mt-3 text-center">
       <div class="mb-3">
-        <div class="row" style="height: 700px">
+        <div class="row">
           <div class="col-3 mh-100">
             <div class="mb-3">
-              <label for="title" class="form-label">제목 : </label>
-              <input
-                type="text"
-                class="form-control"
-                id="title"
-                v-model="plan.title"
-                placeholder="제목..."
-                readonly="readOnly"
-              />
+              <div class="row g-3 align-items-center">
+                <div class="col-auto">
+                  <label for="title" class="form-label">제목 : </label>
+                </div>
+                <div class="col">
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="title"
+                    v-model="plan.title"
+                    placeholder="제목..."
+                    readonly="readOnly"
+                  />
+                </div>
+              </div>
             </div>
             <div class="mb-3">
-              <label for="start_date" class="form-label">여행 시작일 : </label>
-              <input
-                type="date"
-                class="form-control"
-                id="start_date"
-                v-model="plan.start_date"
-                readonly="readOnly"
-              />
+              <div class="row g-3 align-items-center">
+                <div class="col-auto">
+                  <label for="start_date" class="form-label">여행 시작일 : </label>
+                </div>
+                <div class="col">
+                  <input
+                    type="date"
+                    class="form-control"
+                    id="start_date"
+                    v-model="plan.start_date"
+                    readonly="readOnly"
+                  />
+                </div>
+              </div>
             </div>
             <div class="mb-3">
-              <label for="end_date" class="form-label">여행 종료일 : </label>
-              <input
-                type="date"
-                class="form-control"
-                id="end_date"
-                v-model="plan.end_date"
-                readonly="readonly"
-              />
+              <div class="row g-3 align-items-center">
+                <div class="col-auto">
+                  <label for="end_date" class="form-label">여행 종료일 : </label>
+                </div>
+                <div class="col">
+                  <input
+                    type="date"
+                    class="form-control"
+                    id="end_date"
+                    v-model="plan.end_date"
+                    readonly="readonly"
+                  />
+                </div>
+              </div>
             </div>
-            <div class="mb-3" style="height: 450px">
+            <div class="mb-3">
+              <div class="row g-3 align-items-center">
+                <div class="col-auto">
+                  <icon-clip-board />
+                </div>
+                <div class="col">
+                  <input class="form-control" type="url" v-model="currentUrl" readonly="readOnly" />
+                </div>
+                <div class="col-auto">
+                  <button type="button" class="btn" @click="handleCopy">웹 링크 복사</button>
+                </div>
+              </div>
+            </div>
+            <div class="mb-3" style="height: 480px">
               <div class="overflow-auto mh-100">
                 <template v-for="day in days" :key="day">
                   <div class="border p-3">
@@ -150,8 +197,17 @@ const onDeletePlan = () => {
         </div>
       </div>
       <div class="col-auto text-center">
-        <button type="button" class="btn mb-3" @click="moveModify">수정</button>
-        <button type="button" class="btn mb-3 ms-1" @click="onDeletePlan">삭제</button>
+        <button type="button" class="btn mb-3" v-if="plan.user_id === user_id" @click="moveModify">
+          수정
+        </button>
+        <button
+          type="button"
+          class="btn mb-3 ms-1"
+          v-if="plan.user_id === user_id"
+          @click="onDeletePlan"
+        >
+          삭제
+        </button>
         <button type="button" class="btn mb-3 ms-1" @click="moveList">목록으로이동</button>
       </div>
     </div>
