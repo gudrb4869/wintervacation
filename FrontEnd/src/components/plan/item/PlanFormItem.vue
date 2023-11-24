@@ -237,7 +237,7 @@ const onChangeAttractions = (val) => {
 <template>
   <form @submit.prevent="onSubmit">
     <div class="mb-3">
-      <div class="row">
+      <div class="row" style="height: 700px">
         <div class="col-2 mh-100">
           <div class="mb-3">
             <h4 class="my-0 py-0 shadow-sm bg-light">
