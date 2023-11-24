@@ -2,7 +2,7 @@
 import { ref, onMounted } from "vue";
 import { detailPlan, deletePlan } from "@/api/plan";
 
-import VKakaoMap from "@/components/common/VKakaoMap.vue";
+import VKakaoMapPlanDetail from "@/components/common/VKakaoMapPlanDetail.vue";
 import IconClipBoard from "@/components/icons/IconClipBoard.vue";
 
 import { useRoute, useRouter } from "vue-router";
@@ -187,12 +187,12 @@ const handleCopy = () => {
             </div>
           </div>
           <div class="col-9 p-0 mh-100">
-            <v-kakao-map
+            <v-kakao-map-plan-detail
               :search="false"
               :courses="plan.courses"
               :attractions="attractions"
               :selectAttraction="selectAttraction"
-            ></v-kakao-map>
+            ></v-kakao-map-plan-detail>
           </div>
         </div>
       </div>
