@@ -111,6 +111,7 @@ public class BoardController extends HttpServlet {
             logger.info("regist dto : {}", boardDto);
             logger.info("regist multipartFiles : {}", multipartFiles);
             
+            System.out.println("register dto user_id: " + boardDto.getUser_id());
             
             // 파일들 저장 및 dto 리스트로 변환
             List<FileDto> imgInfos = fileUtil.storeImgs(multipartFiles, boardDto);

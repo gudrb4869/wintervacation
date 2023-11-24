@@ -43,6 +43,7 @@ public class FileUtil {
             imgInfoDto.setOriginalFile(originalFileName);
             imgInfoDto.setSaveFile(saveFileName);
             imgInfoDto.setArticle_no(boardDto.getArticle_no());
+            imgInfoDto.setUser_id(boardDto.getUser_id());
             // 파일 실제 저장
             multipartFile.transferTo(new File(folder, saveFileName));
         }
