@@ -14,4 +14,5 @@ public interface FileMapper {
 	FileDto getProfileFile(String user_id) throws Exception;
 	List<FileDto> fileInfoList(int article_no) throws Exception;
 	int deleteFile(int article_no) throws Exception;
+	int deleteFile2(String user_id) throws Exception;
 }

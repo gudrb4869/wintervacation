@@ -14,4 +14,6 @@ public interface BoardMemoMapper {
 	int deleteMemo(int memo_no) throws SQLException;
 	
 	int deleteMemoAll(int article_no) throws SQLException;
+	
+	int deleteMemoAll2(String user_id) throws SQLException;
 }

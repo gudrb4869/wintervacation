@@ -32,5 +32,7 @@ public interface BoardMapper {
 	
 	int deleteArticle(int articleNo) throws SQLException; // 글 삭제
 	
+	int deleteArticle2(String user_id) throws SQLException;
+	
 	List<BoardDto> searchArticle(String option,String search) throws SQLException; // 검색 
 }

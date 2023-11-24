@@ -11,6 +11,7 @@ import javax.xml.bind.DatatypeConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ssafy.board.model.mapper.BoardMapper;
 import com.ssafy.board.model.mapper.BoardMemoMapper;
 import com.ssafy.file.model.mapper.FileMapper;
 import com.ssafy.member.model.MemberDto;
@@ -30,6 +31,7 @@ public class MemberServiceImpl implements MemberService {
 	private final MemberMapper memberMapper;
 	private final FileMapper fileMapper;
 	private final BoardMemoMapper boardMemoMapper;
+	private final BoardMapper boardMapper;
 	
 //	@Override
 //	public MemberDto login(Map<String, String> map) throws Exception {
@@ -111,7 +113,9 @@ public class MemberServiceImpl implements MemberService {
 	@Override
 	@Transactional
 	public int delete(String userId) throws Exception {
-		
+		fileMapper.deleteFile2(userId);
+		boardMemoMapper.deleteMemoAll2(userId);
+		boardMapper.deleteArticle2(userId);
 		
 		return memberMapper.delete(userId);
 	}

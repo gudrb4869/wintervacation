@@ -81,5 +81,10 @@
 		delete from board
 		where article_no = #{articleNo}
 	</delete>
+	
+	<delete id="deleteArticle2" parameterType="String">
+		delete from board
+		where user_id = #{user_id}
+	</delete>
 
 </mapper>

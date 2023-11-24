@@ -25,5 +25,10 @@
 		delete from memo
 		where article_no = #{article_no}
 	</delete>
+	
+	<delete id="deleteMemoAll2" parameterType="String">
+		delete from memo
+		where user_id = #{user_id}
+	</delete>
 
 </mapper>
