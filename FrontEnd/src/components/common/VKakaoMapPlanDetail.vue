@@ -61,6 +61,28 @@ onMounted(() => {
     script.onload = () => kakao.maps.load(() => initMap());
     document.head.appendChild(script);
   }
+  console.log("여행경로 코스 생성!!!");
+  props.courses.forEach((course) => {
+    let obj = {};
+    obj.content_id = course.attraction.content_id;
+    obj.latlng = new kakao.maps.LatLng(course.attraction.latitude, course.attraction.longitude);
+    obj.title = course.attraction.title;
+    obj.content_type_id = course.attraction.content_type_id;
+    obj.addr = course.attraction.addr;
+    obj.image = course.attraction.image;
+    obj.overview = course.attraction.overview;
+    obj.favorite_date = course.attraction.favorite_date;
+    coursePositions.value.push(obj);
+    lines.value.push(
+      new kakao.maps.LatLng(course.attraction.latitude, course.attraction.longitude)
+    );
+  });
+  console.log("***");
+  console.log(coursePositions.value);
+  console.log(lines.value);
+  console.log("***");
+  loadMarkers(coursePositions, courseMarkers);
+  loadLines();
 });
 
 const onAddFavorite = (content_id) => {
@@ -110,36 +132,15 @@ const initMap = () => {
     level: 3,
   };
   map = new kakao.maps.Map(container, options);
-
-  // loadMarkers();
-  if (props.courses.length > 0) {
-    props.courses.forEach((course) => {
-      let obj = {};
-      obj.content_id = course.attraction.content_id;
-      obj.latlng = new kakao.maps.LatLng(course.attraction.latitude, course.attraction.longitude);
-      obj.title = course.attraction.title;
-      obj.content_type_id = course.attraction.content_type_id;
-      obj.addr = course.attraction.addr;
-      obj.image = course.attraction.image;
-      obj.overview = course.attraction.overview;
-      obj.favorite_date = course.attraction.favorite_date;
-      coursePositions.value.push(obj);
-      lines.value.push(
-        new kakao.maps.LatLng(course.attraction.latitude, course.attraction.longitude)
-      );
-    });
-  }
-  loadMarkers(coursePositions, courseMarkers);
-  loadLines();
+  console.log("지도생성성공!!!");
 };
 
 const loadMarkers = (positions, markers) => {
-  // 현재 표시되어있는 marker들이 있다면 map에 등록된 marker를 제거한다.
-  deleteMarkers(markers);
-
   // 마커를 생성합니다
+  console.log("마커생성 진입!!!");
   markers.value = [];
   if (positions.value.length === 0) return;
+  console.log("마커생성 start!!!");
   positions.value.forEach((position, idx) => {
     var color;
     switch (position.content_type_id) {
@@ -320,20 +321,13 @@ const loadMarkers = (positions, markers) => {
   map.setBounds(bounds);
 };
 
-const deleteMarkers = (markers) => {
-  console.log("marker 삭제");
-  console.log(markers.value.length);
-  if (markers.value.length === 0) return;
-  markers.value.forEach((marker) => marker.setMap(null));
-  console.log("marker제거완료");
-};
-
 const loadLines = () => {
   console.log("여행경로생성!!!");
   console.log(lines.value);
 
   if (lines.value.length === 0) return;
 
+  console.log("경로생성 start!!!");
   polyline = new kakao.maps.Polyline({
     path: lines.value, // 선을 구성하는 좌표배열 입니다
     strokeWeight: 4, // 선의 두께 입니다
@@ -352,14 +346,6 @@ const loadLines = () => {
   );
 
   map.setBounds(bounds);
-};
-
-const deleteLines = () => {
-  console.log("여행경로삭제이동!!!");
-  if (polyline) {
-    polyline.setMap(null);
-    console.log("여행경로삭제완료!!!");
-  }
 };
 </script>
 
