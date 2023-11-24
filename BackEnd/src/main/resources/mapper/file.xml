@@ -59,6 +59,11 @@
 		where article_no = #{articleNo}
 	</delete>
 	
+	<delete id= "deleteFile2" parameterType="String">
+		delete from file_info
+		where user_id = #{user_id}
+	</delete>
+	
 
 
 
